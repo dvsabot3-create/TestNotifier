@@ -2,30 +2,48 @@
 # This file defines the services and their configuration
 
 services:
-  # Website Service (React + Express)
+  # Main Website Service (React + Express)
   - type: web
     name: testnotifier-website
-    env: node
-    buildCommand: cd website && npm ci && npm run build
-    startCommand: cd website && npm start
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        sync: false
+        value: https://testnotifier-website.onrender.com
+      - key: JWT_SECRET
+        value: rnd_2N88OuzmRiGFdX2IAwUlmZ2Usoju_render_jwt_2024_secure_key_for_testnotifier_app_production
+      - key: SESSION_SECRET
+        value: session_secret_key_for_testnotifier_app_2024_secure_random
+      - key: CORS_ORIGIN
+        value: https://testnotifier-website.onrender.com
+      - key: GOOGLE_CALLBACK_URL
+        value: https://testnotifier-website.onrender.com/api/auth/google/callback
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FORMAT
+        value: json
+      - key: CUSTOM_DOMAIN
+        value: testnotifier.co.uk
+      - key: API_BASE_URL
+        value: https://testnotifier-website.onrender.com/api
+      # Placeholder values - need to be updated with real credentials
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-      - key: JWT_SECRET
-        sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
-      - key: STRIPE_WEBHOOK_SECRET
-        sync: false
       - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: DATABASE_URL
         sync: false
@@ -33,54 +51,28 @@ services:
         sync: false
       - key: SENTRY_DSN
         sync: false
-    healthCheckPath: /health
-    autoDeploy: true
-    buildFilter:
-      paths:
-        - website/**
-        - render.yaml
-
-  # Backend Service (if separate)
-  - type: web
-    name: testnotifier-backend
-    env: node
-    buildCommand: cd backend && npm ci
-    startCommand: cd backend && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-      - key: DATABASE_URL
+      - key: SMTP_HOST
         sync: false
-      - key: JWT_SECRET
+      - key: SMTP_PORT
         sync: false
-      - key: STRIPE_SECRET_KEY
+      - key: SMTP_USER
         sync: false
-      - key: REDIS_URL
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EXTENSION_ID
+        sync: false
+      - key: EXTENSION_UPDATE_URL
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: BACKUP_ENCRYPTION_KEY
         sync: false
     healthCheckPath: /health
     autoDeploy: true
-    buildFilter:
-      paths:
-        - backend/**
-        - render.yaml
-
-  # Static Site (Alternative approach - just the React app)
-  - type: web
-    name: testnotifier-frontend
-    env: static
-    buildCommand: cd website && npm ci && npm run build
-    staticPublishPath: ./website/dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false
-    buildFilter:
-      paths:
-        - website/src/**
-        - website/public/**
-        - website/package.json
-        - website/vite.config.ts
 
 # Optional: Database service
 # databases:
