@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TestNotifier - Multi-Pupil Manager</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 420px;
+      min-height: 600px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+      color: white;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(29, 112, 184, 0.15);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .plan-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 14px 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      color: #6c757d;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: #f8f9fa;
+      color: #1d70b8;
+    }
+
+    .tab.active {
+      color: #1d70b8;
+      border-bottom-color: #1d70b8;
+      background: #f8f9fa;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 16px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Pupils Tab */
+    .pupil-selector {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 2px solid #e9ecef;
+    }
+
+    .pupil-selector-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .pupil-dropdown {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .pupil-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .pupil-card:hover {
+      border-color: #1d70b8;
+      box-shadow: 0 4px 16px rgba(29, 112, 184, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .pupil-card.active {
+      border-color: #1d70b8;
+      background: linear-gradient(135deg, #f0f7ff, #ffffff);
+      box-shadow: 0 8px 24px rgba(29, 112, 184, 0.15);
+    }
+
+    .pupil-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pupil-info {
+      flex: 1;
+    }
+
+    .pupil-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1d70b8;
+      margin-bottom: 4px;
+    }
+
+    .pupil-booking-ref {
+      font-size: 12px;
+      color: #6c757d;
+      font-family: 'Courier New', monospace;
+    }
+
+    .pupil-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pupil-status.active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .pupil-status.paused {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .pupil-status.inactive {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .pupil-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 8px;
+    }
+
+    .pupil-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pupil-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+      color: white;
+      box-shadow: 0 2px 8px rgba(29, 112, 184, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #155a8c, #1d70b8);
+      box-shadow: 0 4px 12px rgba(29, 112, 184, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #218838, #28a745);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ced4da;
+      color: #495057;
+    }
+
+    .btn-outline:hover {
+      background: #f8f9fa;
+    }
+
+    .add-pupil-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #f8f9fa, #ffffff);
+      border: 2px dashed #ced4da;
+      border-radius: 12px;
+      color: #1d70b8;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 14px;
+    }
+
+    .add-pupil-btn:hover {
+      background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+      border-color: #1d70b8;
+      border-style: solid;
+      box-shadow: 0 4px 12px rgba(29, 112, 184, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      width: 360px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1d70b8;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #495057;
+      font-size: 13px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #1d70b8;
+      box-shadow: 0 0 0 4px rgba(29, 112, 184, 0.12);
+      background: #ffffff;
+    }
+
+    .form-input.error {
+      border-color: #dc3545;
+      background: #fff5f5;
+    }
+
+    .form-input.error:focus {
+      box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.12);
+    }
+
+    .form-input.success {
+      border-color: #28a745;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: #6c757d;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      opacity: 0.3;
+      margin-bottom: 12px;
+    }
+
+    .empty-state-text {
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Settings Tab */
+    .settings-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 12px;
+      border: 2px solid #e9ecef;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s;
+    }
+
+    .settings-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .settings-card-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-label {
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .settings-sublabel {
+      font-size: 11px;
+      color: #6c757d;
+      margin-top: 2px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch.active {
+      background: #28a745;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(20px);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #ffffff, #f8f9fa);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+      border-color: #1d70b8;
+      box-shadow: 0 4px 16px rgba(29, 112, 184, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* Test Center Tags */
+    .center-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .center-tag {
+      padding: 4px 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #495057;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1d70b8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    /* Time Delay Preset Buttons */
+    .delay-preset-btn {
+      padding: 4px 8px;
+      border: 1px solid #ced4da;
+      background: white;
+      color: #495057;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 32px;
+    }
+
+    .delay-preset-btn:hover {
+      background: #f8f9fa;
+      border-color: #1d70b8;
+      color: #1d70b8;
+    }
+
+    .delay-preset-btn.active {
+      background: #1d70b8;
+      color: white;
+      border-color: #1d70b8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo">
+          <img src="icons/tn-logov2.png" alt="TestNotifier Logo">
+        </div>
+        <div>
+          <h1>TestNotifier</h1>
+          <div class="subtitle">Multi-Pupil Manager</div>
+        </div>
+      </div>
+      <div class="plan-badge">PRO PLAN</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="pupils">👥 Pupils</div>
+    <div class="tab" data-tab="dashboard">📊 Dashboard</div>
+    <div class="tab" data-tab="settings">⚙️ Settings</div>
+  </div>
+
+  <!-- Pupils Tab -->
+  <div class="tab-content active" data-content="pupils">
+    <div id="message-container"></div>
+    
+    <div id="pupils-list">
+      <!-- Pupils will be rendered here -->
+    </div>
+
+    <button class="add-pupil-btn" id="add-pupil-btn">
+      + Add New Pupil
+    </button>
+  </div>
+
+  <!-- Dashboard Tab -->
+  <div class="tab-content" data-content="dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value" id="total-pupils">0</span>
+        <div class="stat-label">Total Pupils</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="active-pupils">0</span>
+        <div class="stat-label">Active Pupils</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="slots-found">0</span>
+        <div class="stat-label">Slots Found</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="success-rate">0%</span>
+        <div class="stat-label">Success Rate</div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Recent Activity</div>
+      <div id="activity-log">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <div class="empty-state-text">No activity yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div class="tab-content" data-content="settings">
+    <div class="settings-card">
+      <div class="settings-card-title">Monitoring Settings</div>
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">24/7 Monitoring</div>
+          <div class="settings-sublabel">Continuous background checks</div>
+        </div>
+        <div class="toggle-switch active" id="monitoring-toggle"></div>
+      </div>
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Rapid Mode</div>
+          <div class="settings-sublabel">500ms checks when slots found</div>
+        </div>
+        <div class="toggle-switch" id="rapid-mode-toggle"></div>
+      </div>
+      <div class="settings-item">
+        <div>
+          <div class="settings-label">Stealth Mode</div>
+          <div class="settings-sublabel">Anti-detection enabled</div>
+        </div>
+        <div class="toggle-switch active" id="stealth-toggle"></div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Time Delay Settings</div>
+      <div class="form-group">
+        <label class="form-label">Time Delay (ms)</label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input 
+            type="number" 
+            class="form-input" 
+            id="time-delay-input" 
+            value="500" 
+            min="100" 
+            max="10000" 
+            step="100"
+            style="width: 80px;"
+          >
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button class="delay-preset-btn" data-value="500">500</button>
+            <button class="delay-preset-btn" data-value="1000">1000</button>
+            <button class="delay-preset-btn" data-value="1500">1500</button>
+            <button class="delay-preset-btn" data-value="3000">3000</button>
+            <button class="delay-preset-btn" data-value="3700">3700</button>
+            <button class="delay-preset-btn" data-value="5000">5000</button>
+          </div>
+        </div>
+        <small style="color: #6c757d; font-size: 11px;">Delay between automation checks (lower = faster)</small>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Notifications</div>
+      <div class="settings-item">
+        <div class="settings-label">Browser Notifications</div>
+        <div class="toggle-switch active" id="browser-notif-toggle"></div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-label">Sound Alerts</div>
+        <div class="toggle-switch active" id="sound-toggle"></div>
+      </div>
+    </div>
+
+    <!-- Twilio Configuration (Professional Tier Only) -->
+    <div class="settings-card" id="twilio-config" style="display: none;">
+      <div class="settings-card-title">📱 SMS/WhatsApp Configuration</div>
+      <div class="form-group">
+        <label class="form-label">Twilio Account SID</label>
+        <input type="text" class="form-input" id="twilio-sid" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+        <small style="color: #6c757d; font-size: 11px;">Your Twilio Account SID</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Twilio Auth Token</label>
+        <input type="password" class="form-input" id="twilio-token" placeholder="Your auth token">
+        <small style="color: #6c757d; font-size: 11px;">Your Twilio Auth Token</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Twilio Phone Number</label>
+        <input type="text" class="form-input" id="twilio-phone" placeholder="+447700900123">
+        <small style="color: #6c757d; font-size: 11px;">Your Twilio phone number (UK format)</small>
+      </div>
+      <div style="background: #e3f2fd; border: 1px solid #2196f3; border-radius: 8px; padding: 12px; margin-top: 16px;">
+        <div style="font-size: 12px; color: #1565c0; margin-bottom: 8px;"><strong>💡 Configuration Help:</strong></div>
+        <div style="font-size: 11px; color: #1976d2; line-height: 1.4;">
+          1. Sign up at <a href="https://www.twilio.com" target="_blank" style="color: #1976d2;">twilio.com</a><br>
+          2. Get your Account SID and Auth Token from your dashboard<br>
+          3. Buy a UK phone number for £1/month<br>
+          4. Enable WhatsApp in your Twilio console
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+      💾 Save Settings
+    </button>
+
+    <div style="margin-top: 16px; text-align: center;">
+      <button class="btn btn-secondary" onclick="openTestSuite()" style="font-size: 12px; padding: 8px 16px;">
+        🧪 Test Notification System
+      </button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Pupil Modal -->
+  <div class="modal" id="pupil-modal">
+    <div class="modal-content">
+      <div class="modal-header" id="modal-title">Add New Pupil</div>
+      
+      <div class="form-group">
+        <label class="form-label">Pupil Name* <span style="color: #dc3545; font-size: 11px;" id="name-error"></span></label>
+        <input 
+          type="text" 
+          class="form-input" 
+          id="pupil-name" 
+          placeholder="e.g., John Smith"
+          maxlength="50"
+        >
+        <small style="color: #6c757d; font-size: 11px;">2-50 characters, must be unique</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Booking Reference* <span style="color: #dc3545; font-size: 11px;" id="ref-error"></span></label>
+        <input 
+          type="text" 
+          class="form-input" 
+          id="booking-ref" 
+          placeholder="e.g., A123456789 or SMITH123456S"
+          maxlength="20"
+          style="text-transform: uppercase;"
+        >
+        <small style="color: #6c757d; font-size: 11px;">5-20 characters, letters & numbers only, must be unique</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Test Date (Optional)</label>
+        <input type="date" class="form-input" id="test-date">
+        <small style="color: #6c757d; font-size: 11px;">Current test date (if you have one booked)</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Test Centres* <span style="color: #dc3545; font-size: 11px;" id="centres-error"></span></label>
+        <div style="position: relative;">
+          <input 
+            type="text" 
+            class="form-input" 
+            id="test-centre-search" 
+            placeholder="🔍 Type: Centre name, City, or Postcode (e.g., Manchester, M12, Wembley)"
+            autocomplete="off"
+            style="border-radius: 8px 8px 0 0; border-bottom: none; padding-left: 14px;"
+          >
+          <div id="test-centre-autocomplete" style="position: relative;"></div>
+        </div>
+        <div id="selected-centres" style="
+          background: #f8f9fa;
+          border: 1px solid #ced4da;
+          border-top: none;
+          border-radius: 0 0 8px 8px;
+          padding: 12px;
+          min-height: 60px;
+        "></div>
+        <small style="color: #1d70b8; font-size: 11px; margin-top: 4px; display: block; font-weight: 500;">
+          💡 Start typing to search 150+ official DVSA test centres • Max 10 centres
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notification Preference</label>
+        <select class="form-select" id="notification-pref">
+          <option value="all">SMS + Email + WhatsApp</option>
+          <option value="sms-email">SMS + Email</option>
+          <option value="sms">SMS Only</option>
+          <option value="email">Email Only</option>
+          <option value="whatsapp">WhatsApp Only</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="pupil-status">
+          <option value="active">Active - Monitoring</option>
+          <option value="paused">Paused</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-modal">Cancel</button>
+        <button class="btn btn-primary" id="save-pupil">Save Pupil</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="test-centres-database.js"></script>
+  <script src="test-centre-autocomplete.js"></script>
+  <script src="popup-multi-pupil.js"></script>
+</body>
+</html>
+

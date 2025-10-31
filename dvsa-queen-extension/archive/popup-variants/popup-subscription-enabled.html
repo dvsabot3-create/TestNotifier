@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TestNotifier - DVSA Test Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-blue: #1d70b8;
+      --primary-blue-dark: #155a8c;
+      --primary-blue-light: #2e8bc0;
+      --success-green: #28a745;
+      --warning-orange: #ffc107;
+      --danger-red: #dc3545;
+      --gray-900: #1a1a1a;
+      --gray-700: #4a4a4a;
+      --gray-600: #6c757d;
+      --gray-400: #ced4da;
+      --gray-200: #e9ecef;
+      --gray-50: #f8f9fa;
+      --white: #ffffff;
+    }
+
+    body {
+      width: 420px;
+      min-height: 600px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+      color: var(--white);
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    /* Subscription Badge */
+    .subscription-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .subscription-badge.free {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .subscription-badge.premium {
+      background: rgba(40, 167, 69, 0.3);
+    }
+
+    .subscription-badge.pro {
+      background: rgba(138, 43, 226, 0.3);
+    }
+
+    /* Auth Required Screen */
+    .auth-required {
+      display: none;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .auth-required.active {
+      display: block;
+    }
+
+    .auth-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+    }
+
+    .auth-required h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+
+    .auth-required p {
+      color: var(--gray-600);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 112, 184, 0.3);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(29, 112, 184, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary-blue);
+      border: 2px solid var(--primary-blue);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-blue);
+      color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+      display: none;
+      padding: 16px;
+    }
+
+    .main-content.active {
+      display: block;
+    }
+
+    /* Upgrade Prompt */
+    .upgrade-prompt {
+      background: linear-gradient(135deg, rgba(29, 112, 184, 0.1), rgba(46, 139, 192, 0.1));
+      border: 2px solid var(--primary-blue);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .upgrade-prompt h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .upgrade-prompt p {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+
+    .upgrade-features {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .upgrade-features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .upgrade-features li {
+      padding: 6px 0;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .upgrade-features li::before {
+      content: "✓";
+      color: var(--success-green);
+      font-weight: bold;
+    }
+
+    /* Feature Cards */
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--primary-blue);
+    }
+
+    .locked-overlay {
+      position: relative;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .lock-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .stat-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Center List */
+    .center-list {
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .center-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .center-item.locked {
+      opacity: 0.5;
+    }
+
+    .plan-limit-badge {
+      background: var(--warning-orange);
+      color: var(--gray-900);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* Toggle Switch */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--gray-50);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: var(--gray-400);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: var(--primary-blue);
+    }
+
+    .toggle-switch.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(22px);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* Loading State */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--primary-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading State -->
+  <div class="loading active" id="loading-screen">
+    <div class="spinner"></div>
+    <p style="color: var(--gray-600);">Loading...</p>
+  </div>
+
+  <!-- Auth Required Screen -->
+  <div class="auth-required" id="auth-required">
+    <div class="auth-icon">🔐</div>
+    <h2>Login Required</h2>
+    <p>Please login to TestNotifier to use the extension and monitor test availability.</p>
+    <button class="btn btn-primary" id="login-btn" style="margin-bottom: 12px;">
+      Login to TestNotifier
+    </button>
+    <button class="btn btn-secondary" id="register-btn">
+      Create Free Account
+    </button>
+  </div>
+
+  <!-- Main Extension Interface -->
+  <div class="main-content" id="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="brand-icon">
+          <img src="icons/tn-logov2.png" alt="TestNotifier Logo" style="width: 32px; height: 32px; object-fit: contain;">
+        </div>
+        <div style="flex: 1;">
+          <h1>TestNotifier</h1>
+          <div class="header-subtitle">DVSA Test Finder</div>
+        </div>
+      </div>
+      <div class="subscription-badge" id="subscription-badge">
+        <span id="plan-name">Free</span>
+      </div>
+    </div>
+
+    <!-- Subscription Upgrade Prompt (for Free/Limited users) -->
+    <div class="upgrade-prompt" id="upgrade-prompt" style="display: none;">
+      <h3>🚀 Unlock Full Features</h3>
+      <p id="upgrade-message">Upgrade to Premium to start monitoring test cancellations</p>
+      
+      <div class="upgrade-features">
+        <ul id="upgrade-features-list">
+          <li>Monitor up to 5 test centers</li>
+          <li>Instant SMS + Email notifications</li>
+          <li>Priority notifications</li>
+          <li>24/7 monitoring</li>
+        </ul>
+      </div>
+      
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-primary btn-full" id="upgrade-btn">
+          Upgrade Now - <span id="upgrade-price">£4.99/mo</span>
+        </button>
+      </div>
+      <p style="font-size: 11px; color: var(--gray-600); margin-top: 8px;">
+        7-day free trial • Cancel anytime
+      </p>
+    </div>
+
+    <!-- Test Centers Card -->
+    <div class="card" id="centers-card">
+      <div class="card-header">
+        <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        Test Centers
+        <span style="margin-left: auto; font-size: 12px; color: var(--gray-600);" id="center-limit">
+          0 / 0
+        </span>
+      </div>
+      
+      <div id="centers-content">
+        <div class="center-list" id="center-list">
+          <p style="text-align: center; color: var(--gray-600); padding: 20px; font-size: 13px;">
+            No centers selected
+          </p>
+        </div>
+
+        <button class="btn btn-secondary btn-full" id="add-center-btn" style="margin-top: 12px;">
+          + Add Test Center
+        </button>
+      </div>
+    </div>
+
+    <!-- Automation Controls Card -->
+    <div class="card" id="automation-card">
+      <div class="card-header">
+        <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Monitoring Controls
+      </div>
+      
+      <div id="automation-content">
+        <div class="btn-group" style="margin-bottom: 12px;">
+          <button class="btn btn-primary" id="start-btn" style="flex: 1; background: var(--success-green); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
+            ▶ START
+          </button>
+          <button class="btn" id="stop-btn" style="flex: 1; background: var(--danger-red); color: white;" disabled>
+            ⏹ STOP
+          </button>
+        </div>
+
+        <div class="toggle-container">
+          <span style="font-size: 13px; font-weight: 600;">Rapid Mode (500ms)</span>
+          <div class="toggle-switch" id="rapid-toggle"></div>
+        </div>
+
+        <div style="background: var(--gray-50); padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 12px; color: var(--gray-600);">Status</div>
+          <div style="font-size: 16px; font-weight: 700; color: var(--gray-900);" id="status-text">Ready</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Stats Card -->
+    <div class="card">
+      <div class="card-header">
+        <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        Performance
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="total-checks">0</span>
+          <div class="stat-label">Checks</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="tests-found">0</span>
+          <div class="stat-label">Found</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="success-rate">0%</span>
+          <div class="stat-label">Success</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="display: flex; gap: 8px; margin-top: 16px;">
+      <button class="btn btn-secondary" id="billing-btn" style="flex: 1;">
+        💳 Billing
+      </button>
+      <button class="btn btn-secondary" id="logout-btn" style="flex: 1;">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <script src="auth-manager.js"></script>
+  <script src="popup-subscription-enabled.js"></script>
+</body>
+</html>
+

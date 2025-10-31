@@ -1,0 +1,75 @@
+{
+  "package": "dvsa-queen-extension-v2.1.1-2025-10-19T13-38-00-386Z.zip",
+  "version": "2.1.1",
+  "buildDate": "2025-10-19T13:38:00.423Z",
+  "manifest": {
+    "name": "TestNotifier - Multi-Pupil Manager",
+    "version": "2.1.1",
+    "description": "Multi-pupil DVSA test slot finder for driving instructors - Monitor unlimited pupils with instant notifications",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "notifications",
+      "scripting",
+      "contextMenus"
+    ]
+  },
+  "files": [
+    {
+      "name": "background.js",
+      "size": 10205,
+      "type": ".js"
+    },
+    {
+      "name": "background.js.LICENSE.txt",
+      "size": 163,
+      "type": ".txt"
+    },
+    {
+      "name": "content-script.js",
+      "size": 26266,
+      "type": ".js"
+    },
+    {
+      "name": "content-script.js.LICENSE.txt",
+      "size": 163,
+      "type": ".txt"
+    },
+    {
+      "name": "icons",
+      "size": 320,
+      "type": ""
+    },
+    {
+      "name": "manifest.json",
+      "size": 1562,
+      "type": ".json"
+    },
+    {
+      "name": "popup.html",
+      "size": 10430,
+      "type": ".html"
+    },
+    {
+      "name": "popup.js",
+      "size": 14797,
+      "type": ".js"
+    },
+    {
+      "name": "popup.js.LICENSE.txt",
+      "size": 163,
+      "type": ".txt"
+    },
+    {
+      "name": "stealth",
+      "size": 96,
+      "type": ""
+    }
+  ],
+  "size": 735227,
+  "deployment": {
+    "chromeWebStore": false,
+    "manual": true,
+    "enterprise": false
+  }
+}

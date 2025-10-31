@@ -1,0 +1,752 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DVSA Queen - Professional Test Finder</title>
+  <style>
+    /* Enhanced Professional styling matching requirements */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 420px;
+      min-height: 600px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 13px;
+      background: #f8f9fa;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-indicator.active { background: #28a745; }
+    .status-indicator.inactive { background: #dc3545; }
+    .status-indicator.warning { background: #ffc107; }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: #6c757d;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-button.active {
+      color: #1d70b8;
+      border-bottom-color: #1d70b8;
+      background: #f8f9ff;
+    }
+
+    .tab-button:hover {
+      background: #f8f9fa;
+      color: #495057;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Main Controls Section */
+    .controls-section {
+      background: white;
+      padding: 16px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .date-range-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .date-input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .date-input-group label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+
+    .date-input {
+      padding: 8px 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 12px;
+      background: white;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: #1d70b8;
+      box-shadow: 0 0 0 2px rgba(29, 112, 184, 0.2);
+    }
+
+    /* Automation Controls */
+    .automation-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .control-button {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .start-button {
+      background: linear-gradient(135deg, #6f42c1, #8e44ad);
+      color: white;
+    }
+
+    .start-button:hover {
+      background: linear-gradient(135deg, #5a2e8c, #7b3a96);
+    }
+
+    .start-button:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .stop-button {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .stop-button:hover {
+      background: #c0392b;
+    }
+
+    .status-display {
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-running {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-stopped {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Rapid Mode */
+    .rapid-mode-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .rapid-mode-checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: #f39c12;
+    }
+
+    .rapid-mode-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #856404;
+    }
+
+    /* Advanced Settings */
+    .advanced-settings {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .settings-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      font-size: 12px;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .settings-toggle:hover {
+      background: #e9ecef;
+    }
+
+    .settings-content {
+      padding: 0 12px 12px;
+      display: none;
+    }
+
+    .settings-content.expanded {
+      display: block;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    .setting-input {
+      width: 80px;
+      padding: 4px 6px;
+      border: 1px solid #ced4da;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    /* Test Center Search */
+    .test-center-search {
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .search-results {
+      max-height: 120px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background: white;
+      display: none;
+    }
+
+    .search-result-item {
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 11px;
+      border-bottom: 1px solid #f8f9fa;
+    }
+
+    .search-result-item:hover {
+      background: #f8f9ff;
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Selected Centers */
+    .selected-centers {
+      margin-bottom: 12px;
+    }
+
+    .centers-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .centers-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .centers-count {
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    .center-list {
+      max-height: 100px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background: white;
+    }
+
+    .center-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-bottom: 1px solid #f8f9fa;
+      font-size: 11px;
+    }
+
+    .center-item:last-child {
+      border-bottom: none;
+    }
+
+    .center-name {
+      flex: 1;
+      color: #495057;
+    }
+
+    .remove-center {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .remove-center:hover {
+      background: #c82333;
+    }
+
+    /* User Management */
+    .user-management {
+      background: white;
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .user-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .user-select {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .user-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    .click-counter {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delay-selector {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delay-input {
+      width: 60px;
+      padding: 4px 6px;
+      border: 1px solid #ced4da;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: white;
+    }
+
+    .action-button {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .reserve-button {
+      background: #28a745;
+      color: white;
+      border-color: #28a745;
+    }
+
+    .reserve-button:hover {
+      background: #218838;
+      border-color: #218838;
+    }
+
+    .settings-button {
+      background: #6c757d;
+      color: white;
+      border-color: #6c757d;
+    }
+
+    .settings-button:hover {
+      background: #5a6268;
+      border-color: #5a6268;
+    }
+
+    /* Statistics */
+    .statistics-section {
+      background: white;
+      padding: 12px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1d70b8;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #6c757d;
+      margin-top: 2px;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #1d70b8;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      body {
+        width: 100vw;
+        min-width: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>DVSA Queen</h1>
+    <div class="subtitle">Professional Test Finder</div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-button active" data-tab="main">Main Controls</button>
+    <button class="tab-button" data-tab="users">Users</button>
+    <button class="tab-button" data-tab="centers">Centers</button>
+    <button class="tab-button" data-tab="stats">Stats</button>
+  </div>
+
+  <!-- Main Controls Tab -->
+  <div class="tab-content active" id="main-tab">
+    <!-- Date Range Selection -->
+    <div class="controls-section">
+      <div class="date-range-container">
+        <div class="date-input-group">
+          <label>Start Date</label>
+          <input type="date" id="start-date" class="date-input" value="2025-09-23">
+        </div>
+        <div class="date-input-group">
+          <label>End Date</label>
+          <input type="date" id="end-date" class="date-input" value="2026-06-30">
+        </div>
+      </div>
+
+      <!-- Automation Controls -->
+      <div class="automation-controls">
+        <button id="start-automation" class="control-button start-button">
+          <span>▶</span> START AUTOMATION
+        </button>
+        <button id="stop-automation" class="control-button stop-button" disabled>
+          <span>⏹</span> STOP AUTOMATION
+        </button>
+      </div>
+
+      <!-- Status Display -->
+      <div id="automation-status" class="status-display status-stopped">
+        <strong>STOPPED</strong> - Ready to start
+      </div>
+
+      <!-- Rapid Mode -->
+      <div class="rapid-mode-container">
+        <input type="checkbox" id="rapid-mode" class="rapid-mode-checkbox">
+        <label for="rapid-mode" class="rapid-mode-label">RAPID MODE (500ms intervals)</label>
+      </div>
+
+      <!-- Advanced Settings -->
+      <div class="advanced-settings">
+        <button class="settings-toggle" id="advanced-toggle">
+          <span>Advanced Settings</span>
+          <span id="toggle-icon">▼</span>
+        </button>
+        <div class="settings-content" id="advanced-content">
+          <div class="setting-item">
+            <span class="setting-label">Retry Delay (ms)</span>
+            <input type="number" class="setting-input" value="1000" min="500" max="5000" step="100">
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Max Retries</span>
+            <input type="number" class="setting-input" value="3" min="1" max="10">
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Notification Sound</span>
+            <input type="checkbox" checked>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Center Search -->
+      <div class="test-center-search">
+        <input type="text" id="center-search" class="search-input" placeholder="Search test centers...">
+        <div id="search-results" class="search-results"></div>
+      </div>
+
+      <!-- Selected Centers -->
+      <div class="selected-centers">
+        <div class="centers-header">
+          <span class="centers-title">Selected Centers</span>
+          <span class="centers-count">3/5</span>
+        </div>
+        <div id="selected-centers-list" class="center-list">
+          <!-- Centers will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="user-management">
+      <div class="user-selector">
+        <label style="font-size: 12px; font-weight: 500; color: #495057;">Select User:</label>
+        <select id="user-select" class="user-select">
+          <option value="">Choose pupil...</option>
+          <option value="1">John Smith - Car</option>
+          <option value="2">Sarah Johnson - Car</option>
+          <option value="3">Mike Davis - Car</option>
+        </select>
+      </div>
+
+      <div class="user-stats">
+        <div class="click-counter">
+          <span>Clicked:</span>
+          <strong id="click-count">24</strong>
+        </div>
+        <div class="delay-selector">
+          <label style="font-size: 11px; color: #6c757d;">Delay (ms):</label>
+          <select id="delay-select" class="delay-input">
+            <option value="500">500</option>
+            <option value="1000" selected>1000</option>
+            <option value="1500">1500</option>
+            <option value="2000">2000</option>
+            <option value="3000">3000</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button id="reserve-another" class="action-button reserve-button">
+        📅 Reserve Another Test
+      </button>
+      <button id="open-settings" class="action-button settings-button">
+        ⚙️ Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div class="tab-content" id="users-tab">
+    <div class="controls-section">
+      <b style="display: block; margin-bottom: 8px; font-size: 12px; color: #495057;">Pupil Management</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn btn-primary btn-sm" id="add-pupil">Add Pupil</button>
+        <button class="btn btn-secondary btn-sm" id="import-pupils">Import</button>
+      </div>
+      <div id="pupils-list" class="center-list">
+        <!-- Pupils will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Centers Tab -->
+  <div class="tab-content" id="centers-tab">
+    <div class="controls-section">
+      <b style="display: block; margin-bottom: 8px; font-size: 12px; color: #495057;">Test Center Groups</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn btn-primary btn-sm" id="create-group">Create Group</button>
+        <button class="btn btn-secondary btn-sm" id="browse-centers">Browse Centers</button>
+      </div>
+      <div id="center-groups" class="center-list">
+        <!-- Center groups will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Tab -->
+  <div class="tab-content" id="stats-tab">
+    <div class="statistics-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="total-checks">1,247</span>
+          <div class="stat-label">Total Checks</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="successful-changes">23</span>
+          <div class="stat-label">Tests Found</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="success-rate">94%</span>
+          <div class="stat-label">Success Rate</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <b style="display: block; margin-bottom: 8px; font-size: 12px; color: #495057;">Today's Activity</b>
+        <div class="center-list">
+          <div class="center-item">
+            <span class="center-name">Manchester North - 3 cancellations found</span>
+            <span style="font-size: 10px; color: #28a745;">✓</span>
+          </div>
+          <div class="center-item">
+            <span class="center-name">London Wembley - 1 cancellation found</span>
+            <span style="font-size: 10px; color: #28a745;">✓</span>
+          </div>
+          <div class="center-item">
+            <span class="center-name">Birmingham South - No new tests</span>
+            <span style="font-size: 10px; color: #6c757d;">○</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <script src="popup-enhanced.js"></script>
+</body>
+</html>

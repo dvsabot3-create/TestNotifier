@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Control System Test</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        .test-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .test-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        .test-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        .test-subtitle {
+            color: #6b7280;
+            margin: 4px 0 0 0;
+            font-size: 14px;
+        }
+        .test-section {
+            margin: 24px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .test-section h3 {
+            margin: 0 0 12px 0;
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        .test-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .test-status.pass {
+            background: #10b981;
+        }
+        .test-status.fail {
+            background: #ef4444;
+        }
+        .test-status.pending {
+            background: #f59e0b;
+        }
+        .test-results {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+        .test-results h3 {
+            margin: 0 0 12px 0;
+            color: #166534;
+            font-size: 18px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .result-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        .result-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .result-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .demo-controls {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        .demo-button {
+            background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .demo-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(29, 112, 184, 0.3);
+        }
+        .demo-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .demo-output {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-indicator.trial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-indicator.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-indicator.expired {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <div class="test-icon">🔐</div>
+            <div>
+                <h1 class="test-title">Access Control System Test</h1>
+                <p class="test-subtitle">Comprehensive testing of trial mode, device fingerprinting, and user limitations</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Trial Manager Tests</h3>
+            <div id="trial-tests"></div>
+            <div class="demo-controls">
+                <button class="demo-button" onclick="testTrialMode()">Test Trial Mode</button>
+                <button class="demo-button" onclick="testTrialExpiration()">Test Trial Expiration</button>
+                <button class="demo-button" onclick="testDemoData()">Test Demo Data</button>
+            </div>
+            <div id="trial-output" class="demo-output" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Device Fingerprint Tests</h3>
+            <div id="fingerprint-tests"></div>
+            <div class="demo-controls">
+                <button class="demo-button" onclick="testFingerprint()">Generate Fingerprint</button>
+                <button class="demo-button" onclick="testFingerprintConsistency()">Test Consistency</button>
+                <button class="demo-button" onclick="testSessionValidation()">Test Session Validation</button>
+            </div>
+            <div id="fingerprint-output" class="demo-output" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🖼️ User Limitations UI Tests</h3>
+            <div id="ui-tests"></div>
+            <div class="demo-controls">
+                <button class="demo-button" onclick="showLimitationsUI()">Show Limitations UI</button>
+                <button class="demo-button" onclick="showTrialUI()">Show Trial UI</button>
+                <button class="demo-button" onclick="hideLimitationsUI()">Hide UI</button>
+            </div>
+            <div id="ui-output" class="demo-output" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Access Control Integration Tests</h3>
+            <div id="integration-tests"></div>
+            <div class="demo-controls">
+                <button class="demo-button" onclick="testAccessValidation()">Test Access Validation</button>
+                <button class="demo-button" onclick="testTierPermissions()">Test Tier Permissions</button>
+                <button class="demo-button" onclick="testUsageLimits()">Test Usage Limits</button>
+            </div>
+            <div id="integration-output" class="demo-output" style="display: none;"></div>
+        </div>
+
+        <div class="test-results">
+            <h3>📊 Test Results Summary</h3>
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-number" id="total-tests">0</div>
+                    <div class="result-label">Total Tests</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number" id="passed-tests" style="color: #10b981;">0</div>
+                    <div class="result-label">Passed</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number" id="failed-tests" style="color: #ef4444;">0</div>
+                    <div class="result-label">Failed</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number" id="success-rate">0%</div>
+                    <div class="result-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load all access control scripts -->
+    <script src="trial-manager.js"></script>
+    <script src="device-fingerprint.js"></script>
+    <script src="user-limitations-ui.js"></script>
+    <script src="access-control-manager.js"></script>
+    <script src="extension-integration.js"></script>
+
+    <script>
+        // Test state
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+
+        // Utility functions
+        function addTestResult(testName, passed, message = '') {
+            testResults.total++;
+            if (passed) {
+                testResults.passed++;
+            } else {
+                testResults.failed++;
+            }
+            updateResultsDisplay();
+
+            const status = passed ? 'pass' : 'fail';
+            const icon = passed ? '✓' : '✗';
+
+            return `<div class="test-item">
+                <div class="test-status ${status}">${icon}</div>
+                <span>${testName} ${message ? `- ${message}` : ''}</span>
+            </div>`;
+        }
+
+        function updateResultsDisplay() {
+            document.getElementById('total-tests').textContent = testResults.total;
+            document.getElementById('passed-tests').textContent = testResults.passed;
+            document.getElementById('failed-tests').textContent = testResults.failed;
+
+            const successRate = testResults.total > 0
+                ? Math.round((testResults.passed / testResults.total) * 100)
+                : 0;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+
+        function showOutput(containerId, message) {
+            const output = document.getElementById(containerId);
+            output.style.display = 'block';
+            output.textContent = message;
+        }
+
+        // Trial Manager Tests
+        async function testTrialMode() {
+            try {
+                const output = [];
+                const trialManager = new TrialManager();
+
+                // Test trial initialization
+                const trialSubscription = {
+                    tier: 'trial',
+                    status: 'trial',
+                    trialStartTime: Date.now()
+                };
+
+                const initialized = await trialManager.initialize(trialSubscription);
+
+                let result = addTestResult('Trial Manager Initialization', initialized);
+                document.getElementById('trial-tests').innerHTML += result;
+
+                if (initialized) {
+                    result = addTestResult('Trial Mode Detection', trialManager.isInTrialMode());
+                    document.getElementById('trial-tests').innerHTML += result;
+
+                    output.push('✅ Trial mode initialized successfully');
+                    output.push(`📊 Trial mode active: ${trialManager.isInTrialMode()}`);
+                    output.push(`⏰ Remaining time: ${trialManager.getRemainingTrialTime()}ms`);
+                }
+
+                showOutput('trial-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Trial Mode Test', false, error.message);
+                document.getElementById('trial-tests').innerHTML += result;
+                showOutput('trial-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testTrialExpiration() {
+            try {
+                const output = [];
+                const trialManager = new TrialManager();
+
+                // Test expired trial
+                const expiredSubscription = {
+                    tier: 'trial',
+                    status: 'trial',
+                    trialStartTime: Date.now() - (8 * 24 * 60 * 60 * 1000) // 8 days ago
+                };
+
+                await trialManager.initialize(expiredSubscription);
+                const isExpired = trialManager.isTrialExpired();
+
+                const result = addTestResult('Trial Expiration', isExpired);
+                document.getElementById('trial-tests').innerHTML += result;
+
+                output.push(isExpired ? '✅ Trial correctly identified as expired' : '❌ Trial should be expired');
+                output.push(`📅 Trial start: ${new Date(expiredSubscription.trialStartTime).toLocaleDateString()}`);
+                output.push(`🔚 Expired: ${isExpired}`);
+
+                showOutput('trial-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Trial Expiration Test', false, error.message);
+                document.getElementById('trial-tests').innerHTML += result;
+                showOutput('trial-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function testDemoData() {
+            try {
+                const output = [];
+                const trialManager = new TrialManager();
+
+                // Force trial mode
+                trialManager.isTrialMode = true;
+
+                const demoPupils = trialManager.getDemoPupils();
+                const demoNotifications = trialManager.getDemoNotifications();
+                const demoSlots = trialManager.getDemoAvailableSlots();
+
+                const pupilsResult = addTestResult('Demo Pupils Generation', demoPupils.length > 0);
+                const notificationsResult = addTestResult('Demo Notifications Generation', demoNotifications.length > 0);
+                const slotsResult = addTestResult('Demo Slots Generation', demoSlots.length > 0);
+
+                document.getElementById('trial-tests').innerHTML += pupilsResult + notificationsResult + slotsResult;
+
+                output.push(`👥 Demo pupils: ${demoPupils.length}`);
+                output.push(`🔔 Demo notifications: ${demoNotifications.length}`);
+                output.push(`📅 Demo slots: ${demoSlots.length}`);
+                output.push('');
+                output.push('Sample demo pupil:', JSON.stringify(demoPupils[0], null, 2));
+
+                showOutput('trial-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Demo Data Test', false, error.message);
+                document.getElementById('trial-tests').innerHTML += result;
+                showOutput('trial-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        // Device Fingerprint Tests
+        async function testFingerprint() {
+            try {
+                const output = [];
+                const deviceFingerprint = new DeviceFingerprint();
+
+                const fingerprint = await deviceFingerprint.getFingerprint();
+
+                const result = addTestResult('Fingerprint Generation', fingerprint !== null);
+                document.getElementById('fingerprint-tests').innerHTML += result;
+
+                output.push(`🔐 Generated fingerprint: ${fingerprint}`);
+                output.push(`📏 Fingerprint length: ${fingerprint.length} characters`);
+
+                // Test components
+                const components = await deviceFingerprint.collectFingerprintComponents();
+                output.push('');
+                output.push('Collected components:');
+                output.push(`  🌐 User Agent: ${components.userAgent.substring(0, 50)}...`);
+                output.push(`  📱 Screen: ${components.screenWidth}x${components.screenHeight}`);
+                output.push(`  🎨 WebGL Vendor: ${components.webglVendor}`);
+                output.push(`  🖼️ Canvas Fingerprint: ${components.canvasFingerprint ? 'Generated' : 'Failed'}`);
+
+                showOutput('fingerprint-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Fingerprint Test', false, error.message);
+                document.getElementById('fingerprint-tests').innerHTML += result;
+                showOutput('fingerprint-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testFingerprintConsistency() {
+            try {
+                const output = [];
+                const deviceFingerprint = new DeviceFingerprint();
+
+                const fingerprint1 = await deviceFingerprint.getFingerprint();
+                const fingerprint2 = await deviceFingerprint.getFingerprint();
+
+                const isConsistent = fingerprint1 === fingerprint2;
+
+                const result = addTestResult('Fingerprint Consistency', isConsistent);
+                document.getElementById('fingerprint-tests').innerHTML += result;
+
+                output.push(`🔄 Fingerprint #1: ${fingerprint1}`);
+                output.push(`🔄 Fingerprint #2: ${fingerprint2}`);
+                output.push(`✅ Consistent: ${isConsistent}`);
+
+                showOutput('fingerprint-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Fingerprint Consistency Test', false, error.message);
+                document.getElementById('fingerprint-tests').innerHTML += result;
+                showOutput('fingerprint-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testSessionValidation() {
+            try {
+                const output = [];
+                const deviceFingerprint = new DeviceFingerprint();
+
+                // Mock session validation
+                const mockUserId = 'test-user-' + Date.now();
+                const mockToken = 'test-token-' + Date.now();
+
+                const sessionInfo = deviceFingerprint.getSessionInfo();
+
+                const result = addTestResult('Session Info Generation', sessionInfo === null); // Should be null initially
+                document.getElementById('fingerprint-tests').innerHTML += result;
+
+                output.push(`👤 Mock User ID: ${mockUserId}`);
+                output.push(`🔑 Mock Token: ${mockToken.substring(0, 10)}...`);
+                output.push(`📊 Session Info: ${sessionInfo ? 'Available' : 'Not available (expected)'}`);
+
+                showOutput('fingerprint-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Session Validation Test', false, error.message);
+                document.getElementById('fingerprint-tests').innerHTML += result;
+                showOutput('fingerprint-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        // UI Tests
+        function showLimitationsUI() {
+            try {
+                const limitationsUI = new UserLimitationsUI();
+                limitationsUI.initialize();
+
+                const mockSubscription = {
+                    tier: 'starter',
+                    status: 'active'
+                };
+
+                const mockUsageStats = {
+                    pupils: 2,
+                    dailyBookings: 1,
+                    notifications: 5
+                };
+
+                limitationsUI.showLimitations(mockSubscription, mockUsageStats);
+
+                const result = addTestResult('Limitations UI Display', true);
+                document.getElementById('ui-tests').innerHTML += result;
+
+                showOutput('ui-output', '✅ Limitations UI displayed - check the top-right corner of the page');
+
+            } catch (error) {
+                const result = addTestResult('Limitations UI Test', false, error.message);
+                document.getElementById('ui-tests').innerHTML += result;
+                showOutput('ui-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function showTrialUI() {
+            try {
+                const limitationsUI = new UserLimitationsUI();
+                limitationsUI.initialize();
+
+                const mockSubscription = {
+                    tier: 'trial',
+                    status: 'trial',
+                    trialStartTime: Date.now(),
+                    trialEndTime: Date.now() + (24 * 60 * 60 * 1000) // 24 hours from now
+                };
+
+                const mockUsageStats = {
+                    pupils: 0,
+                    dailyBookings: 0,
+                    notifications: 0
+                };
+
+                limitationsUI.showLimitations(mockSubscription, mockUsageStats);
+
+                const result = addTestResult('Trial UI Display', true);
+                document.getElementById('ui-tests').innerHTML += result;
+
+                showOutput('ui-output', '✅ Trial UI displayed - shows trial-specific messaging and limitations');
+
+            } catch (error) {
+                const result = addTestResult('Trial UI Test', false, error.message);
+                document.getElementById('ui-tests').innerHTML += result;
+                showOutput('ui-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function hideLimitationsUI() {
+            try {
+                const limitationsUI = new UserLimitationsUI();
+                limitationsUI.hide();
+
+                const result = addTestResult('Limitations UI Hide', true);
+                document.getElementById('ui-tests').innerHTML += result;
+
+                showOutput('ui-output', '✅ Limitations UI hidden');
+
+            } catch (error) {
+                const result = addTestResult('Hide UI Test', false, error.message);
+                document.getElementById('ui-tests').innerHTML += result;
+                showOutput('ui-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        // Integration Tests
+        async function testAccessValidation() {
+            try {
+                const output = [];
+                const accessControl = new AccessControlManager();
+
+                // Mock initialization
+                accessControl.isInitialized = true;
+                accessControl.currentUser = { id: 'test-user' };
+                accessControl.currentSubscription = { tier: 'starter' };
+
+                // Test different operations
+                const operations = ['add_pupil', 'monitor_slots', 'auto_book', 'bulk_operations'];
+
+                for (const operation of operations) {
+                    const validation = await accessControl.validateAccess(operation, {});
+
+                    const result = addTestResult(
+                        `Access Validation: ${operation}`,
+                        validation && typeof validation === 'object',
+                        validation.allowed ? 'Allowed' : 'Denied'
+                    );
+                    document.getElementById('integration-tests').innerHTML += result;
+
+                    output.push(`${operation}: ${validation.allowed ? '✅ Allowed' : '❌ Denied'}`);
+                    if (!validation.allowed && validation.reason) {
+                        output.push(`   Reason: ${validation.reason}`);
+                    }
+                }
+
+                showOutput('integration-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Access Validation Test', false, error.message);
+                document.getElementById('integration-tests').innerHTML += result;
+                showOutput('integration-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function testTierPermissions() {
+            try {
+                const output = [];
+                const accessControl = new AccessControlManager();
+
+                const tiers = ['trial', 'one-off', 'starter', 'premium', 'professional'];
+                const operations = ['add_pupil', 'monitor_slots', 'auto_book', 'bulk_operations'];
+
+                output.push('Tier Permission Matrix:');
+                output.push('');
+
+                for (const tier of tiers) {
+                    output.push(`${tier.toUpperCase()} TIER:`);
+                    for (const operation of operations) {
+                        const check = accessControl.checkTierAccess(operation, tier);
+                        const status = check.allowed ? '✅' : '❌';
+                        output.push(`  ${status} ${operation}: ${check.allowed ? 'Allowed' : 'Denied'}`);
+                    }
+                    output.push('');
+                }
+
+                // Test a specific case
+                const starterCheck = accessControl.checkTierAccess('monitor_slots', 'starter');
+                const result = addTestResult('Starter Tier - Monitor Slots', starterCheck.allowed);
+                document.getElementById('integration-tests').innerHTML += result;
+
+                showOutput('integration-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Tier Permissions Test', false, error.message);
+                document.getElementById('integration-tests').innerHTML += result;
+                showOutput('integration-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function testUsageLimits() {
+            try {
+                const output = [];
+                const usageMonitor = new UsageMonitor();
+
+                // Test tier limits
+                const tiers = ['trial', 'starter', 'premium', 'professional'];
+
+                output.push('Usage Limits by Tier:');
+                output.push('');
+
+                for (const tier of tiers) {
+                    const limits = usageMonitor.getTierLimits(tier);
+                    output.push(`${tier.toUpperCase()}:`);
+                    output.push(`  👥 Pupils: ${limits.pupils}`);
+                    output.push(`  📅 Daily Bookings: ${limits.dailyBookings}`);
+                    output.push(`  🔔 Notifications: ${limits.notifications}/day`);
+                    output.push('');
+                }
+
+                // Test specific limit
+                const starterLimits = usageMonitor.getTierLimits('starter');
+                const expectedPupils = 3;
+                const result = addTestResult(
+                    'Starter Tier Limits',
+                    starterLimits.pupils === expectedPupils,
+                    `${starterLimits.pupils} pupils`
+                );
+                document.getElementById('integration-tests').innerHTML += result;
+
+                showOutput('integration-output', output.join('\n'));
+
+            } catch (error) {
+                const result = addTestResult('Usage Limits Test', false, error.message);
+                document.getElementById('integration-tests').innerHTML += result;
+                showOutput('integration-output', `❌ Error: ${error.message}`);
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Access Control Test Suite Loaded');
+            console.log('📋 Available test functions:');
+            console.log('  - Trial Manager: testTrialMode(), testTrialExpiration(), testDemoData()');
+            console.log('  - Device Fingerprint: testFingerprint(), testFingerprintConsistency(), testSessionValidation()');
+            console.log('  - UI Tests: showLimitationsUI(), showTrialUI(), hideLimitationsUI()');
+            console.log('  - Integration: testAccessValidation(), testTierPermissions(), testUsageLimits()');
+
+            // Add some initial test results
+            const result = addTestResult('Test Suite Initialization', true, 'All scripts loaded successfully');
+            document.getElementById('trial-tests').innerHTML += result;
+        });
+    </script>
+</body>
+</html>

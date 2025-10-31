@@ -1,0 +1,44 @@
+{
+  "environmentVariables": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "PORT",
+      "value": "10000"
+    },
+    {
+      "key": "FRONTEND_URL",
+      "value": "https://testnotifier-website.onrender.com"
+    },
+    {
+      "key": "JWT_SECRET",
+      "value": "rnd_2N88OuzmRiGFdX2IAwUlmZ2Usoju_render_jwt_2024_secure_key_for_testnotifier_app"
+    },
+    {
+      "key": "GOOGLE_CLIENT_ID",
+      "value": "[PLACEHOLDER - ADD YOUR GOOGLE_CLIENT_ID]"
+    },
+    {
+      "key": "GOOGLE_CLIENT_SECRET",
+      "value": "[PLACEHOLDER - ADD YOUR GOOGLE_CLIENT_SECRET]"
+    },
+    {
+      "key": "STRIPE_SECRET_KEY",
+      "value": "sk_test_your_stripe_secret_key_here"
+    },
+    {
+      "key": "STRIPE_PUBLISHABLE_KEY",
+      "value": "pk_test_your_stripe_publishable_key_here"
+    },
+    {
+      "key": "DATABASE_URL",
+      "value": "postgresql://username:password@host:port/database"
+    },
+    {
+      "key": "REDIS_URL",
+      "value": "redis://username:password@host:port"
+    }
+  ]
+}

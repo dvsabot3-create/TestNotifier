@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Find Cancelled Driving Tests",
+    "subtitle": "Never miss a cancelled driving test again",
+    "description": "TestNotifier monitors DVSA test centres across the UK and notifies you instantly when a cancelled test slot becomes available.",
+    "cta": {
+      "primary": "Get Started Free",
+      "secondary": "Download Extension"
+    }
+  },
+  "features": {
+    "title": "Why Choose TestNotifier?",
+    "subtitle": "The most reliable way to find cancelled driving tests",
+    "items": [
+      {
+        "title": "Real-time Monitoring",
+        "description": "24/7 automated monitoring of DVSA test centres across the UK"
+      },
+      {
+        "title": "Instant Notifications",
+        "description": "Get notified within seconds when a cancelled test becomes available"
+      },
+      {
+        "title": "Smart Filtering",
+        "description": "Filter by location, test type, and preferred dates"
+      },
+      {
+        "title": "Easy Booking",
+        "description": "Direct links to book your test through the official DVSA website"
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Simple steps to find your cancelled test",
+    "steps": [
+      {
+        "title": "Sign Up",
+        "description": "Create your free account in seconds"
+      },
+      {
+        "title": "Set Preferences",
+        "description": "Tell us your preferred test centres and dates"
+      },
+      {
+        "title": "Get Notified",
+        "description": "Receive instant alerts when tests become available"
+      },
+      {
+        "title": "Book Test",
+        "description": "Book directly through the DVSA website"
+      }
+    ]
+  },
+  "stats": {
+    "title": "Our Impact",
+    "subtitle": "Helping learners across the UK",
+    "users": "Active Users",
+    "testsFound": "Tests Found",
+    "successRate": "Success Rate",
+    "centresMonitored": "Centres Monitored"
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "subtitle": "Real stories from successful learners",
+    "items": [
+      {
+        "name": "Sarah Johnson",
+        "location": "London",
+        "text": "Found a test within 2 days! The notifications were instant and I got exactly the date I wanted."
+      },
+      {
+        "name": "Michael Chen",
+        "location": "Manchester",
+        "text": "Brilliant service! Saved me months of waiting. The extension is so convenient."
+      },
+      {
+        "name": "Emma Williams",
+        "location": "Birmingham",
+        "text": "Highly recommend! Found 3 cancelled tests in my area within a week."
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Simple Pricing",
+    "subtitle": "Choose the plan that works for you",
+    "free": {
+      "title": "Free",
+      "description": "Perfect for occasional monitoring",
+      "features": [
+        "5 test centres",
+        "Basic notifications",
+        "Email alerts",
+        "Standard support"
+      ]
+    },
+    "pro": {
+      "title": "Pro",
+      "description": "For serious learners",
+      "features": [
+        "Unlimited test centres",
+        "Instant notifications",
+        "Multiple alert types",
+        "Priority support",
+        "Advanced filtering"
+      ]
+    }
+  },
+  "extension": {
+    "title": "Chrome Extension",
+    "subtitle": "Never miss a test with our browser extension",
+    "description": "Get instant notifications right in your browser. Works seamlessly with Chrome and other Chromium-based browsers.",
+    "features": [
+      "Real-time notifications",
+      "One-click booking",
+      "Customizable alerts",
+      "Works in background"
+    ],
+    "cta": "Install Extension"
+  }
+}

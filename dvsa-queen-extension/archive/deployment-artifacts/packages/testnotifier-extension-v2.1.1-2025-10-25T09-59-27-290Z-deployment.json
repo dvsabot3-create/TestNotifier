@@ -1,0 +1,75 @@
+{
+  "package": "testnotifier-extension-v2.1.1-2025-10-25T09-59-27-290Z.zip",
+  "version": "2.1.1",
+  "buildDate": "2025-10-25T09:59:27.372Z",
+  "manifest": {
+    "name": "TestNotifier - Multi-Pupil Manager",
+    "version": "2.1.1",
+    "description": "Multi-pupil DVSA test slot finder for driving instructors - Monitor unlimited pupils with instant notifications",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "notifications",
+      "scripting",
+      "contextMenus"
+    ]
+  },
+  "files": [
+    {
+      "name": "background.js",
+      "size": 7549,
+      "type": ".js"
+    },
+    {
+      "name": "background.js.map",
+      "size": 538,
+      "type": ".map"
+    },
+    {
+      "name": "content-script.js",
+      "size": 44968,
+      "type": ".js"
+    },
+    {
+      "name": "content-script.js.map",
+      "size": 57367,
+      "type": ".map"
+    },
+    {
+      "name": "icons",
+      "size": 448,
+      "type": ""
+    },
+    {
+      "name": "manifest.json",
+      "size": 1759,
+      "type": ".json"
+    },
+    {
+      "name": "popup.html",
+      "size": 10430,
+      "type": ".html"
+    },
+    {
+      "name": "popup.js",
+      "size": 31522,
+      "type": ".js"
+    },
+    {
+      "name": "popup.js.map",
+      "size": 41313,
+      "type": ".map"
+    },
+    {
+      "name": "stealth",
+      "size": 96,
+      "type": ""
+    }
+  ],
+  "size": 2768255,
+  "deployment": {
+    "chromeWebStore": false,
+    "manual": true,
+    "enterprise": false
+  }
+}

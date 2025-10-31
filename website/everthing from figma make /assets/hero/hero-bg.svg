@@ -1,0 +1,31 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hero Background Gradient -->
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1d70b8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2e8bc0;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Subtle noise texture -->
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend mode="multiply" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  
+  <!-- Base gradient -->
+  <rect width="1920" height="1080" fill="url(#heroGradient)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="200" cy="200" r="300" fill="#2e8bc0" opacity="0.2" filter="blur(80px)"/>
+  <circle cx="1720" cy="880" r="400" fill="#1d70b8" opacity="0.2" filter="blur(100px)"/>
+  <circle cx="960" cy="540" r="350" fill="white" opacity="0.05" filter="blur(120px)"/>
+  
+  <!-- Grid pattern -->
+  <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+    <path d="M 64 0 L 0 0 0 64" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  </pattern>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+</svg>

@@ -1,0 +1,177 @@
+{
+  "timestamp": "2025-10-27T16:21:38.656Z",
+  "summary": {
+    "scribeLinks": {
+      "total": 7,
+      "accessible": 0,
+      "failed": 7
+    },
+    "screenshotFiles": {
+      "total": 7,
+      "found": 0,
+      "missing": 7
+    },
+    "componentIntegration": {
+      "passed": true,
+      "screenshotSections": 6
+    }
+  },
+  "details": {
+    "scribeResults": [
+      {
+        "id": "chrome-version",
+        "title": "Check Chrome Version",
+        "url": "https://scribehow.com/shared/Check_Chrome_Version_for_TestNotifier__kYqQ",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "extensions-page",
+        "title": "Open Chrome Extensions",
+        "url": "https://scribehow.com/shared/Open_Chrome_Extensions_Page__kYrR",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "developer-mode",
+        "title": "Enable Developer Mode",
+        "url": "https://scribehow.com/shared/Enable_Developer_Mode_in_Chrome__kYsS",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "load-unpacked",
+        "title": "Load Unpacked Extension",
+        "url": "https://scribehow.com/shared/Load_Unpacked_Extension_in_Chrome__kYtT",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "extension-verification",
+        "title": "Verify Installation",
+        "url": "https://scribehow.com/shared/Verify_TestNotifier_Extension_Installation__kYuU",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "pin-extension",
+        "title": "Pin Extension to Toolbar",
+        "url": "https://scribehow.com/shared/Pin_TestNotifier_Extension_to_Toolbar__kYvV",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      },
+      {
+        "id": "disable-extensions",
+        "title": "Disable Conflicting Extensions",
+        "url": "https://scribehow.com/shared/Disable_Conflicting_Extensions_for_TestNotifier__kYwW",
+        "status": 307,
+        "statusText": "Temporary Redirect",
+        "accessible": false
+      }
+    ],
+    "screenshotResults": [
+      {
+        "file": "chrome-version-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/chrome-version-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "extensions-page-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/extensions-page-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "developer-mode-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/developer-mode-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "load-unpacked-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/load-unpacked-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "extension-verification-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/extension-verification-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "pin-extension-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/pin-extension-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      },
+      {
+        "file": "disable-extensions-placeholder.png",
+        "path": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/disable-extensions-placeholder.png",
+        "exists": false,
+        "size": 0,
+        "status": "MISSING"
+      }
+    ],
+    "componentResults": {
+      "screenshotDataStructure": true,
+      "scribeHelperFunctions": true,
+      "screenshotSectionComponent": true,
+      "scribeLinks": [
+        {
+          "id": "chrome-version",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Check_Chrome_Version_for_TestNotifier__kYqQ"
+        },
+        {
+          "id": "extensions-page",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Open_Chrome_Extensions_Page__kYrR"
+        },
+        {
+          "id": "developer-mode",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Enable_Developer_Mode_in_Chrome__kYsS"
+        },
+        {
+          "id": "load-unpacked",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Load_Unpacked_Extension_in_Chrome__kYtT"
+        },
+        {
+          "id": "extension-verification",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Verify_TestNotifier_Extension_Installation__kYuU"
+        },
+        {
+          "id": "pin-extension",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Pin_TestNotifier_Extension_to_Toolbar__kYvV"
+        },
+        {
+          "id": "disable-extensions",
+          "hasLink": true,
+          "url": "https://scribehow.com/shared/Disable_Conflicting_Extensions_for_TestNotifier__kYwW"
+        }
+      ],
+      "screenshotSections": 6
+    }
+  },
+  "recommendations": [
+    "Create Scribe tutorials for failed links",
+    "Generate missing screenshot files"
+  ]
+}

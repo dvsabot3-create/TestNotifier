@@ -1,0 +1,10 @@
+.vercel
+# Ignore node_modules and large files
+node_modules/
+*.log
+.env
+dist/
+.DS_Store
+# Large binary files
+*.node
+mongod-*

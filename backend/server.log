@@ -1,0 +1,6 @@
+(node:20558) [MONGOOSE] Warning: Duplicate schema index on {"stripe.customerId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+🚀 TestNotifier Backend Server running on port 5001
+📊 Environment: development
+🔗 CORS enabled for: http://localhost:5173
+❌ Database connection failed: connect ECONNREFUSED 127.0.0.1:27017

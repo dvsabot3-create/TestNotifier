@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DVSA Queen - Instructor Assistant</title>
+  <style>
+    /* Professional styling matching DVSA branding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .status-bar {
+      background: white;
+      padding: 12px 16px;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-indicator.active { background: #28a745; }
+    .status-indicator.inactive { background: #dc3545; }
+    .status-indicator.warning { background: #ffc107; }
+
+    .status-text {
+      font-weight: 500;
+    }
+
+    .main-content {
+      padding: 16px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: #e9ecef;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #495057;
+    }
+
+    .section-content {
+      padding: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #1d70b8;
+      box-shadow: 0 0 0 2px rgba(29, 112, 184, 0.2);
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #1d70b8;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #155a8c;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #1d70b8;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+
+    .pupil-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .pupil-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .pupil-item:last-child {
+      border-bottom: none;
+    }
+
+    .pupil-info {
+      flex: 1;
+    }
+
+    .pupil-name {
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .pupil-licence {
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    .pupil-status {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    .pupil-status.active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .pupil-status.waiting {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .settings-section {
+      margin-top: 16px;
+    }
+
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-label {
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-switch.active {
+      background: #1d70b8;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(20px);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1d70b8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #f5c6cb;
+      font-size: 13px;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #c3e6cb;
+      font-size: 13px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #6c757d;
+    }
+
+    .empty-state-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>DVSA Queen</h1>
+    <div class="subtitle">Instructor Assistant</div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-indicator active"></span>
+    <span class="status-text">Ready</span>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Instructor Setup -->
+    <div class="section" id="instructor-setup">
+      <div class="section-header">Instructor Setup</div>
+      <div class="section-content">
+        <div class="form-group">
+          <label class="form-label">ADI Number</label>
+          <input type="text" id="adi-number" class="form-input" placeholder="ADI123456" maxlength="10">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Base Location (City)</label>
+          <input type="text" id="base-location" class="form-input" placeholder="London" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Travel Radius (km)</label>
+          <input type="number" id="travel-radius" class="form-input" placeholder="50" min="10" max="100" value="50">
+        </div>
+
+        <button id="setup-instructor" class="btn btn-primary">Setup Instructor</button>
+      </div>
+    </div>
+
+    <!-- Pupils Management -->
+    <div class="section" id="pupils-section" style="display: none;">
+      <div class="section-header">Pupils Management</div>
+      <div class="section-content">
+        <div class="form-group">
+          <label class="form-label">Add New Pupil</label>
+          <input type="text" id="new-pupil-licence" class="form-input" placeholder="SMITH123456S" maxlength="20">
+        </div>
+
+        <button id="add-pupil" class="btn btn-success btn-sm">+ Add Pupil</button>
+
+        <div id="pupils-list" class="pupil-list">
+          <!-- Pupils will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="section" id="statistics-section" style="display: none;">
+      <div class="section-header">Performance Statistics</div>
+      <div class="section-content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="total-checks">0</span>
+            <div class="stat-label">Total Checks</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="successful-changes">0</span>
+            <div class="stat-label">Successful Changes</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="success-rate">0%</span>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="section" id="settings-section" style="display: none;">
+      <div class="section-header">Settings</div>
+      <div class="section-content">
+        <div class="settings-section">
+          <div class="settings-item">
+            <span class="settings-label">Auto-check for cancellations</span>
+            <div class="toggle-switch" id="auto-check-toggle"></div>
+          </div>
+
+          <div class="settings-item">
+            <span class="settings-label">Sound notifications</span>
+            <div class="toggle-switch" id="sound-toggle"></div>
+          </div>
+
+          <div class="settings-item">
+            <span class="settings-label">Browser notifications</span>
+            <div class="toggle-switch" id="notifications-toggle"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <button id="save-settings" class="btn btn-secondary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="margin-top: 20px; display: flex; gap: 8px;">
+      <button id="manual-check" class="btn btn-primary">🔄 Manual Check</button>
+      <button id="open-options" class="btn btn-secondary">⚙️ Advanced Settings</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+🔍 Environment Configuration Check
+=====================================
+✅ TWILIO_ACCOUNT_SID
+✅ TWILIO_AUTH_TOKEN
+✅ TWILIO_PHONE_NUMBER
+✅ TEST_PHONE_NUMBER
+✅ TEST_EMAIL
+
+📊 5/5 environment variables configured
+
+🚀 Starting TestNotifier Notification System Test Suite...
+
+📧 Testing Email Notifications...
+  Running: Basic Email Notification
+  📧 Email would open: mailto:hello@testnotifier.co.uk?subject=TestNotifier%20-%20Basic%20Email%20Test&body=This%20is%20a%20basic%20test%20email%20from%20TestNotifier%20notification%20system.
+  📋 To: hello@testnotifier.co.uk
+  📋 Subject: TestNotifier - Basic Email Test
+  📋 Body: This is a basic test email from TestNotifier notification system.
+  ✅ Basic Email Notification - PASSED
+  Running: Email with Special Characters
+  📧 Email would open: mailto:hello@testnotifier.co.uk?subject=TestNotifier%20-%20Special%20Characters%20Test&body=Test%20with%20special%20characters%3A%20%40%23%24%25%5E%26*()_%2B-%3D%5B%5D%7B%7D%7C%3B%3A%2C.%3C%3E%3F
+  📋 To: hello@testnotifier.co.uk
+  📋 Subject: TestNotifier - Special Characters Test
+  📋 Body: Test with special characters: @#$%^&*()_+-=[]{}|;:,.<>?
+  ✅ Email with Special Characters - PASSED
+  Running: Email with Long Content
+  📧 Email would open: mailto:hello@testnotifier.co.uk?subject=TestNotifier%20-%20Long%20Content%20Test&body=This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20This%20is%20a%20test%20email%20with%20longer%20content.%20It%20contains%20multiple%20sentences%20and%20should%20test%20the%20system's%20ability%20to%20handle%20longer%20email%20bodies%20without%20issues.
+  📋 To: hello@testnotifier.co.uk
+  📋 Subject: TestNotifier - Long Content Test
+  📋 Body: This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. This is a test email with longer content. It contains multiple sentences and should test the system's ability to handle longer email bodies without issues.
+  ✅ Email with Long Content - PASSED
+
+📱 Testing SMS Notifications...
+  Running: Basic SMS Notification
+  📱 SMS would be sent:
+     From: +19789973013
+     To: +12025550123
+     Message: TestNotifier SMS Test: Earlier driving test slot found for Test Pupil!
+  ✅ Basic SMS Notification - PASSED
+  Running: SMS with Special Characters
+  📱 SMS would be sent:
+     From: +19789973013
+     To: +12025550123
+     Message: TestNotifier: Earlier slot for John O'Brien-Smith! Test Centre: London (West).
+  ✅ SMS with Special Characters - PASSED
+  Running: SMS with Long Message
+  📱 SMS would be sent:
+     From: +19789973013
+     To: +12025550123
+     Message: TestNotifier: Earlier driving test slot found for Test Pupil at London West Test Centre. New slot available: 15th December 2025 at 10:30 AM. Original test was scheduled for 20th January 2026.
+  ✅ SMS with Long Message - PASSED
+
+💬 Testing WhatsApp Notifications...
+  Running: Basic WhatsApp Notification
+  💬 WhatsApp message would be sent:
+     From: whatsapp:+19789973013
+     To: whatsapp:+12025550123
+     Message: TestNotifier WhatsApp Test: Earlier driving test slot found for Test Pupil!
+  ✅ Basic WhatsApp Notification - PASSED
+  Running: WhatsApp with Emoji
+  💬 WhatsApp message would be sent:
+     From: whatsapp:+19789973013
+     To: whatsapp:+12025550123
+     Message: 🚗 TestNotifier: Earlier test slot found for Sarah! 🎉 New slot: 15th Dec at 10:30 AM 📅
+  ✅ WhatsApp with Emoji - PASSED
+
+📊 Test Suite Summary
+========================
+⏱️  Duration: 12.008s
+📧 Email Tests: 3 passed, 0 failed
+📱 SMS Tests: 3 passed, 0 failed
+💬 WhatsApp Tests: 2 passed, 0 failed
+📈 Overall: 8 passed, 0 failed
+🎯 Success Rate: 100.0%
+🎉 All tests passed! Notification system is working correctly.

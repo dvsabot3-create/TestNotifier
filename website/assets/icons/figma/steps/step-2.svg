@@ -1,0 +1,30 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step 2 Icon: Configure -->
+  <defs>
+    <linearGradient id="step2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#28a745"/>
+      <stop offset="100%" stop-color="#20c997"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Circle background -->
+  <circle cx="40" cy="40" r="38" fill="url(#step2Grad)" opacity="0.1"/>
+  <circle cx="40" cy="40" r="38" fill="none" stroke="url(#step2Grad)" stroke-width="3"/>
+  
+  <!-- Settings gear -->
+  <circle cx="40" cy="40" r="10" fill="none" stroke="url(#step2Grad)" stroke-width="3"/>
+  
+  <!-- Gear teeth -->
+  <rect x="38" y="22" width="4" height="8" fill="url(#step2Grad)"/>
+  <rect x="38" y="50" width="4" height="8" fill="url(#step2Grad)"/>
+  <rect x="22" y="38" width="8" height="4" fill="url(#step2Grad)"/>
+  <rect x="50" y="38" width="8" height="4" fill="url(#step2Grad)"/>
+  
+  <rect x="28" y="28" width="4" height="6" fill="url(#step2Grad)" transform="rotate(-45 30 31)"/>
+  <rect x="48" y="28" width="4" height="6" fill="url(#step2Grad)" transform="rotate(45 50 31)"/>
+  <rect x="28" y="46" width="4" height="6" fill="url(#step2Grad)" transform="rotate(45 30 49)"/>
+  <rect x="48" y="46" width="4" height="6" fill="url(#step2Grad)" transform="rotate(-45 50 49)"/>
+  
+  <!-- Number -->
+  <text x="68" y="20" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="url(#step2Grad)">2</text>
+</svg>

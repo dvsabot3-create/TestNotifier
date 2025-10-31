@@ -1,0 +1,96 @@
+# Render.com Configuration for TestNotifier
+# This file defines the services and their configuration
+
+services:
+  # Website Service (React + Express)
+  - type: web
+    name: testnotifier-website
+    env: node
+    buildCommand: cd website && npm ci && npm run build
+    startCommand: cd website && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - website/**
+        - render.yaml
+
+  # Backend Service (if separate)
+  - type: web
+    name: testnotifier-backend
+    env: node
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - backend/**
+        - render.yaml
+
+  # Static Site (Alternative approach - just the React app)
+  - type: web
+    name: testnotifier-frontend
+    env: static
+    buildCommand: cd website && npm ci && npm run build
+    staticPublishPath: ./website/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    buildFilter:
+      paths:
+        - website/src/**
+        - website/public/**
+        - website/package.json
+        - website/vite.config.ts
+
+# Optional: Database service
+# databases:
+#   - name: testnotifier-db
+#     databaseName: testnotifier
+#     user: testnotifier
+#     plan: starter
+
+# Optional: Redis service
+# - type: redis
+#   name: testnotifier-redis
+#   plan: starter
+#   maxmemoryPolicy: allkeys-lru

@@ -1,0 +1,144 @@
+{
+  "environmentVariables": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "PORT",
+      "value": "10000"
+    },
+    {
+      "key": "FRONTEND_URL",
+      "value": "https://testnotifier-website.onrender.com"
+    },
+    {
+      "key": "JWT_SECRET",
+      "value": "rnd_2N88OuzmRiGFdX2IAwUlmZ2Usoju_render_jwt_2024_secure_key_for_testnotifier_app_production"
+    },
+    {
+      "key": "GOOGLE_CLIENT_ID",
+      "value": "[YOUR_GOOGLE_CLIENT_ID]"
+    },
+    {
+      "key": "GOOGLE_CLIENT_SECRET",
+      "value": "[YOUR_GOOGLE_CLIENT_SECRET]"
+    },
+    {
+      "key": "GOOGLE_CALLBACK_URL",
+      "value": "https://testnotifier-website.onrender.com/api/auth/google/callback"
+    },
+    {
+      "key": "STRIPE_SECRET_KEY",
+      "value": "sk_test_your_stripe_secret_key_here"
+    },
+    {
+      "key": "STRIPE_PUBLISHABLE_KEY",
+      "value": "pk_test_your_stripe_publishable_key_here"
+    },
+    {
+      "key": "STRIPE_WEBHOOK_SECRET",
+      "value": "whsec_your_stripe_webhook_secret_here"
+    },
+    {
+      "key": "DATABASE_URL",
+      "value": "postgresql://username:password@host:port/database"
+    },
+    {
+      "key": "REDIS_URL",
+      "value": "redis://username:password@host:port"
+    },
+    {
+      "key": "SESSION_SECRET",
+      "value": "session_secret_key_for_testnotifier_app_2024_secure_random"
+    },
+    {
+      "key": "CORS_ORIGIN",
+      "value": "https://testnotifier-website.onrender.com"
+    },
+    {
+      "key": "RATE_LIMIT_WINDOW_MS",
+      "value": "900000"
+    },
+    {
+      "key": "RATE_LIMIT_MAX_REQUESTS",
+      "value": "100"
+    },
+    {
+      "key": "SENTRY_DSN",
+      "value": "https://your-sentry-dsn.ingest.sentry.io/project-id"
+    },
+    {
+      "key": "SMTP_HOST",
+      "value": "smtp.gmail.com"
+    },
+    {
+      "key": "SMTP_PORT",
+      "value": "587"
+    },
+    {
+      "key": "SMTP_USER",
+      "value": "your_email@gmail.com"
+    },
+    {
+      "key": "SMTP_PASS",
+      "value": "your_app_password"
+    },
+    {
+      "key": "EMAIL_FROM",
+      "value": "noreply@testnotifier.co.uk"
+    },
+    {
+      "key": "CUSTOM_DOMAIN",
+      "value": "testnotifier.co.uk"
+    },
+    {
+      "key": "EXTENSION_ID",
+      "value": "your_chrome_extension_id_here"
+    },
+    {
+      "key": "EXTENSION_UPDATE_URL",
+      "value": "https://testnotifier-website.onrender.com/extension/updates"
+    },
+    {
+      "key": "API_BASE_URL",
+      "value": "https://testnotifier-website.onrender.com/api"
+    },
+    {
+      "key": "WEBHOOK_SECRET",
+      "value": "webhook_secret_for_chrome_extension_communication"
+    },
+    {
+      "key": "ENCRYPTION_KEY",
+      "value": "encryption_key_for_sensitive_data_storage"
+    },
+    {
+      "key": "BACKUP_ENCRYPTION_KEY",
+      "value": "backup_encryption_key_for_data_recovery"
+    },
+    {
+      "key": "LOG_LEVEL",
+      "value": "info"
+    },
+    {
+      "key": "LOG_FORMAT",
+      "value": "json"
+    },
+    {
+      "key": "MAX_FILE_SIZE",
+      "value": "5242880"
+    },
+    {
+      "key": "UPLOAD_DIR",
+      "value": "/tmp/uploads"
+    },
+    {
+      "key": "CACHE_TTL",
+      "value": "3600"
+    },
+    {
+      "key": "CACHE_MAX_SIZE",
+      "value": "100"
+    }
+  ]
+}
