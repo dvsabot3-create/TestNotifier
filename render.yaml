@@ -2,11 +2,12 @@
 # This file defines the services and their configuration
 
 services:
-  # Main Website Service (React + Express)
+  # Main Website Service (React + Express) - Using Node.js environment
   - type: web
     name: testnotifier-website
-    env: docker
-    dockerfilePath: ./Dockerfile
+    env: node
+    buildCommand: cd website && npm ci && npm run build
+    startCommand: cd website && npm start
     envVars:
       - key: NODE_ENV
         value: production
