@@ -4,14 +4,11 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy website package files first
-COPY website/package*.json ./
+# Copy website folder contents to /app
+COPY website/ ./
 
 # Install dependencies
-RUN npm ci --only=production
-
-# Copy website source code
-COPY website/ .
+RUN npm ci
 
 # Build the React app
 RUN npm run build
