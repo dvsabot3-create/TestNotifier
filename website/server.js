@@ -24,19 +24,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Handle www to non-www redirect with proper HTTPS detection
+// Handle redirect logic based on Render configuration
+// testnotifier.co.uk → www.testnotifier.co.uk (Render's configuration)
 app.use((req, res, next) => {
   const host = req.get('host');
   const protocol = req.headers['x-forwarded-proto'] || req.protocol;
 
   console.log(`[Redirect Check] Host: ${host}, Protocol: ${protocol}, Original: ${req.originalUrl}`);
 
-  if (host && host.startsWith('www.')) {
-    const newHost = host.replace('www.', '');
-    const newUrl = `${protocol}://${newHost}${req.originalUrl}`;
-    console.log(`[Redirect] www → non-www: ${newUrl}`);
+  // Only redirect if it's the root domain (not www)
+  if (host && !host.startsWith('www.') && host === 'testnotifier.co.uk') {
+    const newUrl = `${protocol}://www.${host}${req.originalUrl}`;
+    console.log(`[Redirect] root → www: ${newUrl}`);
     return res.redirect(301, newUrl);
   }
+
+  // If it's already www, don't redirect - serve content normally
   next();
 });
 
