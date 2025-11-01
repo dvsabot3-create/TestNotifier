@@ -72,7 +72,7 @@ services:
         sync: false
       - key: BACKUP_ENCRYPTION_KEY
         sync: false
-    healthCheckPath: /health
+    healthCheckPath: /healthz
     autoDeploy: true
     domains:
       - testnotifier.co.uk  # Primary domain (redirects to www)
