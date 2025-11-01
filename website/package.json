@@ -17,6 +17,11 @@
     "setup-stripe-branding": "node scripts/setup-stripe-branding.js"
   },
   "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "googleapis": "^128.0.0",
     "@gsap/react": "^2.1.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",

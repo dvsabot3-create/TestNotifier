@@ -40,8 +40,8 @@ WORKDIR /app
 # Copy package files for production dependencies
 COPY website/package*.json ./
 
-# Install only production dependencies including express
-RUN npm install express --omit=dev
+# Install production dependencies (express, cors, bcrypt, jwt, googleapis, stripe)
+RUN npm install --omit=dev
 
 # Copy built assets from builder
 COPY --from=builder /app/dist ./dist
@@ -49,8 +49,9 @@ COPY --from=builder /app/dist ./dist
 # Verify dist was copied
 RUN ls -la dist/ && test -f dist/index.html || (echo "ERROR: dist/index.html not found!" && exit 1)
 
-# Copy server file
+# Copy server file and API routes
 COPY website/server.js ./
+COPY website/api ./api
 
 # Expose port (Render will override this with PORT env var)
 EXPOSE 3000
