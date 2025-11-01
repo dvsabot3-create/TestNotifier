@@ -1,6 +1,18 @@
 # Multi-stage build for TestNotifier website
 FROM node:18-alpine AS builder
 
+# Install build dependencies for native packages (gifsicle, etc.)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    autoconf \
+    automake \
+    libtool \
+    nasm \
+    libpng-dev \
+    libjpeg-turbo-dev
+
 # Set working directory
 WORKDIR /app
 
