@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Extension to Toolbar - TestNotifier Installation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        line-height: 1.5;
+      }
+
+      .chrome-window {
+        width: 1366px;
+        height: 768px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+      }
+
+      .chrome-header {
+        background: #f1f3f4;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid #dadce0;
+      }
+
+      .chrome-tabs {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .chrome-tab {
+        background: white;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #5f6368;
+        border: 1px solid #dadce0;
+        border-bottom: none;
+        position: relative;
+        top: 1px;
+      }
+
+      .chrome-tab.active {
+        color: #1a73e8;
+        font-weight: 500;
+      }
+
+      .chrome-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .chrome-control {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .chrome-control.close { background: #ff5f57; }
+      .chrome-control.minimize { background: #ffbd2e; }
+      .chrome-control.maximize { background: #28ca42; }
+
+      .chrome-content {
+        height: calc(100% - 40px);
+        overflow: hidden;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition: all 0.2s ease;
+      }
+
+      /* Professional styling */
+      h1, h2, h3, h4 {
+        font-weight: 500;
+      }
+
+      button {
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+</head>
+<body>
+    <div class="chrome-window">
+        <!-- Chrome Browser Chrome -->
+        <div class="chrome-header">
+            <div class="chrome-tabs">
+                <div class="chrome-tab active">Pin Extension to Toolbar</div>
+                <div class="chrome-tab">New Tab</div>
+            </div>
+            <div class="chrome-controls">
+                <div class="chrome-control close"></div>
+                <div class="chrome-control minimize"></div>
+                <div class="chrome-control maximize"></div>
+            </div>
+        </div>
+
+        <!-- Chrome Content -->
+        <div class="chrome-content">
+            
+      <!-- Clean Browser Interface -->
+      <div style="background: #ffffff; height: 80px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid #e5e7eb;">
+        <!-- Address Bar -->
+        <div style="flex: 1; display: flex; align-items: center; background: #f3f4f6; border-radius: 24px; padding: 8px 16px; margin-right: 20px;">
+          <div style="color: #6b7280; font-size: 14px;">🔍</div>
+          <div style="margin-left: 8px; color: #374151; font-size: 14px;">https://www.dvsa.gov.uk</div>
+        </div>
+
+        <!-- Extensions Area -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Extensions Menu -->
+          <div style="background: #17a2b8; color: white; padding: 8px 12px; border-radius: 16px; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);">
+            <span style="font-size: 16px;">🧩</span>
+            <span style="font-size: 12px;">Extensions</span>
+            <span style="font-size: 12px;">▼</span>
+          </div>
+
+          <!-- Profile Menu -->
+          <div style="width: 32px; height: 32px; background: #6b7280; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">👤</div>
+        </div>
+      </div>
+
+      <!-- Extensions Dropdown Menu -->
+      <div style="position: absolute; top: 70px; right: 24px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); padding: 8px; min-width: 280px; z-index: 1000;">
+        <div style="padding: 8px 0;">
+
+          <!-- TestNotifier with Pin -->
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; background: #e3f2fd; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #17a2b8; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📋</div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; color: #374151; font-weight: 500;">TestNotifier</div>
+              <div style="font-size: 12px; color: #6b7280;">Monitor test slots</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px;">📌</div>
+              <div style="color: #17a2b8; font-size: 12px;">Pinned</div>
+            </div>
+          </div>
+
+          <!-- Other Extensions -->
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px;">
+            <div style="width: 20px; height: 20px; background: #dc3545; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px;">🔒</div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; color: #374151;">uBlock Origin</div>
+              <div style="font-size: 12px; color: #6b7280;">Finally, an efficient blocker</div>
+            </div>
+            <div style="color: #6b7280; font-size: 12px;">📌</div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px;">
+            <div style="width: 20px; height: 20px; background: #fd7e14; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px;">🛡️</div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; color: #374151;">Privacy Badger</div>
+              <div style="font-size: 12px; color: #6b7280;">Protects your privacy</div>
+            </div>
+            <div style="color: #6b7280; font-size: 12px;">📌</div>
+          </div>
+
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; margin: 8px 0; padding-top: 8px;">
+          <div style="padding: 8px 12px; color: #6b7280; font-size: 12px; cursor: pointer;">⚙️ Manage extensions</div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div style="padding: 40px; background: #f8f9fa; min-height: 600px;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+          <!-- Success Visualization -->
+          <div style="margin-bottom: 30px;">
+            <div style="display: inline-flex; align-items: center; gap: 20px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 40px; height: 40px; background: #17a2b8; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">1️⃣</div>
+                <div>
+                  <div style="font-size: 14px; color: #6b7280;">Click</div>
+                  <div style="font-weight: 500; color: #374151;">🧩 Extensions menu</div>
+                </div>
+              </div>
+
+              <div style="color: #6b7280; font-size: 24px;">→</div>
+
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 40px; height: 40px; background: #28a745; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">2️⃣</div>
+                <div>
+                  <div style="font-size: 14px; color: #6b7280;">Find</div>
+                  <div style="font-weight: 500; color: #374151;">TestNotifier</div>
+                </div>
+              </div>
+
+              <div style="color: #6b7280; font-size: 24px;">→</div>
+
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 40px; height: 40px; background: #17a2b8; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">3️⃣</div>
+                <div>
+                  <div style="font-size: 14px; color: #6b7280;">Click</div>
+                  <div style="font-weight: 500; color: #374151;">📌 Pin icon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <div style="background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 12px; padding: 25px; margin-bottom: 20px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">✅</div>
+            <h3 style="color: #1d70b8; font-size: 18px; margin: 0 0 10px 0;">TestNotifier Pinned Successfully!</h3>
+            <p style="color: #1565c0; font-size: 16px; margin: 0;">The extension is now easily accessible from your Chrome toolbar.</p>
+          </div>
+
+          <!-- Benefits -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+            <h4 style="color: #374151; font-size: 16px; margin: 0 0 15px 0;">🎯 Why Pin Extensions?</h4>
+            <ul style="text-align: left; color: #6b7280; font-size: 14px; margin: 0; padding-left: 20px; line-height: 1.6;">
+              <li>Quick access to extension features</li>
+              <li>Easy monitoring of extension status</li>
+              <li>Convenient access to settings and options</li>
+              <li>Better user experience and workflow</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px;">
+        <p>Professional Chrome interface mockup for TestNotifier installation guide</p>
+        <p style="font-size: 12px; margin-top: 5px;">Replace with actual Chrome screenshot from Scribe in production</p>
+    </div>
+</body>
+</html>
+  

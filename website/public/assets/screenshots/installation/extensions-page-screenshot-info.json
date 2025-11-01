@@ -1,0 +1,22 @@
+{
+  "type": "professional_mockup",
+  "step": "extensions-page",
+  "title": "Open Chrome Extensions",
+  "dimensions": {
+    "width": 1366,
+    "height": 768
+  },
+  "format": "PNG",
+  "quality": "high",
+  "created": "2025-10-27T16:18:14.344Z",
+  "note": "Professional HTML mockup - replace with actual Chrome screenshot from Scribe",
+  "htmlFile": "extensions-page.html",
+  "productionInstructions": [
+    "1. Install Scribe Chrome extension",
+    "2. Navigate to the appropriate Chrome settings page",
+    "3. Start Scribe recording",
+    "4. Perform the installation steps",
+    "5. Export high-quality PNG screenshots",
+    "6. Replace this mockup with actual screenshots"
+  ]
+}

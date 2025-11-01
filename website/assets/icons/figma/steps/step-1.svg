@@ -1,0 +1,23 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step 1 Icon: Install -->
+  <defs>
+    <linearGradient id="step1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1d70b8"/>
+      <stop offset="100%" stop-color="#2e8bc0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Circle background -->
+  <circle cx="40" cy="40" r="38" fill="url(#step1Grad)" opacity="0.1"/>
+  <circle cx="40" cy="40" r="38" fill="none" stroke="url(#step1Grad)" stroke-width="3"/>
+  
+  <!-- Download arrow -->
+  <path d="M40 20 L40 50" stroke="url(#step1Grad)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M30 45 L40 55 L50 45" stroke="url(#step1Grad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Base line -->
+  <line x1="25" y1="60" x2="55" y2="60" stroke="url(#step1Grad)" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Number -->
+  <text x="68" y="20" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="url(#step1Grad)">1</text>
+</svg>

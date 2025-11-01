@@ -1,0 +1,22 @@
+{
+  "type": "professional_png_placeholder",
+  "source": "chrome-version.html",
+  "target": "chrome-version-screenshot.png",
+  "dimensions": {
+    "width": 1366,
+    "height": 768
+  },
+  "htmlContent": "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Check Chrome Version - TestNotifier Installation</title>\n    <style>\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n\n      body {\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\n        background: #f8f9fa;\n        color: #333;\n        l...",
+  "conversionMethod": "placeholder_generation",
+  "created": "2025-10-27T16:20:57.063Z",
+  "productionNote": "Replace with actual PNG screenshot from Scribe or HTML renderer",
+  "quality": "high",
+  "format": "PNG",
+  "maxSize": "200KB",
+  "nextSteps": [
+    "1. Use Scribe Chrome extension to capture real Chrome interface",
+    "2. Use Puppeteer or similar for automated HTML to PNG conversion",
+    "3. Use professional screenshot tools for highest quality",
+    "4. Optimize final PNG files for web delivery"
+  ]
+}

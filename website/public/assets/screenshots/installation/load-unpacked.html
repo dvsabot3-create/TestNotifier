@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Unpacked Extension - TestNotifier Installation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        line-height: 1.5;
+      }
+
+      .chrome-window {
+        width: 1366px;
+        height: 768px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+      }
+
+      .chrome-header {
+        background: #f1f3f4;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid #dadce0;
+      }
+
+      .chrome-tabs {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .chrome-tab {
+        background: white;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #5f6368;
+        border: 1px solid #dadce0;
+        border-bottom: none;
+        position: relative;
+        top: 1px;
+      }
+
+      .chrome-tab.active {
+        color: #1a73e8;
+        font-weight: 500;
+      }
+
+      .chrome-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .chrome-control {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .chrome-control.close { background: #ff5f57; }
+      .chrome-control.minimize { background: #ffbd2e; }
+      .chrome-control.maximize { background: #28ca42; }
+
+      .chrome-content {
+        height: calc(100% - 40px);
+        overflow: hidden;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition: all 0.2s ease;
+      }
+
+      /* Professional styling */
+      h1, h2, h3, h4 {
+        font-weight: 500;
+      }
+
+      button {
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+</head>
+<body>
+    <div class="chrome-window">
+        <!-- Chrome Browser Chrome -->
+        <div class="chrome-header">
+            <div class="chrome-tabs">
+                <div class="chrome-tab active">Load Unpacked Extension</div>
+                <div class="chrome-tab">New Tab</div>
+            </div>
+            <div class="chrome-controls">
+                <div class="chrome-control close"></div>
+                <div class="chrome-control minimize"></div>
+                <div class="chrome-control maximize"></div>
+            </div>
+        </div>
+
+        <!-- Chrome Content -->
+        <div class="chrome-content">
+            
+      <!-- Chrome Extensions Header -->
+      <div style="background: #2e8bc0; height: 60px; display: flex; align-items: center; padding: 0 24px;">
+        <h1 style="color: white; font-size: 18px; margin: 0;">Extensions</h1>
+      </div>
+
+      <!-- Extensions Toolbar -->
+      <div style="background: #f8f9fa; height: 60px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid #dee2e6;">
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div style="font-size: 14px; color: #495057;">📦 Extensions (12)</div>
+          <div style="background: #28a745; color: white; padding: 6px 12px; border-radius: 16px; font-size: 12px;">Developer mode ON</div>
+        </div>
+      </div>
+
+      <!-- Load Unpacked Interface -->
+      <div style="padding: 40px; background: white; min-height: 600px;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+          <!-- Main Action Button -->
+          <div style="margin-bottom: 40px;">
+            <div style="display: inline-flex; align-items: center; gap: 15px; background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3); cursor: pointer;">
+              <span style="font-size: 24px;">📁</span>
+              <span style="font-size: 18px; font-weight: bold;">Load unpacked</span>
+            </div>
+          </div>
+
+          <!-- Instructions -->
+          <div style="background: #f3e8ff; border: 2px solid #c4b5fd; border-radius: 12px; padding: 30px; margin-bottom: 30px;">
+            <h3 style="color: #7c3aed; font-size: 18px; margin: 0 0 15px 0;">📋 Select Extension Folder</h3>
+            <p style="color: #6b21a8; font-size: 16px; margin: 0 0 15px 0;">Choose the folder that contains your extension files:</p>
+            <ul style="text-align: left; color: #6b21a8; font-size: 14px; line-height: 1.6;">
+              <li>✅ Must contain <strong>manifest.json</strong> file</li>
+              <li>✅ Should include all extension assets and scripts</li>
+              <li>✅ Do NOT select the ZIP file - extract first</li>
+              <li>✅ Folder name should be descriptive (e.g., "testnotifier-extension")</li>
+            </ul>
+          </div>
+
+          <!-- File Browser Preview -->
+          <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+              <span style="font-size: 16px;">📂</span>
+              <span style="font-weight: 500; color: #374151;">testnotifier-extension/</span>
+            </div>
+            <div style="font-family: monospace; font-size: 13px; color: #6b7280; background: #f9fafb; padding: 15px; border-radius: 6px; text-align: left;">
+              📄 manifest.json<br>
+              📄 background.js<br>
+              📄 content.js<br>
+              📄 popup.html<br>
+              📄 popup.js<br>
+              📁 icons/
+            </div>
+          </div>
+
+        </div>
+      </div>
+    
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px;">
+        <p>Professional Chrome interface mockup for TestNotifier installation guide</p>
+        <p style="font-size: 12px; margin-top: 5px;">Replace with actual Chrome screenshot from Scribe in production</p>
+    </div>
+</body>
+</html>
+  
