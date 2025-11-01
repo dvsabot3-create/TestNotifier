@@ -116,7 +116,7 @@ export function Header() {
                   onClick={handleGetStartedClick}
                   className="relative overflow-hidden group bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] hover:shadow-xl transition-all"
                 >
-                  <span className="relative z-10">Get Started Free</span>
+                  <span className="relative z-10">Get Started</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-[#2e8bc0] to-[#1d70b8] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </Button>
               </>
@@ -150,7 +150,7 @@ export function Header() {
                   onClick={handleGetStartedClick}
                   className="w-full bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] hover:shadow-xl transition-all"
                 >
-                  Get Started Free
+                  Get Started
                 </Button>
               </div>
             </div>

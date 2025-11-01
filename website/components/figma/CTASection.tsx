@@ -2,31 +2,14 @@ import { Button } from "./ui/button";
 import { Chrome, PlayCircle, Check, ArrowRight } from "lucide-react";
 
 export function CTASection() {
-  const handleInstallClick = () => {
-    // Download the extension zip file
-    const link = document.createElement('a');
-    link.href = '/downloads/testnotifier-extension.zip';
-    link.download = 'testnotifier-extension.zip';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Show success message
-    alert('🎉 Extension downloaded!\n\n📁 Check your Downloads folder\n\n📖 Installation guide:\n1. Extract the ZIP file\n2. Open Chrome → Extensions\n3. Enable Developer mode\n4. Click "Load unpacked"\n5. Select the extracted folder\n\n✅ Ready to monitor test slots!');
+  const handleGetStartedClick = () => {
+    // Scroll to pricing section
+    window.location.href = '#pricing';
   };
 
-  const handleDemoClick = () => {
-    // Scroll to demo section
-    const demoSection = document.querySelector('.demo-section');
-    if (demoSection) {
-      demoSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // Fallback to how it works section
-      const howItWorksSection = document.querySelector('.how-it-works-section');
-      if (howItWorksSection) {
-        howItWorksSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+  const handleLearnMoreClick = () => {
+    // Scroll to how it works section
+    window.location.href = '#how-it-works';
   };
 
   return (
@@ -61,21 +44,21 @@ export function CTASection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button 
             size="lg" 
-            onClick={handleInstallClick}
+            onClick={handleGetStartedClick}
             className="bg-white text-[#1d70b8] hover:bg-white/90 gap-2 text-lg px-10 py-7 shadow-2xl transform hover:scale-105 transition-all"
           >
             <Chrome className="w-6 h-6" />
-            Download Extension Free
+            View Pricing & Subscribe
             <ArrowRight className="w-5 h-5" />
           </Button>
           <Button 
             size="lg" 
             variant="outline" 
-            onClick={handleDemoClick}
+            onClick={handleLearnMoreClick}
             className="bg-transparent border-2 border-white text-white hover:bg-white/10 gap-2 text-lg px-10 py-7 backdrop-blur-sm"
           >
             <PlayCircle className="w-6 h-6" />
-            Watch Demo
+            Learn How It Works
           </Button>
         </div>
         

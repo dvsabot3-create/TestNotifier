@@ -231,7 +231,7 @@ export function PricingSection() {
         {/* Trust Indicators */}
         <div className="text-center mt-12 space-y-3">
           <p className="text-[#6c757d]">
-            ✓ Subscription trials for monitoring only • ✓ Cancel anytime • ✓ 30-day money-back guarantee
+            ✓ Subscription trials for monitoring only • ✓ Cancel anytime • ✓ Secure payment via Stripe
           </p>
           <p className="text-sm text-[#6c757d]">
             Used by over 500 learners • 95% success rate in finding earlier slots
@@ -295,11 +295,11 @@ export function PricingSection() {
           </div>
         </div>
 
-        {/* Money Back Guarantee */}
+        {/* Secure Payment Badge */}
         <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-3 bg-green-50 text-[#28a745] px-6 py-3 rounded-full border border-green-200">
+          <div className="inline-flex items-center gap-3 bg-blue-50 text-[#1d70b8] px-6 py-3 rounded-full border border-blue-200">
             <Shield className="w-5 h-5" />
-            <span>30-day money-back guarantee on all subscription plans</span>
+            <span>Secure payment processing powered by Stripe</span>
           </div>
         </div>
       </div>

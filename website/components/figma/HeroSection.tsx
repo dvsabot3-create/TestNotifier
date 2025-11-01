@@ -78,21 +78,21 @@ export function HeroSection() {
             <div className="hero-cta flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg"
-                onClick={handleInstallClick}
+                onClick={() => window.location.href = '#pricing'}
                 className="group relative overflow-hidden bg-white text-[#1d70b8] hover:bg-white/90 hover:scale-105 active:bg-[#28a745] active:text-white text-lg px-8 h-14 shadow-2xl transition-all"
               >
                 <Chrome className="w-5 h-5 mr-2" />
-                <span>Download Extension</span>
+                <span>View Pricing</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               </Button>
               <Button 
                 size="lg"
                 variant="outline"
-                onClick={handleDemoClick}
+                onClick={() => window.location.href = '#how-it-works'}
                 className="border-2 border-white bg-white/10 text-white backdrop-blur-xl hover:bg-white/20 hover:border-white/90 hover:scale-105 active:bg-[#28a745] active:border-[#28a745] text-lg px-8 h-14 shadow-xl transition-all"
               >
                 <PlayCircle className="w-5 h-5 mr-2" />
-                <span className="font-semibold">Watch Demo</span>
+                <span className="font-semibold">How Does It Work?</span>
               </Button>
             </div>
 
