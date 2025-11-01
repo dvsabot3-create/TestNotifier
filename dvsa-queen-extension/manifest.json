@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "TestNotifier - DVSA Test Finder",
+  "version": "2.0.0",
+  "description": "Never miss an earlier driving test slot - Professional DVSA test cancellation finder with instant notifications",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "https://driverpracticaltest.dvsa.gov.uk/*",
+    "https://www.gov.uk/book-pupil-driving-test*",
+    "http://localhost:3002/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["https://driverpracticaltest.dvsa.gov.uk/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    }
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup-branded.html",
+    "default_title": "TestNotifier - DVSA Test Finder",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["stealth/*"],
+      "matches": ["https://driverpracticaltest.dvsa.gov.uk/*"]
+    }
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "DVSA Queen - TestNotifier",
+  "version": "1.0.0",
+  "description": "Professional driving test cancellation notification service",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://driverpracticaltest.dvsa.gov.uk/*",
+    "https://www.gov.uk/book-pupil-driving-test*",
+    "http://localhost:3002/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://driverpracticaltest.dvsa.gov.uk/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup-enhanced.html",
+    "default_title": "TestNotifier - Professional Test Finder"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  }
+}

@@ -1,0 +1,49 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Smart Filtering Illustration -->
+  <defs>
+    <linearGradient id="filterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#ffa500"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Funnel shape -->
+  <path d="M80 80 L320 80 L250 200 L150 200 Z" fill="url(#filterGrad)" opacity="0.2"/>
+  <path d="M150 200 L150 320 L200 340 L250 320 L250 200" fill="url(#filterGrad)" opacity="0.3"/>
+  
+  <!-- Funnel outline -->
+  <path d="M80 80 L320 80 L250 200 L250 320 L200 340 L150 320 L150 200 Z" fill="none" stroke="url(#filterGrad)" stroke-width="4"/>
+  
+  <!-- Input items (top) -->
+  <circle cx="120" cy="50" r="8" fill="#1d70b8"/>
+  <circle cx="160" cy="50" r="8" fill="#1d70b8"/>
+  <circle cx="200" cy="50" r="8" fill="#28a745"/>
+  <circle cx="240" cy="50" r="8" fill="#1d70b8"/>
+  <circle cx="280" cy="50" r="8" fill="#28a745"/>
+  
+  <!-- Arrows showing filtering -->
+  <path d="M120 60 L140 80" stroke="#1d70b8" stroke-width="2" opacity="0.5"/>
+  <path d="M200 60 L200 80" stroke="#28a745" stroke-width="3"/>
+  <path d="M280 60 L260 80" stroke="#28a745" stroke-width="3"/>
+  
+  <!-- Filter criteria icons -->
+  <!-- Calendar -->
+  <rect x="100" y="140" width="40" height="40" rx="4" fill="white" stroke="url(#filterGrad)" stroke-width="2"/>
+  <line x1="108" y1="148" x2="132" y2="148" stroke="url(#filterGrad)" stroke-width="2"/>
+  <text x="120" y="170" text-anchor="middle" font-family="Inter" font-size="14" fill="url(#filterGrad)">12</text>
+  
+  <!-- Clock -->
+  <circle cx="200" cy="160" r="20" fill="white" stroke="url(#filterGrad)" stroke-width="2"/>
+  <line x1="200" y1="160" x2="200" y2="150" stroke="url(#filterGrad)" stroke-width="2"/>
+  <line x1="200" y1="160" x2="208" y2="160" stroke="url(#filterGrad)" stroke-width="2"/>
+  
+  <!-- Location pin -->
+  <path d="M280,-20 C272,-20 265,-13 265,-5 C265,5 280,20 280,20 C280,20 295,5 295,-5 C295,-13 288,-20 280,-20Z" 
+        transform="translate(0, 160)" fill="white" stroke="url(#filterGrad)" stroke-width="2"/>
+  
+  <!-- Filtered output (bottom) -->
+  <circle cx="200" cy="350" r="12" fill="#28a745">
+    <animate attributeName="cy" values="200;350" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+</svg>
