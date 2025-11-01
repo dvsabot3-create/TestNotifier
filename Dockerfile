@@ -8,7 +8,7 @@ WORKDIR /app
 COPY website/package*.json ./
 
 # Install ALL dependencies (needed for build)
-RUN npm ci
+RUN npm install
 
 # Copy website source
 COPY website/ ./
