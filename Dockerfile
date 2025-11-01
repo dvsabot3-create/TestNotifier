@@ -1,5 +1,5 @@
 # Multi-stage build for TestNotifier website
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Install build dependencies for native packages (gifsicle, etc.)
 RUN apk add --no-cache \
@@ -32,7 +32,7 @@ RUN npm run build
 RUN ls -la dist/
 
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -41,7 +41,7 @@ WORKDIR /app
 COPY website/package*.json ./
 
 # Install only production dependencies including express
-RUN npm install express --production
+RUN npm install express --omit=dev
 
 # Copy built assets from builder
 COPY --from=builder /app/dist ./dist
