@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TestNotifier</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 420px;
+      height: 600px;
+      overflow: hidden;
+    }
+    
+    /* Custom animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    /* Scrollbar styling */
+    .scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .scroll-area::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .scroll-area::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+    
+    .scroll-area::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'tn-blue': '#1d70b8',
+            'tn-blue-light': '#2e8bc0',
+            'tn-green': '#28a745',
+            'tn-orange': '#ffc107',
+            'tn-bronze': '#8B4513',
+            'tn-silver': '#C0C0C0',
+            'tn-gold': '#FFD700',
+            'tn-platinum': '#E5E4E2',
+          },
+          fontFamily: {
+            'sans': ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  
+  <!-- Main Container -->
+  <div class="flex flex-col h-full">
+    
+    <!-- Header - Dynamic color based on subscription tier -->
+    <div id="header" class="px-6 py-5 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-sm">
+            <!-- TestNotifier Logo SVG -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+              <rect width="100" height="100" rx="20" fill="#28a745"/>
+              <path d="M30 35h15v30h-15z" fill="white"/>
+              <path d="M55 35v30" stroke="white" stroke-width="15"/>
+              <path d="M70 45l10 10-10 10" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="75" cy="30" r="8" fill="#ffc107"/>
+              <path d="M72 30l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-white font-bold text-xl">TestNotifier</h1>
+            <p class="text-white/80 text-xs" id="subscription-tier">Loading...</p>
+          </div>
+        </div>
+        <button id="settings-btn" class="text-white hover:bg-white/10 p-2 rounded-lg transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+          <div class="text-white font-bold text-2xl" id="monitor-count">0</div>
+          <div class="text-white/80 text-xs">Monitors</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+          <div class="text-[#28a745] font-bold text-2xl" id="slots-found">0</div>
+          <div class="text-white/80 text-xs">Found</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+          <div class="text-white font-bold text-2xl" id="last-check">--</div>
+          <div class="text-white/80 text-xs">Last Check</div>
+        </div>
+      </div>
+
+      <!-- Rebook Quota (Show if not unlimited) -->
+      <div id="quota-indicator" class="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center hidden">
+        <div class="text-white/90 text-xs">
+          Rebooks: <span id="quota-remaining" class="font-bold">0</span>/<span id="quota-total">0</span> remaining
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area - Scrollable -->
+    <div class="flex-1 overflow-y-auto scroll-area bg-gray-50 px-5 py-4 space-y-3">
+      
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-2 gap-2">
+        <button id="add-monitor-btn" class="bg-[#28a745] hover:bg-[#218838] transition-colors text-white py-3 px-4 rounded-xl font-bold text-sm shadow-sm">
+          + Add Monitor
+        </button>
+        <button id="emergency-stop-btn" class="bg-red-600 hover:bg-red-700 transition-colors text-white py-3 px-4 rounded-xl font-bold text-sm shadow-sm">
+          🛑 Stop All
+        </button>
+      </div>
+
+      <!-- Subscription Status Alert (if trial/expired) -->
+      <div id="subscription-alert" class="hidden"></div>
+
+      <!-- Monitors List -->
+      <div id="monitors-list" class="space-y-3">
+        <!-- Monitor cards will be dynamically added here -->
+        <div class="text-center py-8 text-gray-500 text-sm" id="empty-state">
+          <svg class="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          <p class="font-semibold mb-1">No monitors yet</p>
+          <p class="text-xs">Click "Add Monitor" to get started</p>
+        </div>
+      </div>
+
+      <!-- Activity Log (Collapsible) -->
+      <div class="mt-4">
+        <button id="activity-toggle" class="w-full text-left text-sm font-semibold text-gray-700 hover:text-[#1d70b8] transition-colors flex items-center justify-between">
+          <span>Activity Log</span>
+          <svg class="w-4 h-4 transform transition-transform" id="activity-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div id="activity-log" class="mt-2 space-y-1 hidden"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 px-5 py-3 bg-white flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs text-gray-600">
+        <div class="w-2 h-2 rounded-full animate-pulse" id="connection-indicator"></div>
+        <span id="connection-status">Checking...</span>
+      </div>
+      <button id="help-btn" class="text-[#1d70b8] text-xs font-semibold hover:underline">Help</button>
+    </div>
+    
+  </div>
+
+  <!-- Modals Container -->
+  <div id="modals-container"></div>
+
+  <!-- Load Extension Logic -->
+  <script src="popup.js"></script>
+
+</body>
+</html>
