@@ -75,8 +75,8 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     domains:
-      - testnotifier.co.uk
-      - www.testnotifier.co.uk
+      - testnotifier.co.uk  # Primary domain (redirects to www)
+      - www.testnotifier.co.uk  # Main domain
 
 # Optional: Database service
 # databases:
