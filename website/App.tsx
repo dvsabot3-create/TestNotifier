@@ -8,7 +8,7 @@ import { BridgeSection } from './components/figma/BridgeSection';
 import { SolutionSection } from './components/figma/SolutionSection';
 import { DemoSection } from './components/figma/DemoSection';
 import { HowItWorksSection } from './components/figma/HowItWorksSection';
-import { PricingSection } from './components/figma/PricingSection';
+import { PricingSection } from './components/PricingSection';
 import { ComplianceSection } from './components/figma/ComplianceSection';
 import { SocialProofSection } from './components/figma/SocialProofSection';
 import { FAQSection } from './components/figma/FAQSection';
