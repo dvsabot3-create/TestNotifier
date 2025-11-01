@@ -14,15 +14,15 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://testnotifier-website.onrender.com
+        value: https://testnotifier.co.uk
       - key: JWT_SECRET
         value: rnd_2N88OuzmRiGFdX2IAwUlmZ2Usoju_render_jwt_2024_secure_key_for_testnotifier_app_production
       - key: SESSION_SECRET
         value: session_secret_key_for_testnotifier_app_2024_secure_random
       - key: CORS_ORIGIN
-        value: https://testnotifier-website.onrender.com
+        value: https://testnotifier.co.uk
       - key: GOOGLE_CALLBACK_URL
-        value: https://testnotifier-website.onrender.com/api/auth/google/callback
+        value: https://testnotifier.co.uk/api/auth/google/callback
       - key: RATE_LIMIT_WINDOW_MS
         value: 900000
       - key: RATE_LIMIT_MAX_REQUESTS
@@ -34,7 +34,7 @@ services:
       - key: CUSTOM_DOMAIN
         value: testnotifier.co.uk
       - key: API_BASE_URL
-        value: https://testnotifier-website.onrender.com/api
+        value: https://testnotifier.co.uk/api
       # Placeholder values - need to be updated with real credentials
       - key: GOOGLE_CLIENT_ID
         sync: false
@@ -74,6 +74,9 @@ services:
         sync: false
     healthCheckPath: /health
     autoDeploy: true
+    domains:
+      - testnotifier.co.uk
+      - www.testnotifier.co.uk
 
 # Optional: Database service
 # databases:
