@@ -48,13 +48,13 @@ const authHandler = await import('./api/auth/index.js');
 app.use('/api', apiHandler.default);
 app.use('/api/auth', authHandler.default);
 
-// Health check endpoint with SSL debugging
-app.get('/health', (req, res) => {
+// Health check endpoint with SSL debugging (supports both /health and /healthz)
+app.get(['/health', '/healthz'], (req, res) => {
   const protocol = req.headers['x-forwarded-proto'] || req.protocol;
   const host = req.get('host');
   const userAgent = req.get('user-agent');
 
-  console.log(`[Health Check] ${protocol}://${host}/health - User-Agent: ${userAgent}`);
+  console.log(`[Health Check] ${protocol}://${host}${req.path} - User-Agent: ${userAgent}`);
   console.log(`[Health Check] Headers:`, JSON.stringify(req.headers, null, 2));
 
   res.json({
