@@ -34,8 +34,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Handle client-side routing - serve index.html for all routes
-app.get('*', (req, res) => {
+// Handle client-side routing - serve index.html for all other routes
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
