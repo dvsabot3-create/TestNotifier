@@ -1,0 +1,10 @@
+{
+  "originalSVG": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/chrome-version-placeholder.svg",
+  "outputPNG": "/Users/mosman/Documents/DVLA BOT/website/public/assets/screenshots/installation/chrome-version-placeholder.png",
+  "dimensions": {
+    "width": 800,
+    "height": 600
+  },
+  "status": "ready_for_conversion",
+  "notes": "Use proper SVG to PNG converter in production"
+}

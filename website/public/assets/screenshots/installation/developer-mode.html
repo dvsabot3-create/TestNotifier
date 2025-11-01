@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable Developer Mode - TestNotifier Installation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        line-height: 1.5;
+      }
+
+      .chrome-window {
+        width: 1366px;
+        height: 768px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+      }
+
+      .chrome-header {
+        background: #f1f3f4;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid #dadce0;
+      }
+
+      .chrome-tabs {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .chrome-tab {
+        background: white;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #5f6368;
+        border: 1px solid #dadce0;
+        border-bottom: none;
+        position: relative;
+        top: 1px;
+      }
+
+      .chrome-tab.active {
+        color: #1a73e8;
+        font-weight: 500;
+      }
+
+      .chrome-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .chrome-control {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .chrome-control.close { background: #ff5f57; }
+      .chrome-control.minimize { background: #ffbd2e; }
+      .chrome-control.maximize { background: #28ca42; }
+
+      .chrome-content {
+        height: calc(100% - 40px);
+        overflow: hidden;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition: all 0.2s ease;
+      }
+
+      /* Professional styling */
+      h1, h2, h3, h4 {
+        font-weight: 500;
+      }
+
+      button {
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+</head>
+<body>
+    <div class="chrome-window">
+        <!-- Chrome Browser Chrome -->
+        <div class="chrome-header">
+            <div class="chrome-tabs">
+                <div class="chrome-tab active">Enable Developer Mode</div>
+                <div class="chrome-tab">New Tab</div>
+            </div>
+            <div class="chrome-controls">
+                <div class="chrome-control close"></div>
+                <div class="chrome-control minimize"></div>
+                <div class="chrome-control maximize"></div>
+            </div>
+        </div>
+
+        <!-- Chrome Content -->
+        <div class="chrome-content">
+            
+      <!-- Chrome Extensions Header -->
+      <div style="background: #2e8bc0; height: 60px; display: flex; align-items: center; padding: 0 24px;">
+        <h1 style="color: white; font-size: 18px; margin: 0;">Extensions</h1>
+      </div>
+
+      <!-- Extensions Toolbar with Developer Mode Enabled -->
+      <div style="background: #fff3cd; height: 60px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid #ffeaa7;">
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div style="font-size: 14px; color: #495057;">📦 Extensions (12)</div>
+          <div style="background: #28a745; color: white; padding: 6px 12px; border-radius: 16px; font-size: 12px;">Developer mode ON</div>
+        </div>
+
+        <!-- Developer Mode Toggle (ON) -->
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 14px; color: #856404; font-weight: 500;">Developer mode</span>
+          <div style="width: 40px; height: 20px; background: #28a745; border-radius: 10px; position: relative; box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);">
+            <div style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; right: 2px; top: 2px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Extensions Interface -->
+      <div style="padding: 30px; background: white; min-height: 600px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+          <!-- Load Unpacked Button -->
+          <div style="margin-bottom: 30px; text-align: center;">
+            <div style="display: inline-flex; align-items: center; gap: 15px; background: #6f42c1; color: white; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);">
+              <span style="font-size: 20px;">📁</span>
+              <span style="font-size: 16px; font-weight: bold;">Load unpacked</span>
+            </div>
+            <p style="margin-top: 15px; color: #6c757d; font-size: 14px;">Select the folder containing your extension files</p>
+          </div>
+
+          <!-- Instructions -->
+          <div style="background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+            <h3 style="color: #1d70b8; font-size: 16px; margin: 0 0 10px 0;">💡 Developer Mode Enabled</h3>
+            <p style="color: #1565c0; font-size: 14px; margin: 0;">You can now load unpacked extensions and access advanced developer features.</p>
+          </div>
+
+        </div>
+      </div>
+    
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px;">
+        <p>Professional Chrome interface mockup for TestNotifier installation guide</p>
+        <p style="font-size: 12px; margin-top: 5px;">Replace with actual Chrome screenshot from Scribe in production</p>
+    </div>
+</body>
+</html>
+  

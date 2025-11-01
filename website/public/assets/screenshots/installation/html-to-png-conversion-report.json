@@ -1,0 +1,89 @@
+{
+  "timestamp": "2025-10-27T16:20:57.069Z",
+  "summary": {
+    "total": 7,
+    "successful": 7,
+    "failed": 0,
+    "successRate": "100.0%"
+  },
+  "conversions": [
+    {
+      "htmlFile": "chrome-version.html",
+      "pngFile": "chrome-version-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "chrome-version-screenshot-data.json",
+        "chrome-version-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "extensions-page.html",
+      "pngFile": "extensions-page-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "extensions-page-screenshot-data.json",
+        "extensions-page-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "developer-mode.html",
+      "pngFile": "developer-mode-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "developer-mode-screenshot-data.json",
+        "developer-mode-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "load-unpacked.html",
+      "pngFile": "load-unpacked-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "load-unpacked-screenshot-data.json",
+        "load-unpacked-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "extension-verification.html",
+      "pngFile": "extension-verification-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "extension-verification-screenshot-data.json",
+        "extension-verification-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "pin-extension.html",
+      "pngFile": "pin-extension-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "pin-extension-screenshot-data.json",
+        "pin-extension-screenshot-reference.json"
+      ]
+    },
+    {
+      "htmlFile": "disable-extensions.html",
+      "pngFile": "disable-extensions-screenshot.png",
+      "status": "placeholder_created",
+      "dataFiles": [
+        "disable-extensions-screenshot-data.json",
+        "disable-extensions-screenshot-reference.json"
+      ]
+    }
+  ],
+  "failed": [],
+  "recommendations": [
+    "Use Scribe Chrome extension for actual Chrome screenshots",
+    "Implement Puppeteer for automated HTML to PNG conversion",
+    "Optimize final PNG files for web delivery",
+    "Test screenshot loading in React application",
+    "Verify all Scribe tutorial links work correctly"
+  ],
+  "nextSteps": [
+    "1. Install Scribe Chrome extension",
+    "2. Create actual Chrome screenshots",
+    "3. Replace placeholder files with real PNGs",
+    "4. Test complete system integration",
+    "5. Deploy to production environment"
+  ]
+}
