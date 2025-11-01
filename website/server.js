@@ -15,6 +15,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Handle www to non-www redirect
+app.use((req, res, next) => {
+  const host = req.get('host');
+  if (host && host.startsWith('www.')) {
+    const newHost = host.replace('www.', '');
+    const newUrl = `${req.protocol}://${newHost}${req.originalUrl}`;
+    return res.redirect(301, newUrl);
+  }
+  next();
+});
+
 // Import API handlers dynamically
 const apiHandler = await import('./api/index.js');
 const authHandler = await import('./api/auth/index.js');
@@ -38,21 +49,21 @@ const distPath = join(__dirname, 'dist');
 app.use(express.static(distPath));
 
 // Serve index.html for all other routes (SPA support)
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(join(distPath, 'index.html'));
 });
 
 // Catch-all route for SPA support - must be last
-app.use((req, res, next) => {
-  // Don't serve index.html for API routes or health check
-  if (req.path.startsWith('/api') || req.path === '/health') {
+app.use((req, res, _next) => {
+  // Don't serve index.html for API routes only (health should work)
+  if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
   res.sendFile(join(distPath, 'index.html'));
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error('Server error:', err);
   res.status(500).json({
     error: 'Internal server error',
