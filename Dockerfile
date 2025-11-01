@@ -16,6 +16,9 @@ COPY website/ ./
 # Build the application
 RUN npm run build
 
+# List contents of dist to verify build
+RUN ls -la dist/
+
 # Production stage
 FROM node:18-alpine
 
@@ -30,6 +33,9 @@ RUN npm install express --production
 
 # Copy built assets from builder
 COPY --from=builder /app/dist ./dist
+
+# Verify dist was copied
+RUN ls -la dist/ && test -f dist/index.html || (echo "ERROR: dist/index.html not found!" && exit 1)
 
 # Copy server file
 COPY website/server.js ./
