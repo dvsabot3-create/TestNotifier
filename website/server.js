@@ -10,17 +10,31 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enhanced logging for debugging SSL/HTTPS issues
+app.use((req, res, next) => {
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.get('host');
+  console.log(`[${new Date().toISOString()}] ${req.method} ${protocol}://${host}${req.originalUrl}`);
+  console.log(`[${new Date().toISOString()}] Headers:`, JSON.stringify(req.headers, null, 2));
+  next();
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Handle www to non-www redirect
+// Handle www to non-www redirect with proper HTTPS detection
 app.use((req, res, next) => {
   const host = req.get('host');
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+
+  console.log(`[Redirect Check] Host: ${host}, Protocol: ${protocol}, Original: ${req.originalUrl}`);
+
   if (host && host.startsWith('www.')) {
     const newHost = host.replace('www.', '');
-    const newUrl = `${req.protocol}://${newHost}${req.originalUrl}`;
+    const newUrl = `${protocol}://${newHost}${req.originalUrl}`;
+    console.log(`[Redirect] www → non-www: ${newUrl}`);
     return res.redirect(301, newUrl);
   }
   next();
@@ -34,13 +48,30 @@ const authHandler = await import('./api/auth/index.js');
 app.use('/api', apiHandler.default);
 app.use('/api/auth', authHandler.default);
 
-// Health check endpoint
+// Health check endpoint with SSL debugging
 app.get('/health', (req, res) => {
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.get('host');
+  const userAgent = req.get('user-agent');
+
+  console.log(`[Health Check] ${protocol}://${host}/health - User-Agent: ${userAgent}`);
+  console.log(`[Health Check] Headers:`, JSON.stringify(req.headers, null, 2));
+
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
-    frontendUrl: process.env.FRONTEND_URL
+    frontendUrl: process.env.FRONTEND_URL,
+    protocol: protocol,
+    host: host,
+    userAgent: userAgent,
+    headers: req.headers,
+    ssl: {
+      secure: req.secure,
+      tls: false, // Modern Express doesn't expose connection.encrypted
+      forwardedProto: req.headers['x-forwarded-proto'],
+      forwardedFor: req.headers['x-forwarded-for']
+    }
   });
 });
 
