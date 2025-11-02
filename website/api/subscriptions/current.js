@@ -1,4 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const jwt = require('jsonwebtoken');
+const { connectDatabase } = require('../../config/database');
+const User = require('../../models/User');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -6,6 +9,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Connect to database
+    await connectDatabase();
+    
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -14,51 +20,55 @@ export default async function handler(req, res) {
 
     const token = authHeader.substring(7);
     
-    // In a real app, you'd validate the token and get user info
-    // For demo purposes, we'll use a mock customer ID
-    const customerId = 'cus_demo_customer_123';
-
-    // Get customer's active subscription
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: 'active',
-      limit: 1,
-      expand: ['data.items.data.price.product'],
-    });
-
-    if (subscriptions.data.length === 0) {
-      return res.status(404).json({ 
-        error: 'No active subscription found' 
-      });
+    // Verify JWT and get user
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
+    
+    const userEmail = decoded.email || decoded.id;
+    
+    // Get user from database
+    const user = await User.findOne({ 
+      $or: [
+        { email: userEmail },
+        { _id: decoded.id }
+      ]
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const customerId = user.stripeCustomerId;
 
-    const subscription = subscriptions.data[0];
-    const productName = subscription.items.data[0]?.price?.product?.name;
-
-    // Map product names to plan types
-    const planTypeMap = {
-      'One-Off Rebook': 'oneoff',
-      'Starter': 'starter', 
-      'Premium': 'premium',
-      'Professional': 'professional'
-    };
-
-    const planType = planTypeMap[productName] || 'free';
-
-    // Get plan features and limits
+    // Return user's subscription from database
+    const planType = user.subscription.tier;
     const features = getPlanFeatures(planType);
     const limits = getPlanLimits(planType);
+    
+    // Reset daily usage if needed
+    user.resetDailyUsage();
+    await user.save();
 
     const subscriptionData = {
-      id: subscription.id,
-      planType: planType,
-      status: subscription.status,
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      tier: user.subscription.tier,
+      status: user.subscription.status,
+      currentPeriodStart: user.subscription.currentPeriodStart,
+      currentPeriodEnd: user.subscription.currentPeriodEnd,
+      cancelAtPeriodEnd: user.subscription.cancelAtPeriodEnd,
+      trialEnd: user.subscription.trialEnd,
       features: features,
       limits: limits,
-      productName: productName,
+      usage: {
+        rebooksToday: user.usage.rebooksToday,
+        rebooksThisMonth: user.usage.rebooksThisMonth,
+        notificationsToday: user.usage.notificationsToday,
+        canRebook: user.canRebook()
+      },
+      instructorProfile: user.subscription.tier === 'professional' ? user.instructorProfile : null
     };
 
     res.status(200).json({

@@ -81,19 +81,25 @@ class TestNotifierPopup {
           this.subscription = await this.loadSubscriptionFromAPI(result.authToken);
         } catch (error) {
           console.error('Failed to load subscription from API:', error);
-          this.subscription = result.subscription || this.getDemoSubscription(); // Fallback to demo
+          this.subscription = result.subscription || { tier: 'free', status: 'inactive' };
         }
       } else {
-        // Not authenticated - use demo data
-        console.log('⚠️ No auth token - using demo subscription');
-        this.subscription = this.getDemoSubscription(); // DEMO DATA
+        // Not authenticated - use free tier
+        console.log('⚠️ No auth token - user not signed in');
+        this.subscription = { tier: 'free', status: 'inactive' };
       }
       
-      // Use stored data or demo data
-      this.monitors = result.monitors || this.getDemoMonitors(); // DEMO DATA
-      this.stats = result.stats || this.getDemoStats(); // DEMO DATA
+      // Use stored data or start with empty state (PRODUCTION MODE)
+      this.monitors = result.monitors || [];
+      this.stats = result.stats || { 
+        monitorsCount: 0, 
+        slotsFound: 0, 
+        rebooksUsed: 0, 
+        rebooksTotal: 0,
+        lastCheck: null
+      };
       this.settings = result.settings || this.getDefaultSettings();
-      this.activityLog = result.activityLog || this.getDemoActivity(); // DEMO DATA
+      this.activityLog = result.activityLog || [];
       this.riskLevel = result.riskLevel || { level: 'low', percentage: 12 };
       
       // Enforce subscription limits
@@ -107,12 +113,12 @@ class TestNotifierPopup {
       });
     } catch (error) {
       console.error('Error loading data:', error);
-      // Fallback to demo data
-      this.monitors = this.getDemoMonitors();
-      this.stats = this.getDemoStats();
-      this.subscription = this.getDemoSubscription();
+      // Fallback to empty state
+      this.monitors = [];
+      this.stats = { monitorsCount: 0, slotsFound: 0, rebooksUsed: 0, rebooksTotal: 0 };
+      this.subscription = { tier: 'free', status: 'inactive' };
       this.settings = this.getDefaultSettings();
-      this.activityLog = this.getDemoActivity();
+      this.activityLog = [];
     }
   }
 
@@ -304,109 +310,6 @@ class TestNotifierPopup {
     return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
   }
 
-  /**
-   * DEMO DATA - Sample monitors for UI preview
-   * Remove this in production - will be replaced with real monitors from storage
-   */
-  getDemoMonitors() {
-    return [
-      {
-        id: 'demo-1',
-        name: 'Sarah Johnson',
-        licence: 'JOHNS123456J99AB',
-        email: 'sarah.j@demo.com', // DEMO
-        phone: '+447123456789', // DEMO
-        currentTestDate: '2025-03-15',
-        preferredTestDate: '2025-02-20',
-        targetDate: '2025-03-15', // Backward compat
-        location: 'Manchester',
-        testCentres: ['Manchester (Bury Old Road)', 'Manchester (Cheetham Hill)'],
-        notifications: { email: true, sms: true, whatsapp: false, browser: true },
-        status: 'active',
-        slotsFound: 3,
-        foundSlots: [
-          { date: '2025-02-10', time: '09:00', centre: 'Manchester (Bury Old Road)' },
-          { date: '2025-02-12', time: '14:30', centre: 'Manchester (Bury Old Road)' },
-          { date: '2025-02-15', time: '11:00', centre: 'Manchester (Cheetham Hill)' }
-        ],
-        lastUpdate: new Date(Date.now() - 120000).toISOString()
-      },
-      {
-        id: 'demo-2',
-        name: 'James Wilson',
-        licence: 'WILSO987654W99BC',
-        email: 'james.w@demo.com', // DEMO
-        phone: '+447987654321', // DEMO
-        currentTestDate: '2025-04-22',
-        preferredTestDate: null, // No preference - any earlier slot
-        targetDate: '2025-04-22',
-        location: 'London',
-        testCentres: ['London (Wood Green)', 'London (Palmers Green)'],
-        notifications: { email: true, sms: true, whatsapp: false, browser: true },
-        status: 'active',
-        slotsFound: 0,
-        foundSlots: [],
-        lastUpdate: new Date(Date.now() - 300000).toISOString()
-      },
-      {
-        id: 'demo-3',
-        name: 'Emily Davis',
-        licence: 'DAVIS555555D99CD',
-        email: 'emily.d@demo.com', // DEMO
-        phone: '+447555123456', // DEMO
-        currentTestDate: '2025-05-10',
-        preferredTestDate: '2025-04-25',
-        targetDate: '2025-05-10',
-        location: 'Birmingham',
-        testCentres: ['Birmingham (Garretts Green)', 'Birmingham (Kingstanding)'],
-        notifications: { email: true, sms: true, whatsapp: true, browser: true }, // Professional plan
-        status: 'active',
-        slotsFound: 1,
-        foundSlots: [
-          { date: '2025-04-20', time: '10:30', centre: 'Birmingham (Garretts Green)' }
-        ],
-        lastUpdate: new Date(Date.now() - 180000).toISOString()
-      }
-    ];
-  }
-
-  /**
-   * DEMO DATA - Sample stats
-   */
-  getDemoStats() {
-    return {
-      monitorsCount: 3,
-      slotsFound: 4,
-      rebooksUsed: 2,
-      rebooksTotal: 5,
-      lastCheck: new Date(Date.now() - 120000).toISOString()
-    };
-  }
-
-  /**
-   * DEMO DATA - Sample subscription
-   */
-  getDemoSubscription() {
-    return {
-      tier: 'premium',
-      status: 'active',
-      rebooksRemaining: 3,
-      rebooksTotal: 5
-    };
-  }
-
-  /**
-   * DEMO DATA - Sample activity log
-   */
-  getDemoActivity() {
-    return [
-      { time: new Date(Date.now() - 120000).toISOString(), message: 'Found 3 slots for Sarah Johnson' },
-      { time: new Date(Date.now() - 240000).toISOString(), message: 'Checked Manchester test centres' },
-      { time: new Date(Date.now() - 360000).toISOString(), message: 'Monitor added: James Wilson' },
-      { time: new Date(Date.now() - 480000).toISOString(), message: 'Settings updated' },
-      { time: new Date(Date.now() - 600000).toISOString(), message: 'Extension started' }
-    ];
-  }
 
   /**
    * Default settings
@@ -2839,10 +2742,12 @@ class TestNotifierPopup {
   async saveInstructorProfile() {
     const adiNumber = document.getElementById('adi-number').value.trim();
     const baseLocation = document.getElementById('base-location').value.trim();
+    const dvsaEmail = document.getElementById('dvsa-email').value.trim();
+    const dvsaPassword = document.getElementById('dvsa-password').value;
     const travelRadius = this.instructorProfile?.travelRadius || 50;
     
-    if (!adiNumber) {
-      this.showAlert('Validation Error', '⚠️ Please enter your ADI number');
+    if (!adiNumber || !baseLocation) {
+      this.showAlert('Validation Error', '⚠️ Please enter ADI number and base location');
       return;
     }
     
@@ -2852,12 +2757,43 @@ class TestNotifierPopup {
       return;
     }
     
+    // DVSA credentials are required for auto-rebooking (Premium/Professional tiers)
+    if (this.subscription.tier === 'premium' || this.subscription.tier === 'professional') {
+      if (!dvsaEmail || !dvsaPassword) {
+        this.showAlert('DVSA Credentials Required', '⚠️ DVSA website login is required for auto-rebooking feature');
+        return;
+      }
+      
+      // Validate DVSA email
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dvsaEmail)) {
+        this.showAlert('Invalid Email', '⚠️ Please enter a valid DVSA account email');
+        return;
+      }
+    }
+    
     const profile = {
       adiNumber,
       baseLocation,
       travelRadius,
       updatedAt: new Date().toISOString()
     };
+    
+    // Encrypt and save DVSA credentials if provided
+    if (dvsaEmail && dvsaPassword) {
+      try {
+        const encryptedPassword = await this.encryptPassword(dvsaPassword);
+        profile.dvsaCredentials = {
+          email: dvsaEmail,
+          encryptedPassword: encryptedPassword,
+          lastUpdated: new Date().toISOString()
+        };
+        console.log('✅ DVSA credentials encrypted and saved');
+      } catch (error) {
+        console.error('❌ Failed to encrypt DVSA credentials:', error);
+        this.showAlert('Encryption Error', '⚠️ Failed to secure DVSA credentials. Please try again.');
+        return;
+      }
+    }
     
     // Save to storage
     await chrome.storage.local.set({ instructorProfile: profile });
@@ -2872,6 +2808,128 @@ class TestNotifierPopup {
     this.showAlert('Profile Saved', '✅ Instructor profile has been saved successfully.');
     
     console.log('✅ Instructor profile saved:', profile);
+  }
+  
+  /**
+   * Encrypt password using Web Crypto API
+   */
+  async encryptPassword(password) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      
+      // Generate a key from a passphrase (in production, derive from user session)
+      const passphrase = 'testnotifier-secure-key-' + (await this.getDeviceId());
+      const passphraseKey = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(passphrase),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+      
+      // Derive encryption key
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: encoder.encode('testnotifier-salt'),
+          iterations: 100000,
+          hash: 'SHA-256'
+        },
+        passphraseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+      
+      // Generate IV
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      
+      // Encrypt
+      const encrypted = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        data
+      );
+      
+      // Combine IV and encrypted data
+      const combined = new Uint8Array(iv.length + encrypted.byteLength);
+      combined.set(iv, 0);
+      combined.set(new Uint8Array(encrypted), iv.length);
+      
+      // Convert to base64
+      return btoa(String.fromCharCode(...combined));
+    } catch (error) {
+      console.error('Encryption error:', error);
+      throw new Error('Failed to encrypt password');
+    }
+  }
+  
+  /**
+   * Decrypt password using Web Crypto API
+   */
+  async decryptPassword(encryptedPassword) {
+    try {
+      // Decode from base64
+      const combined = Uint8Array.from(atob(encryptedPassword), c => c.charCodeAt(0));
+      
+      // Extract IV and encrypted data
+      const iv = combined.slice(0, 12);
+      const encrypted = combined.slice(12);
+      
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      
+      // Generate same key
+      const passphrase = 'testnotifier-secure-key-' + (await this.getDeviceId());
+      const passphraseKey = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(passphrase),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+      
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: encoder.encode('testnotifier-salt'),
+          iterations: 100000,
+          hash: 'SHA-256'
+        },
+        passphraseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+      
+      // Decrypt
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        encrypted
+      );
+      
+      return decoder.decode(decrypted);
+    } catch (error) {
+      console.error('Decryption error:', error);
+      throw new Error('Failed to decrypt password');
+    }
+  }
+  
+  /**
+   * Get unique device ID for encryption
+   */
+  async getDeviceId() {
+    const stored = await chrome.storage.local.get(['deviceId']);
+    if (stored.deviceId) {
+      return stored.deviceId;
+    }
+    
+    // Generate new device ID
+    const deviceId = crypto.randomUUID();
+    await chrome.storage.local.set({ deviceId });
+    return deviceId;
   }
 
   /**

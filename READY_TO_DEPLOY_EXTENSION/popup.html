@@ -762,6 +762,42 @@
         <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Your Approved Driving Instructor number</div>
       </div>
       
+      <!-- DVSA Website Credentials (for Auto-Rebooking) -->
+      <div class="settings-group" style="margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e5e7eb;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d70b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <label class="settings-label" style="margin: 0;">DVSA Website Login</label>
+        </div>
+        <div style="font-size: 11px; color: #6b7280; margin-bottom: 12px;">Required for auto-rebooking feature • Stored encrypted in your browser only</div>
+        
+        <input type="email" id="dvsa-email" placeholder="Your DVSA account email" style="
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 13px;
+          margin-bottom: 8px;
+        ">
+        
+        <input type="password" id="dvsa-password" placeholder="Your DVSA account password" style="
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 13px;
+        ">
+        
+        <div style="font-size: 10px; color: #059669; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Encrypted with AES-256 • Never sent to our servers
+        </div>
+      </div>
+      
       <!-- Base Location -->
       <div class="settings-group">
         <label class="settings-label">Base Location</label>

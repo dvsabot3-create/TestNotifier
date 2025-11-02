@@ -561,9 +561,9 @@ export function EnhancedSubscriptionModal({
                 <Clock className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900 text-sm mb-1">30-Day Guarantee</p>
+                <p className="font-semibold text-gray-900 text-sm mb-1">Cancellation Policy</p>
                 <p className="text-xs text-gray-600">
-                  Not satisfied? Get a full refund within 30 days, no questions asked.
+                  No refunds. Cancel anytime - you keep full access until your billing period ends.
                 </p>
               </div>
             </div>
