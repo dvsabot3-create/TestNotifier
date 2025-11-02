@@ -38,9 +38,9 @@ const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'oneoff',
     name: 'One-Off Rebook',
-    price: 25.00,
+    price: 30.00,
     interval: 'once',
-    description: 'Single rebook attempt',
+    description: 'Single urgent rebook',
     features: [
       'One rebook attempt',
       'Monitor 1 test center',
@@ -49,13 +49,13 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'No recurring charges',
       '5 daily notifications max'
     ],
-    buttonText: 'Pay £25 Once',
+    buttonText: 'Pay £30 Once',
     priceId: 'price_1SMSgh0xPOxdopWPJGe2jU3M'
   },
   {
     id: 'starter',
     name: 'Starter',
-    price: 19.00,
+    price: 25.00,
     interval: 'month',
     description: 'For occasional needs',
     features: [
@@ -66,7 +66,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       '3-day preview access',
       'Cancel anytime'
     ],
-    buttonText: 'Subscribe Now',
+    buttonText: 'Subscribe - £25/month',
     priceId: 'price_1SMSgi0xPOxdopWPUKIVTL2s',
     rebooksPerDay: 2,
     notificationsPerDay: 10
@@ -74,7 +74,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'premium',
     name: 'Premium',
-    price: 29.00,
+    price: 45.00,
     interval: 'month',
     description: 'Best for active learners',
     features: [
@@ -88,7 +88,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Cancel anytime'
     ],
     popular: true,
-    buttonText: 'Subscribe Now',
+    buttonText: 'Subscribe - £45/month',
     priceId: 'price_1SMSgj0xPOxdopWPWujQSxG8',
     rebooksPerDay: 5,
     notificationsPerDay: 25
@@ -96,7 +96,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'professional',
     name: 'Professional',
-    price: 89.00,
+    price: 80.00,
     interval: 'month',
     description: 'For driving instructors',
     features: [
@@ -109,7 +109,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Priority phone support',
       'Stealth mode (anti-detection)'
     ],
-    buttonText: 'Subscribe Now',
+    buttonText: 'Subscribe - £80/month',
     priceId: 'price_1SMSgl0xPOxdopWPQqujVkKi'
   }
 ];
