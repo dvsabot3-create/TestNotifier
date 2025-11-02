@@ -15,14 +15,10 @@ class SecureConfig {
    */
   validateEnvironment() {
     const requiredVars = [
-      'POSTGRES_DB',
-      'POSTGRES_USER',
-      'POSTGRES_PASSWORD',
+      'DATABASE_URL',
       'JWT_SECRET',
-      'JWT_REFRESH_SECRET',
       'STRIPE_SECRET_KEY',
-      'STRIPE_WEBHOOK_SECRET',
-      'EMAIL_SMTP_PASS'
+      'STRIPE_WEBHOOK_SECRET'
     ];
 
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
@@ -31,30 +27,27 @@ class SecureConfig {
       throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
     }
 
-    // Validate JWT secrets are strong enough
+    // Validate JWT secret is strong enough
     if (process.env.JWT_SECRET.length < 32) {
       throw new Error('JWT_SECRET must be at least 32 characters long');
     }
 
-    if (process.env.JWT_REFRESH_SECRET.length < 32) {
-      throw new Error('JWT_REFRESH_SECRET must be at least 32 characters long');
+    // Warn if email not configured (not critical)
+    if (!process.env.EMAIL_SMTP_PASS) {
+      console.warn('⚠️  EMAIL_SMTP_PASS not set - contact form will not work');
     }
   }
 
   /**
-   * Get database configuration
+   * Get database configuration (MongoDB)
    */
   getDatabaseConfig() {
     return {
-      host: process.env.POSTGRES_HOST || 'localhost',
-      port: process.env.POSTGRES_PORT || 5432,
-      database: process.env.POSTGRES_DB,
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      max: 20, // Maximum number of clients in the pool
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      url: process.env.DATABASE_URL,
+      options: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
     };
   }
 
@@ -64,9 +57,9 @@ class SecureConfig {
   getJwtConfig() {
     return {
       secret: process.env.JWT_SECRET,
-      refreshSecret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
-      refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+      refreshSecret: process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+      refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
     };
   }
 
