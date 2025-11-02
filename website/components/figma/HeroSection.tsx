@@ -139,9 +139,9 @@ export function HeroSection() {
           </div>
 
           {/* Right: Interactive Extension Preview */}
-          <div className="hero-visual relative z-10">
+          <div className="hero-visual relative z-20">
             {/* Main Extension Window */}
-            <div className="extension-window relative bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 shadow-2xl w-full min-h-[420px] lg:min-h-[560px]">
+            <div className="extension-window relative bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 shadow-2xl w-full min-h-[420px] lg:min-h-[560px] z-30">
               {/* Window Header */}
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
@@ -215,27 +215,27 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Floating Notification Cards */}
-            <div className="floating-notification-1 absolute -top-6 -right-6 bg-white rounded-2xl p-4 shadow-2xl max-w-xs hidden lg:block border border-gray-100">
+            {/* Floating Notification Cards - Properly positioned */}
+            <div className="floating-notification-1 absolute top-4 right-4 bg-white rounded-2xl p-4 shadow-2xl max-w-xs hidden xl:block border border-gray-100 z-10 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#28a745] to-[#20c997] rounded-xl flex items-center justify-center flex-shrink-0">
                   <Bell className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-[#1d70b8] mb-1">New slot available!</div>
+                  <div className="text-[#1d70b8] font-semibold mb-1">New slot available!</div>
                   <div className="text-sm text-gray-600">London Wembley</div>
                   <div className="text-xs text-gray-500 mt-1">2 minutes ago</div>
                 </div>
               </div>
             </div>
 
-            <div className="floating-notification-2 absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-2xl max-w-xs hidden lg:block border border-gray-100">
+            <div className="floating-notification-2 absolute bottom-4 left-4 bg-white rounded-2xl p-4 shadow-2xl max-w-xs hidden xl:block border border-gray-100 z-10 animate-fade-in-up" style={{animationDelay: '0.8s'}}>
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#1d70b8] to-[#2e8bc0] rounded-xl flex items-center justify-center flex-shrink-0">
                   <Bell className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-[#1d70b8] mb-1">3 new slots found</div>
+                  <div className="text-[#1d70b8] font-semibold mb-1">3 new slots found</div>
                   <div className="text-sm text-gray-600">Birmingham South</div>
                   <div className="text-xs text-gray-500 mt-1">Just now</div>
                 </div>
