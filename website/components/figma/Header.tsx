@@ -58,18 +58,18 @@ export function Header() {
     <header
       className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-xl shadow-lg py-3'
-          : 'bg-transparent py-3'
+          ? 'bg-white/95 backdrop-blur-xl shadow-md py-2'
+          : 'bg-transparent py-2'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={handleLogoClick}>
+          <div className="flex items-center gap-2 cursor-pointer group" onClick={handleLogoClick}>
             <img
               src="/assets/logos/tn-logov2.png"
               alt="TN Test Notifier"
-              className="w-auto h-8 transition-opacity group-hover:opacity-80 cursor-pointer"
+              className="w-auto h-7 transition-opacity group-hover:opacity-80 cursor-pointer"
             />
           </div>
 
