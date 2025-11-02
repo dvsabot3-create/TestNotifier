@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { Check, X, Star, Sparkles, Shield, Zap, Loader2 } from "lucide-react";
 import { loadStripe } from '@stripe/stripe-js';
 import { STRIPE_CONFIG } from "../../lib/stripe-config";
+import { logCritical } from "../../utils/logger";
 
 export function PricingSection() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export function PricingSection() {
         throw new Error(stripeError.message);
       }
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      logCritical(error, 'Stripe checkout session creation');
       alert('There was an error processing your request. Please try again or contact support.');
     } finally {
       setLoading(null);
