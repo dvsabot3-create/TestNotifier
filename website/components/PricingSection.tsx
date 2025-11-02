@@ -12,37 +12,11 @@ export function PricingSection() {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('');
 
-  // Check URL parameters for plan selection (from auth redirect)
+  // URL parameters handled by AuthCallbackPage now - direct to Stripe
+  // This hook is kept for backwards compatibility but does nothing
   useEffect(() => {
-    // Small delay to ensure auth state is updated
-    const timer = setTimeout(() => {
-      const params = new URLSearchParams(window.location.search);
-      const planParam = params.get('plan');
-      const checkoutParam = params.get('checkout');
-      
-      if (planParam && checkoutParam === 'true') {
-        console.log('Detected checkout flow for plan:', planParam);
-        setSelectedPlan(planParam);
-        
-        // Check authentication
-        const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
-        const userData = localStorage.getItem('user_data') || localStorage.getItem('user');
-        
-        if (token && userData) {
-          console.log('User authenticated, opening subscription modal');
-          setShowSubscriptionModal(true);
-        } else {
-          console.log('User not authenticated, opening auth modal');
-          localStorage.setItem('checkout_in_progress', 'true');
-          setShowAuthModal(true);
-        }
-        
-        // Clean up URL parameters
-        window.history.replaceState({}, '', window.location.pathname);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
+    // AuthCallbackPage now handles direct checkout after auth
+    // No need for modal if user already selected a plan
   }, [isAuthenticated]);
 
   const handlePlanSelect = (planId: string) => {
