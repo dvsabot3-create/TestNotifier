@@ -6,8 +6,12 @@
  * - Communication between popup and content script
  * - Monitoring coordination
  * - State management
- * - Notifications
+ * - Multi-channel notifications (Email/SMS/WhatsApp)
  */
+
+// Import notifications manager
+importScripts('notifications/notifications-manager.js');
+const notificationsManager = new NotificationsManager();
 
 // Extension state
 let state = {
@@ -332,6 +336,24 @@ async function handleBookSlot(slot, monitorId) {
         action: 'autoBook',
         slot: slot,
         monitor: monitor
+      }, async (response) => {
+        if (response && response.success) {
+          // Booking confirmed - send confirmation notifications
+          try {
+            await notificationsManager.sendBookingConfirmation(
+              monitor,
+              {
+                date: slot.date,
+                time: slot.time,
+                centre: slot.centre
+              },
+              state.subscription
+            );
+            console.log('✅ Booking confirmation notifications sent');
+          } catch (error) {
+            console.error('Failed to send booking confirmation:', error);
+          }
+        }
       });
       
       chrome.tabs.onUpdated.removeListener(listener);
@@ -462,14 +484,14 @@ async function performCheck() {
 }
 
 /**
- * Handle found slots
+ * Handle found slots - REAL MULTI-CHANNEL NOTIFICATIONS
  */
-function handleSlotsFound(slotsData) {
+async function handleSlotsFound(slotsData) {
   console.log('🎉 Slots found!', slotsData);
   
-  slotsData.forEach(({ monitorId, slots }) => {
+  for (const { monitorId, slots } of slotsData) {
     const monitor = state.monitors.find(m => m.id === monitorId);
-    if (!monitor) return;
+    if (!monitor) continue;
     
     // Update monitor with found slots
     monitor.foundSlots = slots;
@@ -479,29 +501,53 @@ function handleSlotsFound(slotsData) {
     // Update total stats
     state.stats.slotsFound += slots.length;
     
-    // Send notification
-    if (state.settings.browserNotifications) {
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icons/icon128.png',
-        title: `${slots.length} Slot${slots.length !== 1 ? 's' : ''} Found!`,
-        message: `Found for ${monitor.name} - Click to book`,
-        priority: 2
-      });
-    }
-    
-    // Play sound
-    if (state.settings.soundAlerts) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]) {
-          chrome.tabs.sendMessage(tabs[0].id, { action: 'playNotificationSound' });
+    // Send multi-channel notifications
+    for (const slot of slots) {
+      try {
+        console.log(`📢 Sending notifications for ${monitor.name} - ${slot.date} at ${slot.time}`);
+        
+        const results = await notificationsManager.sendSlotFoundNotification(
+          monitor,
+          slot,
+          state.subscription
+        );
+        
+        console.log('📊 Notification results:', results);
+        
+        // Log any errors
+        if (results.errors.length > 0) {
+          console.error('⚠️ Some notifications failed:', results.errors);
         }
-      });
+        
+        // Play sound if enabled (for browser notifications)
+        if (results.browser && state.settings.soundAlerts) {
+          try {
+            const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tabs[0]) {
+              await chrome.tabs.sendMessage(tabs[0].id, { action: 'playNotificationSound' });
+            }
+          } catch (error) {
+            console.log('Could not play sound (no active tab)');
+          }
+        }
+        
+      } catch (error) {
+        console.error('❌ Error sending notifications for slot:', error);
+        
+        // Fallback to basic browser notification
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon128.png',
+          title: `Slot Found for ${monitor.name}!`,
+          message: `${slot.date} at ${slot.time} - ${slot.centre}`,
+          priority: 2
+        });
+      }
     }
-  });
+  }
   
   // Save updated monitors
-  chrome.storage.local.set({ 
+  await chrome.storage.local.set({ 
     monitors: state.monitors,
     stats: state.stats
   });
