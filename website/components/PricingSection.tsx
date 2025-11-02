@@ -31,6 +31,7 @@ export function PricingSection() {
 
   const plans = [
     {
+      id: "oneoff",
       name: "One-Off Rescue",
       subtitle: "Single urgent rebook",
       price: "£30",
@@ -53,6 +54,7 @@ export function PricingSection() {
       badge: null
     },
     {
+      id: "starter",
       name: "Starter",
       subtitle: "For occasional needs",
       price: "£25",
@@ -70,13 +72,14 @@ export function PricingSection() {
         { text: "Auto-rebooking", included: false },
         { text: "Cancel anytime", included: true }
       ],
-      cta: "Start 7-Day Trial",
+      cta: "Subscribe - £25/month",
       highlighted: false,
       color: "#718096",
       badge: null,
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
+      id: "premium",
       name: "Premium",
       subtitle: "Best for active learners",
       price: "£45",
@@ -95,13 +98,14 @@ export function PricingSection() {
         { text: "24/7 email support", included: true },
         { text: "7-day trial (monitoring only)", included: true }
       ],
-      cta: "Start Premium Trial",
+      cta: "Subscribe - £45/month",
       highlighted: true,
       color: "#8b5cf6",
       badge: "Most Popular",
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
+      id: "professional",
       name: "Professional",
       subtitle: "Ultimate for instructors",
       price: "£80",
@@ -120,7 +124,7 @@ export function PricingSection() {
         { text: "Priority phone support", included: true },
         { text: "14-day trial (includes 2 rebooks)", included: true }
       ],
-      cta: "Start Professional Trial",
+      cta: "Subscribe - £80/month",
       highlighted: false,
       color: "#1d70b8",
       badge: "Ultimate Professional"
