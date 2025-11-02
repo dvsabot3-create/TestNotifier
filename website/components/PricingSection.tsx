@@ -244,14 +244,14 @@ export function PricingSection() {
                   borderWidth: plan.highlighted ? '0' : '2px',
                   borderColor: plan.color
                 }}
-                onClick={() => handlePlanSelect(plan.name.toLowerCase().replace(/[^a-z]/g, ''))}
+                onClick={() => handlePlanSelect(plan.id)}
               >
                 {plan.cta}
               </Button>
               
               {plan.highlighted && (
                 <p className="text-xs text-center text-[#6c757d] mt-3">
-                  Start 7-day monitoring trial
+                  Includes 7-day trial
                 </p>
               )}
             </Card>
