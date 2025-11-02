@@ -337,6 +337,9 @@ class TestNotifierPopup {
     // Activity tab
     this.attachActivityListeners();
     
+    // Instructor tab (Professional only)
+    this.attachInstructorListeners();
+    
     // Footer
     this.attachFooterListeners();
     
@@ -472,6 +475,35 @@ class TestNotifierPopup {
   }
 
   /**
+   * Instructor tab listeners (Professional only)
+   */
+  attachInstructorListeners() {
+    // Travel radius slider
+    const radiusSlider = document.getElementById('slider-radius');
+    if (radiusSlider) {
+      radiusSlider.addEventListener('click', (e) => this.updateTravelRadius(e));
+    }
+    
+    // Bulk pause button
+    const bulkPauseBtn = document.getElementById('bulk-pause');
+    if (bulkPauseBtn) {
+      bulkPauseBtn.addEventListener('click', () => this.bulkPauseMonitors());
+    }
+    
+    // Bulk resume button
+    const bulkResumeBtn = document.getElementById('bulk-resume');
+    if (bulkResumeBtn) {
+      bulkResumeBtn.addEventListener('click', () => this.bulkResumeMonitors());
+    }
+    
+    // Save instructor profile
+    const saveInstructorBtn = document.getElementById('btn-save-instructor');
+    if (saveInstructorBtn) {
+      saveInstructorBtn.addEventListener('click', () => this.saveInstructorProfile());
+    }
+  }
+
+  /**
    * Footer listeners
    */
   attachFooterListeners() {
@@ -525,6 +557,7 @@ class TestNotifierPopup {
     this.updateMonitorsList();
     this.updateSettings();
     this.updateActivityLog();
+    this.updateInstructorStats(); // Update instructor stats if Professional tier
   }
 
   /**
@@ -541,6 +574,16 @@ class TestNotifierPopup {
         'professional': 'Professional Plan'
       };
       tierElement.textContent = tierNames[this.subscription.tier] || 'DVSA Test Monitor';
+    }
+    
+    // Show/hide Instructor tab for Professional tier
+    const instructorTab = document.getElementById('tab-instructor');
+    if (instructorTab) {
+      if (this.subscription?.tier === 'professional') {
+        instructorTab.style.display = 'block';
+      } else {
+        instructorTab.style.display = 'none';
+      }
     }
   }
 
@@ -2167,6 +2210,136 @@ class TestNotifierPopup {
     this.updateUI();
     this.addActivity(`✅ Added monitor for ${name}`);
     this.showAlert('Monitor Added!', `Now monitoring test slots for ${name} at ${window.selectedCentres.length} test centre${window.selectedCentres.length !== 1 ? 's' : ''}.`);
+  }
+
+  /**
+   * Update travel radius (Instructor)
+   */
+  updateTravelRadius(e) {
+    const slider = e.currentTarget;
+    const rect = slider.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    
+    // Map to 10-100km range
+    const radius = Math.round(10 + (percentage * 90));
+    
+    const fill = slider.querySelector('.slider-fill');
+    const value = document.getElementById('radius-value');
+    
+    if (fill) fill.style.width = `${percentage * 100}%`;
+    if (value) value.textContent = `${radius}km`;
+    
+    // Save to temp (will be saved on "Save Instructor Profile")
+    this.instructorProfile = this.instructorProfile || {};
+    this.instructorProfile.travelRadius = radius;
+  }
+
+  /**
+   * Bulk pause all monitors
+   */
+  async bulkPauseMonitors() {
+    const activeCount = this.monitors.filter(m => m.status === 'active').length;
+    
+    if (activeCount === 0) {
+      this.showAlert('No Active Monitors', 'All monitors are already paused.');
+      return;
+    }
+    
+    if (confirm(`Pause all ${activeCount} active monitor${activeCount !== 1 ? 's' : ''}?`)) {
+      this.monitors.forEach(m => m.status = 'paused');
+      await chrome.storage.local.set({ monitors: this.monitors });
+      
+      // Send to background.js
+      await chrome.runtime.sendMessage({
+        action: 'bulkPause'
+      });
+      
+      this.updateMonitorsList();
+      this.addActivity(`⏸ Paused ${activeCount} monitor${activeCount !== 1 ? 's' : ''}`);
+      this.showAlert('Monitors Paused', `✅ Paused ${activeCount} monitor${activeCount !== 1 ? 's' : ''}`);
+    }
+  }
+
+  /**
+   * Bulk resume all monitors
+   */
+  async bulkResumeMonitors() {
+    const pausedCount = this.monitors.filter(m => m.status === 'paused').length;
+    
+    if (pausedCount === 0) {
+      this.showAlert('No Paused Monitors', 'All monitors are already active.');
+      return;
+    }
+    
+    if (confirm(`Resume all ${pausedCount} paused monitor${pausedCount !== 1 ? 's' : ''}?`)) {
+      this.monitors.forEach(m => m.status = 'active');
+      await chrome.storage.local.set({ monitors: this.monitors });
+      
+      // Send to background.js
+      await chrome.runtime.sendMessage({
+        action: 'bulkResume'
+      });
+      
+      this.updateMonitorsList();
+      this.addActivity(`▶️ Resumed ${pausedCount} monitor${pausedCount !== 1 ? 's' : ''}`);
+      this.showAlert('Monitors Resumed', `✅ Resumed ${pausedCount} monitor${pausedCount !== 1 ? 's' : ''}`);
+    }
+  }
+
+  /**
+   * Save instructor profile
+   */
+  async saveInstructorProfile() {
+    const adiNumber = document.getElementById('adi-number').value.trim();
+    const baseLocation = document.getElementById('base-location').value.trim();
+    const travelRadius = this.instructorProfile?.travelRadius || 50;
+    
+    if (!adiNumber) {
+      this.showAlert('Validation Error', '⚠️ Please enter your ADI number');
+      return;
+    }
+    
+    // Validate ADI number (6 digits)
+    if (!/^\d{6}$/.test(adiNumber)) {
+      this.showAlert('Invalid ADI Number', '⚠️ ADI number must be 6 digits');
+      return;
+    }
+    
+    const profile = {
+      adiNumber,
+      baseLocation,
+      travelRadius,
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Save to storage
+    await chrome.storage.local.set({ instructorProfile: profile });
+    
+    // Send to background.js
+    await chrome.runtime.sendMessage({
+      action: 'updateInstructorProfile',
+      profile
+    });
+    
+    this.addActivity(`📋 Instructor profile updated (ADI: ${adiNumber})`);
+    this.showAlert('Profile Saved', '✅ Instructor profile has been saved successfully.');
+    
+    console.log('✅ Instructor profile saved:', profile);
+  }
+
+  /**
+   * Update instructor stats
+   */
+  updateInstructorStats() {
+    const totalPupils = this.monitors.length;
+    const activePupils = this.monitors.filter(m => m.status === 'active').length;
+    
+    const totalEl = document.getElementById('total-pupils');
+    const activeEl = document.getElementById('active-pupils');
+    
+    if (totalEl) totalEl.textContent = totalPupils;
+    if (activeEl) activeEl.textContent = activePupils;
   }
 }
 

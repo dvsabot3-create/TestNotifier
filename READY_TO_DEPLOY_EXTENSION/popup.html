@@ -627,6 +627,7 @@
       <button class="tab active" data-tab="monitors">Monitors</button>
       <button class="tab" data-tab="settings">Settings</button>
       <button class="tab" data-tab="activity">Activity</button>
+      <button class="tab" id="tab-instructor" data-tab="instructor" style="display: none;">Instructor</button>
     </div>
     
     <!-- Tab: Monitors -->
@@ -701,6 +702,82 @@
       <div id="activity-log">
         <!-- Activity items will be injected here -->
       </div>
+    </div>
+    
+    <!-- Tab: Instructor (Professional Only) -->
+    <div class="tab-content" id="tab-instructor">
+      <div class="section-header">
+        <span>Instructor Profile</span>
+        <span style="font-size: 10px; background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px;">Professional</span>
+      </div>
+      
+      <!-- ADI Number -->
+      <div class="settings-group">
+        <label class="settings-label">ADI Number</label>
+        <input type="text" id="adi-number" placeholder="123456" style="
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 13px;
+          font-family: monospace;
+        ">
+        <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Your Approved Driving Instructor number</div>
+      </div>
+      
+      <!-- Base Location -->
+      <div class="settings-group">
+        <label class="settings-label">Base Location</label>
+        <input type="text" id="base-location" placeholder="Manchester" style="
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 13px;
+        ">
+        <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Your primary teaching area</div>
+      </div>
+      
+      <!-- Travel Radius -->
+      <div class="settings-group">
+        <label class="settings-label">Travel Radius</label>
+        <div class="slider-container">
+          <div class="slider" id="slider-radius">
+            <div class="slider-fill" style="width: 50%;"></div>
+          </div>
+          <div class="slider-value" id="radius-value">50km</div>
+        </div>
+        <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Maximum distance you'll travel for tests</div>
+      </div>
+      
+      <!-- Multi-Pupil Stats -->
+      <div class="card" style="margin-top: 12px;">
+        <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px; font-weight: 600;">MULTI-PUPIL STATISTICS</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <div style="font-size: 20px; font-weight: 700; color: #1d70b8;" id="total-pupils">0</div>
+            <div style="font-size: 11px; color: #6b7280;">Total Pupils</div>
+          </div>
+          <div>
+            <div style="font-size: 20px; font-weight: 700; color: #10b981;" id="active-pupils">0</div>
+            <div style="font-size: 11px; color: #6b7280;">Active</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bulk Operations -->
+      <div class="section-header" style="margin-top: 16px;">
+        <span>Bulk Operations</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button class="btn" id="bulk-pause" style="background: #f59e0b; color: white; padding: 10px; font-size: 12px;">⏸ Pause All</button>
+        <button class="btn" id="bulk-resume" style="background: #10b981; color: white; padding: 10px; font-size: 12px;">▶️ Resume All</button>
+      </div>
+      
+      <!-- Save Profile -->
+      <button class="btn btn-primary" id="btn-save-instructor" style="margin-top: 16px;">
+        Save Instructor Profile
+      </button>
     </div>
     
   </div>
