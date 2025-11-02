@@ -78,13 +78,36 @@ const AuthCallbackPage: React.FC = () => {
 
         // Save authentication data (compatible with auth library)
         localStorage.setItem('token', accessToken);
+        localStorage.setItem('auth_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
         localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('user_data', JSON.stringify(userData));
 
         console.log('OAuth Callback - User data saved to localStorage');
 
-        // Navigate to dashboard on success
+        // Check if user was in checkout flow
+        const checkoutInProgress = localStorage.getItem('checkout_in_progress');
+        const selectedPlan = localStorage.getItem('selected_plan');
+        const redirectUrl = searchParams.get('redirect');
+
+        // Clear checkout flag
+        if (checkoutInProgress) {
+          localStorage.removeItem('checkout_in_progress');
+        }
+
+        // Determine where to redirect
         setTimeout(() => {
-          navigate('/dashboard');
+          if (checkoutInProgress && selectedPlan) {
+            // User was trying to subscribe - go back to pricing with plan selected
+            console.log('Redirecting to checkout for plan:', selectedPlan);
+            navigate(`/?plan=${selectedPlan}&checkout=true`);
+          } else if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {
+            // Custom redirect URL from OAuth
+            navigate(redirectUrl);
+          } else {
+            // Default to dashboard
+            navigate('/dashboard');
+          }
         }, 500);
 
       } catch (callbackError) {

@@ -78,32 +78,71 @@ router.get('/google', (req, res, next) => {
 });
 
 router.get('/google/callback', (req, res, next) => {
-  passport.authenticate('google', { session: false }, async (err, user, info) => {
+  passport.authenticate('google', { session: false }, async (err, userData, info) => {
     try {
-      if (err || !user) {
+      if (err || !userData) {
         console.error('Google OAuth callback error:', err);
         const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
+      }
+
+      // Connect to database
+      await connectDatabase();
+
+      // Find or create user in database
+      let user = await User.findOne({ googleId: userData.googleId });
+      
+      if (!user) {
+        // Check if user exists by email
+        user = await User.findOne({ email: userData.email.toLowerCase() });
+        
+        if (user) {
+          // Link Google account to existing user
+          user.googleId = userData.googleId;
+          user.firstName = user.firstName || userData.firstName;
+          user.lastName = user.lastName || userData.lastName;
+          await user.save();
+        } else {
+          // Create new user
+          user = await User.create({
+            googleId: userData.googleId,
+            email: userData.email.toLowerCase(),
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            subscription: {
+              tier: 'free',
+              status: 'active'
+            }
+          });
+        }
       }
 
       if (!process.env.JWT_SECRET) {
         throw new Error('JWT_SECRET environment variable is not set');
       }
       const jwtSecret = process.env.JWT_SECRET;
-      const accessToken = jwt.sign({ id: user.googleId, email: user.email }, jwtSecret, { expiresIn: '7d' });
-      const refreshToken = jwt.sign({ id: user.googleId }, jwtSecret, { expiresIn: '30d' });
+      const accessToken = jwt.sign(
+        { 
+          id: user._id, 
+          email: user.email,
+          googleId: user.googleId 
+        }, 
+        jwtSecret, 
+        { expiresIn: '7d' }
+      );
+      const refreshToken = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '30d' });
 
-      const redirectUrl = req.query.state || '/dashboard';
+      const redirectUrl = req.query.state || '/';
       const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
       const callbackUrl = new URL('/auth/callback', frontendUrl);
       callbackUrl.searchParams.set('accessToken', accessToken);
       callbackUrl.searchParams.set('refreshToken', refreshToken);
-      callbackUrl.searchParams.set('userId', user.googleId);
+      callbackUrl.searchParams.set('userId', user._id.toString());
       callbackUrl.searchParams.set('email', user.email);
       callbackUrl.searchParams.set('firstName', user.firstName);
       callbackUrl.searchParams.set('lastName', user.lastName);
-      if (user.avatar) callbackUrl.searchParams.set('avatar', user.avatar);
-
+      callbackUrl.searchParams.set('redirect', redirectUrl);
+      
       res.redirect(callbackUrl.toString());
     } catch (error) {
       console.error('Google OAuth token generation error:', error);

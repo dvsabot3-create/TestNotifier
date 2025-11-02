@@ -13,19 +13,36 @@ export function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState<string>('');
 
   const handlePlanSelect = (planId: string) => {
+    // Store selected plan in localStorage for persistence across auth flow
+    localStorage.setItem('selected_plan', planId);
+    localStorage.setItem('plan_selection_time', Date.now().toString());
+    
+    setSelectedPlan(planId);
+
     if (!isAuthenticated) {
+      // Store that we're in checkout flow
+      localStorage.setItem('checkout_in_progress', 'true');
       setShowAuthModal(true);
       return;
     }
 
-    setSelectedPlan(planId);
+    // User is authenticated, show subscription modal
     setShowSubscriptionModal(true);
   };
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
-    if (selectedPlan) {
+    
+    // Check if there's a selected plan from before auth
+    const storedPlan = localStorage.getItem('selected_plan');
+    const checkoutInProgress = localStorage.getItem('checkout_in_progress');
+    
+    if (checkoutInProgress && storedPlan) {
+      setSelectedPlan(storedPlan);
       setShowSubscriptionModal(true);
+      
+      // Clear the checkout flag
+      localStorage.removeItem('checkout_in_progress');
     }
   };
 
