@@ -978,7 +978,7 @@ class TestNotifierPopup {
     const modal = this.createModal(title, `
       <div style="text-align: center; padding: 20px 10px;">
         <p style="color: #374151; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">${message}</p>
-        <button onclick="window.popupApp.closeModal()" style="
+        <button class="alert-ok-btn" style="
           background: #1d70b8;
           color: white;
           border: none;
@@ -991,6 +991,14 @@ class TestNotifierPopup {
     `, '400px');
     
     document.body.appendChild(modal);
+    
+    // Attach OK button click listener
+    setTimeout(() => {
+      const okBtn = modal.querySelector('.alert-ok-btn');
+      if (okBtn) {
+        okBtn.addEventListener('click', () => this.closeModal());
+      }
+    }, 0);
   }
 
   /**
@@ -1020,8 +1028,10 @@ class TestNotifierPopup {
       padding: 20px;
     `;
     
+    const modalId = 'modal-' + Date.now();
+    
     modal.innerHTML = `
-      <div style="
+      <div id="${modalId}" style="
         background: white;
         border-radius: 12px;
         max-width: ${maxWidth};
@@ -1038,13 +1048,13 @@ class TestNotifierPopup {
           justify-content: space-between;
         ">
           <h3 style="color: white; font-weight: 700; font-size: 16px; margin: 0;">${title}</h3>
-          <button onclick="window.popupApp.closeModal()" style="
+          <button class="close-modal-btn" style="
             background: none;
             border: none;
             color: white;
             cursor: pointer;
-            padding: 4px;
-            font-size: 20px;
+            padding: 4px 8px;
+            font-size: 24px;
             line-height: 1;
           ">×</button>
         </div>
@@ -1054,9 +1064,18 @@ class TestNotifierPopup {
       </div>
     `;
     
+    // Close on background click
     modal.addEventListener('click', (e) => {
       if (e.target === modal) this.closeModal();
     });
+    
+    // Close on X button click
+    setTimeout(() => {
+      const closeBtn = modal.querySelector('.close-modal-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => this.closeModal());
+      }
+    }, 0);
     
     return modal;
   }
@@ -1070,24 +1089,632 @@ class TestNotifierPopup {
   }
 
   /**
-   * Placeholder methods (will be implemented)
+   * Show monitors list
    */
-  showMonitorsList() { this.showAlert('Monitors', `You are monitoring ${this.monitors.length} test${this.monitors.length !== 1 ? 's' : ''}.`); }
-  showFoundSlots() { this.showAlert('Found Slots', `${this.stats.slotsFound} slot${this.stats.slotsFound !== 1 ? 's' : ''} have been found across all monitors.`); }
-  showRebookQuota() { 
-    const remaining = this.subscription.rebooksTotal - (this.stats.rebooksUsed || 0);
-    this.showAlert('Rebook Quota', `You have ${remaining} rebook${remaining !== 1 ? 's' : ''} remaining out of ${this.subscription.rebooksTotal} total.`); 
+  showMonitorsList() {
+    const content = `
+      <div>
+        ${this.monitors.map((m, i) => `
+          <div style="padding: 12px; background: #f9fafb; border-radius: 8px; margin-bottom: 8px; cursor: pointer;" onclick="window.popupApp.showMonitorDetails(${i}); window.popupApp.closeModal();">
+            <div style="font-weight: 600; color: #111827;">${m.name}</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">${m.location} • ${this.formatDate(m.targetDate)}</div>
+            <div style="font-size: 11px; color: ${m.status === 'active' ? '#059669' : '#dc2626'}; margin-top: 4px; font-weight: 600;">
+              ${m.status === 'active' ? '✓ Active' : '⏸ Paused'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    const modal = this.createModal('All Monitors', content, '450px');
+    document.body.appendChild(modal);
   }
-  showCheckHistory() { this.showAlert('Check History', `Last check was performed ${this.formatTimestamp(this.stats.lastCheck)} ago.`); }
-  showRiskBreakdown() { this.showAlert('Risk Analysis', `Current risk level: ${this.riskLevel.level.toUpperCase()} (${this.riskLevel.percentage}%). The extension is operating safely.`); }
-  showMonitorDetails(index) { this.showAlert('Monitor Details', `Details for ${this.monitors[index].name} - Full implementation coming soon.`); }
-  showSlotDetails(index) { this.showAlert('Slots Found', `${this.monitors[index].slotsFound} slot${this.monitors[index].slotsFound !== 1 ? 's' : ''} found for ${this.monitors[index].name}.`); }
+
+  /**
+   * Show found slots
+   */
+  showFoundSlots() {
+    const allSlots = this.monitors.flatMap(m => 
+      m.foundSlots.map(slot => ({ ...slot, monitorName: m.name }))
+    );
+    
+    const content = allSlots.length === 0 ? `
+      <div style="text-align: center; padding: 30px; color: #6b7280;">
+        <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+        <div style="font-weight: 600;">No slots found yet</div>
+        <div style="font-size: 13px; margin-top: 8px;">We're actively searching...</div>
+      </div>
+    ` : `
+      <div>
+        ${allSlots.map(slot => `
+          <div style="padding: 12px; background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; margin-bottom: 8px;">
+            <div style="font-weight: 600; color: #065f46;">${slot.monitorName}</div>
+            <div style="font-size: 13px; color: #047857; margin-top: 4px;">📅 ${this.formatDate(slot.date)} at ${slot.time}</div>
+            <div style="font-size: 12px; color: #059669; margin-top: 2px;">📍 ${slot.centre}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    const modal = this.createModal('Found Slots', content, '450px');
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Show rebook quota
+   */
+  showRebookQuota() {
+    const remaining = this.subscription.rebooksTotal - (this.stats.rebooksUsed || 0);
+    const content = `
+      <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 48px; font-weight: 700; color: #1d70b8; margin-bottom: 12px;">${remaining}/${this.subscription.rebooksTotal}</div>
+        <div style="font-size: 16px; color: #374151; margin-bottom: 20px;">Rebooks Remaining</div>
+        <div style="background: #eff6ff; padding: 16px; border-radius: 8px; text-align: left; font-size: 13px; color: #1e40af;">
+          <div style="margin-bottom: 8px;"><strong>Plan:</strong> ${this.subscription.tier}</div>
+          <div style="margin-bottom: 8px;"><strong>Used:</strong> ${this.stats.rebooksUsed || 0} rebooks</div>
+          <div><strong>Remaining:</strong> ${remaining} rebooks</div>
+        </div>
+      </div>
+    `;
+    const modal = this.createModal('Rebook Quota', content, '400px');
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Show check history
+   */
+  showCheckHistory() {
+    const content = `
+      <div style="padding: 10px;">
+        <div style="font-size: 14px; color: #374151; margin-bottom: 16px;">
+          Last check was performed <strong>${this.formatTimestamp(this.stats.lastCheck)}</strong> ago.
+        </div>
+        <div style="background: #f9fafb; padding: 12px; border-radius: 8px; font-size: 12px; color: #6b7280;">
+          Automatic checks run every ${this.settings.checkInterval} seconds when enabled.
+        </div>
+      </div>
+    `;
+    const modal = this.createModal('Check History', content, '400px');
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Show risk breakdown
+   */
+  showRiskBreakdown() {
+    const content = `
+      <div style="padding: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 40px; font-weight: 700; color: ${this.riskLevel.level === 'low' ? '#10b981' : this.riskLevel.level === 'medium' ? '#fbbf24' : '#ef4444'};">
+            ${this.riskLevel.percentage}%
+          </div>
+          <div style="font-size: 18px; font-weight: 600; color: #374151;">${this.riskLevel.level.toUpperCase()} RISK</div>
+        </div>
+        <div style="background: #f9fafb; padding: 16px; border-radius: 8px; font-size: 13px; color: #374151; line-height: 1.6;">
+          <div style="margin-bottom: 12px;"><strong>Status:</strong> The extension is operating ${this.riskLevel.level === 'low' ? 'safely' : this.riskLevel.level === 'medium' ? 'with caution' : 'at high risk'}.</div>
+          <div><strong>Recommendation:</strong> ${this.riskLevel.level === 'low' ? 'Continue monitoring as normal.' : this.riskLevel.level === 'medium' ? 'Consider reducing check frequency.' : 'Use Emergency Stop immediately.'}</div>
+        </div>
+      </div>
+    `;
+    const modal = this.createModal('Risk Analysis', content, '400px');
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Show monitor details
+   */
+  showMonitorDetails(index) {
+    const monitor = this.monitors[index];
+    const content = `
+      <div style="font-size: 13px;">
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Student Name</div>
+          <div style="font-weight: 600; color: #111827;">${monitor.name}</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">License Number</div>
+          <div style="font-family: monospace; color: #374151;">${monitor.licence}</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Current Test Date</div>
+          <div style="color: #374151;">${this.formatDate(monitor.targetDate)}</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Test Centres</div>
+          ${monitor.testCentres.map(c => `<div style="color: #374151; font-size: 12px; margin-top: 2px;">• ${c}</div>`).join('')}
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Status</div>
+          <div style="display: inline-block; padding: 4px 12px; background: ${monitor.status === 'active' ? '#d1fae5' : '#fee2e2'}; color: ${monitor.status === 'active' ? '#065f46' : '#991b1b'}; border-radius: 4px; font-size: 12px; font-weight: 600;">
+            ${monitor.status === 'active' ? '✓ Active' : '⏸ Paused'}
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Slots Found</div>
+          <div style="font-weight: 700; font-size: 20px; color: ${monitor.slotsFound > 0 ? '#059669' : '#6b7280'};">${monitor.slotsFound}</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px;">
+          <button class="edit-monitor-btn" style="padding: 10px; background: #1d70b8; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Edit</button>
+          <button class="delete-monitor-btn" style="padding: 10px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Delete</button>
+        </div>
+      </div>
+    `;
+    const modal = this.createModal(`Monitor: ${monitor.name}`, content, '450px');
+    document.body.appendChild(modal);
+    
+    // Attach button listeners
+    setTimeout(() => {
+      const editBtn = modal.querySelector('.edit-monitor-btn');
+      const deleteBtn = modal.querySelector('.delete-monitor-btn');
+      
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          this.closeModal();
+          this.showAlert('Edit Monitor', 'Edit functionality coming in next update.');
+        });
+      }
+      
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Are you sure you want to delete monitor for ${monitor.name}?`)) {
+            this.monitors.splice(index, 1);
+            this.stats.monitorsCount = this.monitors.length;
+            chrome.storage.local.set({ monitors: this.monitors, stats: this.stats });
+            this.closeModal();
+            this.updateUI();
+            this.addActivity(`Deleted monitor for ${monitor.name}`);
+            this.showAlert('Monitor Deleted', `Monitor for ${monitor.name} has been removed.`);
+          }
+        });
+      }
+    }, 0);
+  }
+
+  /**
+   * Show slot details
+   */
+  showSlotDetails(index) {
+    const monitor = this.monitors[index];
+    if (monitor.foundSlots.length === 0) {
+      this.showAlert('No Slots', `No slots found yet for ${monitor.name}.`);
+      return;
+    }
+    
+    const content = `
+      <div>
+        ${monitor.foundSlots.map(slot => `
+          <div style="padding: 14px; background: #d1fae5; border: 2px solid #10b981; border-radius: 10px; margin-bottom: 10px;">
+            <div style="font-weight: 700; font-size: 16px; color: #065f46; margin-bottom: 6px;">
+              ${this.formatDate(slot.date)} at ${slot.time}
+            </div>
+            <div style="font-size: 13px; color: #047857; margin-bottom: 8px;">
+              📍 ${slot.centre}
+            </div>
+            <button style="width: 100%; padding: 10px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+              Book This Slot
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    const modal = this.createModal(`Slots for ${monitor.name}`, content, '450px');
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Toggle monitor status
+   */
   toggleMonitor(index) {
     this.monitors[index].status = this.monitors[index].status === 'active' ? 'paused' : 'active';
+    chrome.storage.local.set({ monitors: this.monitors });
     this.updateMonitorsList();
     this.addActivity(`Monitor ${this.monitors[index].status} for ${this.monitors[index].name}`);
   }
-  showAddMonitorModal() { this.showAlert('Add Monitor', 'Add monitor form will open here. Full implementation coming soon.'); }
+
+  /**
+   * FULL Add Monitor Modal with UK Test Centres and Validation
+   */
+  showAddMonitorModal() {
+    // UK Test Centres Database
+    const testCentres = [
+      // London & South East
+      { name: 'London (Wood Green)', postcode: 'N22', area: 'London', region: 'London' },
+      { name: 'London (Palmers Green)', postcode: 'N13', area: 'London', region: 'London' },
+      { name: 'London (Barking)', postcode: 'IG11', area: 'London', region: 'London' },
+      { name: 'London (Hendon)', postcode: 'NW4', area: 'London', region: 'London' },
+      { name: 'London (Southall)', postcode: 'UB2', area: 'London', region: 'London' },
+      { name: 'London (Mill Hill)', postcode: 'NW7', area: 'London', region: 'London' },
+      { name: 'London (Wanstead)', postcode: 'E11', area: 'London', region: 'London' },
+      
+      // Manchester & North West
+      { name: 'Manchester (Bury Old Road)', postcode: 'M25', area: 'Manchester', region: 'North West' },
+      { name: 'Manchester (Cheetham Hill)', postcode: 'M8', area: 'Manchester', region: 'North West' },
+      { name: 'Manchester (Belle Vue)', postcode: 'M12', area: 'Manchester', region: 'North West' },
+      { name: 'Liverpool (Norris Green)', postcode: 'L11', area: 'Liverpool', region: 'North West' },
+      { name: 'Liverpool (Speke)', postcode: 'L24', area: 'Liverpool', region: 'North West' },
+      { name: 'Preston', postcode: 'PR2', area: 'Preston', region: 'North West' },
+      { name: 'Bolton', postcode: 'BL3', area: 'Bolton', region: 'North West' },
+      
+      // Birmingham & West Midlands
+      { name: 'Birmingham (Garretts Green)', postcode: 'B33', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Kingstanding)', postcode: 'B44', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Shirley)', postcode: 'B90', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Coventry', postcode: 'CV6', area: 'Coventry', region: 'West Midlands' },
+      { name: 'Wolverhampton', postcode: 'WV11', area: 'Wolverhampton', region: 'West Midlands' },
+      
+      // Leeds & Yorkshire
+      { name: 'Leeds (Harehills)', postcode: 'LS8', area: 'Leeds', region: 'Yorkshire' },
+      { name: 'Leeds (Horsforth)', postcode: 'LS18', area: 'Leeds', region: 'Yorkshire' },
+      { name: 'Sheffield (Handsworth)', postcode: 'S13', area: 'Sheffield', region: 'Yorkshire' },
+      { name: 'Bradford', postcode: 'BD7', area: 'Bradford', region: 'Yorkshire' },
+      { name: 'York', postcode: 'YO30', area: 'York', region: 'Yorkshire' },
+      
+      // Scotland
+      { name: 'Glasgow (Shieldhall)', postcode: 'G51', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Edinburgh (Currie)', postcode: 'EH14', area: 'Edinburgh', region: 'Scotland' },
+      { name: 'Aberdeen', postcode: 'AB21', area: 'Aberdeen', region: 'Scotland' },
+      { name: 'Dundee', postcode: 'DD2', area: 'Dundee', region: 'Scotland' },
+      
+      // Wales
+      { name: 'Cardiff (Llanishen)', postcode: 'CF14', area: 'Cardiff', region: 'Wales' },
+      { name: 'Swansea', postcode: 'SA5', area: 'Swansea', region: 'Wales' },
+      { name: 'Newport', postcode: 'NP19', area: 'Newport', region: 'Wales' },
+      
+      // South West
+      { name: 'Bristol (Brislington)', postcode: 'BS4', area: 'Bristol', region: 'South West' },
+      { name: 'Plymouth', postcode: 'PL7', area: 'Plymouth', region: 'South West' },
+      { name: 'Exeter', postcode: 'EX2', area: 'Exeter', region: 'South West' },
+      
+      // North East
+      { name: 'Newcastle (Gosforth)', postcode: 'NE3', area: 'Newcastle', region: 'North East' },
+      { name: 'Sunderland', postcode: 'SR5', area: 'Sunderland', region: 'North East' },
+      { name: 'Middlesbrough', postcode: 'TS5', area: 'Middlesbrough', region: 'North East' },
+      
+      // East Midlands
+      { name: 'Nottingham (Colwick)', postcode: 'NG4', area: 'Nottingham', region: 'East Midlands' },
+      { name: 'Leicester (Wigston)', postcode: 'LE18', area: 'Leicester', region: 'East Midlands' },
+      { name: 'Derby', postcode: 'DE24', area: 'Derby', region: 'East Midlands' },
+      
+      // East of England
+      { name: 'Norwich', postcode: 'NR6', area: 'Norwich', region: 'East of England' },
+      { name: 'Ipswich', postcode: 'IP3', area: 'Ipswich', region: 'East of England' },
+      { name: 'Cambridge', postcode: 'CB1', area: 'Cambridge', region: 'East of England' }
+    ];
+    
+    window.allTestCentres = testCentres;
+    window.selectedCentres = [];
+    
+    const content = `
+      <form id="add-monitor-form" style="font-size: 13px;">
+        <!-- Student Name -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Student Name *</label>
+          <input type="text" id="student-name" required style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          " placeholder="e.g., Sarah Johnson">
+          <div id="name-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- License Number -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Driving License Number *</label>
+          <input type="text" id="license-number" required maxlength="16" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+          " placeholder="SMITH123456AB9CD">
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">16 characters (5 letters + 6 digits + 5 characters)</div>
+          <div id="license-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Current Test Date -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Current Test Date *</label>
+          <input type="date" id="test-date" required style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+          <div id="date-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Test Centres Search -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Test Centres to Monitor *</label>
+          <input type="text" id="centre-search" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          " placeholder="Search by name, area, or postcode...">
+          <div id="search-results" style="
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+          "></div>
+          <div id="selected-centres" style="margin-top: 8px;"></div>
+          <div id="centres-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Submit Buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px;">
+          <button type="button" class="cancel-btn" style="
+            padding: 12px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          ">Cancel</button>
+          <button type="submit" style="
+            padding: 12px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          ">Add Monitor</button>
+        </div>
+      </form>
+    `;
+    
+    const modal = this.createModal('Add New Monitor', content, '550px');
+    document.body.appendChild(modal);
+    
+    // Setup form functionality
+    this.setupAddMonitorForm(modal);
+  }
+
+  /**
+   * Setup Add Monitor Form with validation
+   */
+  setupAddMonitorForm(modal) {
+    const nameInput = modal.querySelector('#student-name');
+    const licenseInput = modal.querySelector('#license-number');
+    const dateInput = modal.querySelector('#test-date');
+    const searchInput = modal.querySelector('#centre-search');
+    const searchResults = modal.querySelector('#search-results');
+    const selectedCentres = modal.querySelector('#selected-centres');
+    const form = modal.querySelector('#add-monitor-form');
+    const cancelBtn = modal.querySelector('.cancel-btn');
+    
+    // Set minimum date to today
+    dateInput.min = new Date().toISOString().split('T')[0];
+    
+    // License validation
+    licenseInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+      const value = e.target.value;
+      const error = modal.querySelector('#license-error');
+      
+      if (value.length === 16) {
+        // UK license format: 5 letters + 6 digits + 5 characters
+        const pattern = /^[A-Z]{5}\d{6}[A-Z\d]{5}$/;
+        if (!pattern.test(value)) {
+          error.textContent = '❌ Invalid format. Should be: 5 letters + 6 digits + 5 characters';
+          error.style.display = 'block';
+        } else {
+          error.style.display = 'none';
+        }
+      } else if (value.length > 0 && value.length < 16) {
+        error.textContent = `Need ${16 - value.length} more characters`;
+        error.style.display = 'block';
+      } else {
+        error.style.display = 'none';
+      }
+    });
+    
+    // Test centre search
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      
+      if (query.length < 2) {
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      const filtered = window.allTestCentres.filter(centre =>
+        centre.name.toLowerCase().includes(query) ||
+        centre.area.toLowerCase().includes(query) ||
+        centre.postcode.toLowerCase().includes(query) ||
+        centre.region.toLowerCase().includes(query)
+      );
+      
+      if (filtered.length === 0) {
+        searchResults.innerHTML = '<div style="padding: 12px; color: #6b7280; font-size: 12px;">No test centres found</div>';
+      } else {
+        searchResults.innerHTML = filtered.slice(0, 10).map(centre => `
+          <div class="centre-option" data-centre='${JSON.stringify(centre)}' style="
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s;
+          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            <div style="font-weight: 600; font-size: 13px; color: #111827;">${centre.name}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">${centre.postcode} • ${centre.area} • ${centre.region}</div>
+          </div>
+        `).join('');
+      }
+      
+      searchResults.style.display = 'block';
+      
+      // Attach click listeners
+      setTimeout(() => {
+        searchResults.querySelectorAll('.centre-option').forEach(el => {
+          el.addEventListener('click', () => {
+            const centre = JSON.parse(el.getAttribute('data-centre'));
+            if (!window.selectedCentres.find(c => c.name === centre.name)) {
+              window.selectedCentres.push(centre);
+              this.updateSelectedCentres(modal);
+            }
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+          });
+        });
+      }, 0);
+    });
+    
+    // Cancel button
+    cancelBtn.addEventListener('click', () => this.closeModal());
+    
+    // Form submission
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleAddMonitor(modal);
+    });
+  }
+
+  /**
+   * Update selected centres display
+   */
+  updateSelectedCentres(modal) {
+    const container = modal.querySelector('#selected-centres');
+    container.innerHTML = window.selectedCentres.map((centre, i) => `
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #eff6ff;
+        border: 1px solid: #3b82f6;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+      ">
+        <div style="font-size: 12px; font-weight: 600; color: #1e40af;">${centre.name}</div>
+        <button type="button" class="remove-centre" data-index="${i}" style="
+          background: none;
+          border: none;
+          color: #dc2626;
+          cursor: pointer;
+          font-size: 16px;
+          padding: 0 4px;
+        ">×</button>
+      </div>
+    `).join('');
+    
+    // Attach remove listeners
+    setTimeout(() => {
+      container.querySelectorAll('.remove-centre').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          window.selectedCentres.splice(index, 1);
+          this.updateSelectedCentres(modal);
+        });
+      });
+    }, 0);
+  }
+
+  /**
+   * Handle add monitor form submission
+   */
+  handleAddMonitor(modal) {
+    const name = modal.querySelector('#student-name').value.trim();
+    const license = modal.querySelector('#license-number').value.trim();
+    const date = modal.querySelector('#test-date').value;
+    
+    // Validation
+    const nameError = modal.querySelector('#name-error');
+    const licenseError = modal.querySelector('#license-error');
+    const dateError = modal.querySelector('#date-error');
+    const centresError = modal.querySelector('#centres-error');
+    
+    let hasError = false;
+    
+    // Name validation
+    if (name.length < 2) {
+      nameError.textContent = '❌ Name must be at least 2 characters';
+      nameError.style.display = 'block';
+      hasError = true;
+    } else {
+      nameError.style.display = 'none';
+    }
+    
+    // License validation
+    const licensePattern = /^[A-Z]{5}\d{6}[A-Z\d]{5}$/;
+    if (!licensePattern.test(license)) {
+      licenseError.textContent = '❌ Invalid license format';
+      licenseError.style.display = 'block';
+      hasError = true;
+    } else {
+      // Check for duplicates
+      const duplicate = this.monitors.find(m => m.licence === license);
+      if (duplicate) {
+        licenseError.textContent = `❌ Duplicate! ${duplicate.name} already uses this license`;
+        licenseError.style.display = 'block';
+        hasError = true;
+      } else {
+        licenseError.style.display = 'none';
+      }
+    }
+    
+    // Date validation
+    if (!date || new Date(date) < new Date()) {
+      dateError.textContent = '❌ Date must be in the future';
+      dateError.style.display = 'block';
+      hasError = true;
+    } else {
+      dateError.style.display = 'none';
+    }
+    
+    // Centres validation
+    if (window.selectedCentres.length === 0) {
+      centresError.textContent = '❌ Select at least one test centre';
+      centresError.style.display = 'block';
+      hasError = true;
+    } else {
+      centresError.style.display = 'none';
+    }
+    
+    if (hasError) return;
+    
+    // Create new monitor
+    const newMonitor = {
+      id: `monitor-${Date.now()}`,
+      name,
+      licence: license,
+      targetDate: date,
+      location: window.selectedCentres[0].area,
+      testCentres: window.selectedCentres.map(c => c.name),
+      notifications: { email: true, sms: true, browser: true },
+      status: 'active',
+      slotsFound: 0,
+      foundSlots: [],
+      lastUpdate: new Date().toISOString()
+    };
+    
+    // Add to monitors
+    this.monitors.push(newMonitor);
+    this.stats.monitorsCount = this.monitors.length;
+    
+    // Save to storage
+    chrome.storage.local.set({ monitors: this.monitors, stats: this.stats });
+    
+    // Send to background.js
+    chrome.runtime.sendMessage({
+      action: 'addMonitor',
+      monitor: newMonitor
+    });
+    
+    // Close modal and update UI
+    this.closeModal();
+    this.updateUI();
+    this.addActivity(`✅ Added monitor for ${name}`);
+    this.showAlert('Monitor Added!', `Now monitoring test slots for ${name} at ${window.selectedCentres.length} test centre${window.selectedCentres.length !== 1 ? 's' : ''}.`);
+  }
 }
 
 // Initialize popup
