@@ -21,6 +21,7 @@
         "https://driverpracticaltest.dvsa.gov.uk/*"
       ],
       "js": [
+        "stealth/stealth-manager.js",
         "content-script.js",
         "dvsa-auto-booking.js"
       ],

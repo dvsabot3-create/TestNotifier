@@ -13,11 +13,36 @@
  * - background.js (coordination)
  */
 
+// Try to import stealth manager if available
+let stealthManager = null;
+try {
+  if (typeof StealthManager !== 'undefined') {
+    stealthManager = new StealthManager();
+  }
+} catch (e) {
+  console.log('Stealth manager not available, using basic mode');
+}
+
 class DVSAAutoBooking {
   constructor() {
     this.baseURL = 'https://driverpracticaltest.dvsa.gov.uk';
     this.currentStep = 0;
     this.maxRetries = 3;
+    this.stealthMode = !!stealthManager;
+  }
+
+  /**
+   * Initialize stealth if available
+   */
+  async initializeStealth() {
+    if (stealthManager && !stealthManager.isActive) {
+      try {
+        await stealthManager.initialize();
+        console.log('✅ Stealth protection active');
+      } catch (error) {
+        console.warn('⚠️ Stealth initialization failed, continuing without:', error);
+      }
+    }
   }
 
   /**
@@ -26,6 +51,9 @@ class DVSAAutoBooking {
   async performAutoBooking(slot, monitor) {
     console.log('🚀 Starting auto-booking for', monitor.name);
     console.log('📅 Slot:', slot);
+    
+    // Initialize stealth protection if available
+    await this.initializeStealth();
     
     try {
       // Step 1: Detect current page

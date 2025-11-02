@@ -34,6 +34,15 @@ let state = {
   riskLevel: {
     level: 'low',
     percentage: 12
+  },
+  riskMetrics: {
+    totalChecks: 0,
+    successfulChecks: 0,
+    failedChecks: 0,
+    lastCheckTime: null,
+    averageCheckInterval: 30000,
+    checksInLastHour: 0,
+    suspiciousPatterns: 0
   }
 };
 
@@ -471,7 +480,13 @@ async function performCheck() {
     
     if (response?.slotsFound) {
       // Process found slots
-      handleSlotsFound(response.slotsFound);
+      await handleSlotsFound(response.slotsFound);
+      
+      // Update risk metrics (successful check with slots found)
+      updateRiskMetrics({ success: true, slotsFound: true });
+    } else {
+      // Update risk metrics (successful check, no slots)
+      updateRiskMetrics({ success: true, slotsFound: false });
     }
     
     // Update last check time
@@ -480,6 +495,9 @@ async function performCheck() {
     
   } catch (error) {
     console.error('Error performing check:', error);
+    
+    // Update risk metrics (failed check)
+    updateRiskMetrics({ success: false });
   }
 }
 
@@ -562,10 +580,120 @@ chrome.notifications.onClicked.addListener((notificationId) => {
 });
 
 /**
+ * Calculate real-time risk level based on activity metrics
+ */
+function calculateRiskLevel() {
+  const metrics = state.riskMetrics;
+  let riskScore = 0;
+  
+  // Factor 1: Check frequency (0-25 points)
+  const timeSinceLastCheck = Date.now() - (metrics.lastCheckTime || Date.now());
+  if (timeSinceLastCheck < 10000) { // Less than 10 seconds
+    riskScore += 25;
+  } else if (timeSinceLastCheck < 20000) {
+    riskScore += 15;
+  } else if (timeSinceLastCheck < 30000) {
+    riskScore += 5;
+  }
+  
+  // Factor 2: Success rate (0-20 points)
+  const successRate = metrics.totalChecks > 0 
+    ? (metrics.successfulChecks / metrics.totalChecks) 
+    : 0.5;
+  
+  if (successRate > 0.9) {
+    riskScore += 20; // Too high success = suspicious
+  } else if (successRate < 0.1) {
+    riskScore += 15; // Too many failures = suspicious
+  }
+  
+  // Factor 3: Checks in last hour (0-25 points)
+  if (metrics.checksInLastHour > 120) { // More than 2 per minute
+    riskScore += 25;
+  } else if (metrics.checksInLastHour > 60) {
+    riskScore += 15;
+  } else if (metrics.checksInLastHour > 30) {
+    riskScore += 5;
+  }
+  
+  // Factor 4: Suspicious patterns (0-15 points)
+  riskScore += Math.min(15, metrics.suspiciousPatterns * 3);
+  
+  // Factor 5: Time of day (0-15 points)
+  const hour = new Date().getHours();
+  if (hour >= 2 && hour <= 5) {
+    riskScore += 15; // Unusual hours
+  } else if (hour >= 22 || hour <= 1) {
+    riskScore += 5;
+  }
+  
+  // Determine risk level
+  let level = 'low';
+  if (riskScore >= 70) {
+    level = 'high';
+  } else if (riskScore >= 40) {
+    level = 'medium';
+  }
+  
+  state.riskLevel = {
+    level,
+    percentage: Math.min(100, riskScore),
+    lastCalculated: new Date().toISOString()
+  };
+  
+  // Save to storage
+  chrome.storage.local.set({ riskLevel: state.riskLevel });
+  
+  return state.riskLevel;
+}
+
+/**
+ * Update risk metrics after check
+ */
+function updateRiskMetrics(checkResult) {
+  const now = Date.now();
+  const metrics = state.riskMetrics;
+  
+  metrics.totalChecks++;
+  if (checkResult.success) {
+    metrics.successfulChecks++;
+  } else {
+    metrics.failedChecks++;
+  }
+  
+  // Update checks in last hour
+  metrics.lastCheckTime = now;
+  
+  // Calculate average interval
+  if (metrics.totalChecks > 1) {
+    const avgInterval = (now - metrics.lastCheckTime) / metrics.totalChecks;
+    metrics.averageCheckInterval = avgInterval;
+    
+    // Detect suspicious patterns
+    if (avgInterval < 15000) { // Checking too frequently
+      metrics.suspiciousPatterns++;
+    }
+  }
+  
+  // Recalculate risk
+  calculateRiskLevel();
+  
+  chrome.storage.local.set({ riskMetrics: metrics });
+}
+
+/**
  * Load state on startup
  */
 (async function() {
   await initializeExtension();
+  
+  // Calculate initial risk
+  calculateRiskLevel();
+  
+  // Recalculate risk every minute
+  setInterval(() => {
+    calculateRiskLevel();
+  }, 60000);
   
   // Start monitoring if auto-check is enabled and there are active monitors
   if (state.settings.autoCheck && state.monitors.some(m => m.status === 'active')) {
