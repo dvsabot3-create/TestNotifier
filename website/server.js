@@ -1,21 +1,70 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const app = express();
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const SecureConfig = require('./config/secure-config');
 
+const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Initialize secure configuration
+let secureConfig;
+try {
+  secureConfig = new SecureConfig();
+  console.log('✅ Secure configuration loaded');
+} catch (error) {
+  console.error('❌ Failed to load secure configuration:', error.message);
+  console.error('Please ensure all required environment variables are set');
+  process.exit(1);
+}
 
-// Security headers
+// Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.stripe.com", "https://www.googletagmanager.com"],
+      frameSrc: ["'self'", "https://js.stripe.com"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'https://testnotifier.co.uk',
+  credentials: true
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', limiter);
+
+// Additional security headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
   next();
 });
 
@@ -63,6 +112,15 @@ try {
   console.log('✅ Subscriptions API routes loaded');
 } catch (err) {
   console.warn('⚠️  Subscriptions API not available:', err.message);
+}
+
+try {
+  // Notifications API
+  const notificationsHandler = require('./api/notifications/send.js');
+  app.use('/api/notifications/send', notificationsHandler);
+  console.log('✅ Notifications API routes loaded');
+} catch (err) {
+  console.warn('⚠️  Notifications API not available:', err.message);
 }
 
 // Health check endpoints
