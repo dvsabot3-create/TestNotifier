@@ -1,10 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+// Plan to Stripe Price ID mapping
+const PLAN_TO_PRICE_ID: Record<string, string> = {
+  'oneoff': 'price_1SMSgh0xPOxdopWPJGe2jU3M',
+  'starter': 'price_1SMSgi0xPOxdopWPUKIVTL2s',
+  'premium': 'price_1SMSgj0xPOxdopWPWujQSxG8',
+  'professional': 'price_1SMSgl0xPOxdopWPQqujVkKi'
+};
+
+const PLAN_NAMES: Record<string, string> = {
+  'oneoff': 'One-Off Rebook',
+  'starter': 'Starter',
+  'premium': 'Premium',
+  'professional': 'Professional'
+};
+
 const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Create Stripe checkout session and redirect immediately
+   */
+  const createCheckoutSessionAndRedirect = async (planId: string, userData: any) => {
+    try {
+      console.log('Creating checkout session for plan:', planId);
+      
+      const priceId = PLAN_TO_PRICE_ID[planId];
+      const planName = PLAN_NAMES[planId];
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+
+      if (!priceId) {
+        throw new Error('Invalid plan ID');
+      }
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          priceId: priceId,
+          planName: planName,
+          planType: planId === 'oneoff' ? 'one-time' : 'subscription',
+          customerEmail: userData.email,
+          successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/cancel`
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        console.log('Redirecting to Stripe checkout:', data.url);
+        // IMMEDIATE redirect to Stripe - no intermediate pages
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Checkout creation error:', error);
+      setError('Failed to start checkout. Redirecting to dashboard...');
+      setTimeout(() => navigate('/dashboard'), 2000);
+    }
+  };
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -85,27 +147,28 @@ const AuthCallbackPage: React.FC = () => {
 
         console.log('OAuth Callback - User data saved to localStorage');
 
-        // Check if user was in checkout flow
+        // Check if user was in checkout flow - GO STRAIGHT TO STRIPE
         const checkoutInProgress = localStorage.getItem('checkout_in_progress');
         const selectedPlan = localStorage.getItem('selected_plan');
         const redirectUrl = searchParams.get('redirect');
 
-        // Clear checkout flag
-        if (checkoutInProgress) {
+        if (checkoutInProgress && selectedPlan) {
+          // User was trying to subscribe - GO DIRECTLY TO STRIPE CHECKOUT
+          console.log('User selected plan before auth - going straight to checkout:', selectedPlan);
+          
+          // Clear flags
           localStorage.removeItem('checkout_in_progress');
+          
+          // Create checkout session immediately
+          createCheckoutSessionAndRedirect(selectedPlan, userData);
+          return; // Don't navigate anywhere else
         }
 
-        // Determine where to redirect
+        // No checkout in progress - normal redirect
         setTimeout(() => {
-          if (checkoutInProgress && selectedPlan) {
-            // User was trying to subscribe - go back to pricing with plan selected
-            console.log('Redirecting to checkout for plan:', selectedPlan);
-            navigate(`/?plan=${selectedPlan}&checkout=true`);
-          } else if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {
-            // Custom redirect URL from OAuth
+          if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {
             navigate(redirectUrl);
           } else {
-            // Default to dashboard
             navigate('/dashboard');
           }
         }, 500);
