@@ -31,25 +31,6 @@
     .animate-pulse {
       animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    
-    /* Scrollbar styling */
-    .scroll-content::-webkit-scrollbar {
-      width: 6px;
-    }
-    
-    .scroll-content::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    .scroll-content::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 10px;
-    }
-    
-    .scroll-content::-webkit-scrollbar-thumb:hover {
-      background: #999;
-    }
   </style>
   
   <!-- Tailwind Config -->
@@ -74,10 +55,10 @@
 <body>
   
   <!-- Extension Popup -->
-  <div class="bg-white rounded-lg overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-2xl border-2 border-gray-200 overflow-hidden" style="width: 420px;">
     
-    <!-- Header - Dynamic gradient based on tier -->
-    <div id="popup-header" class="bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] px-6 py-5">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] px-6 py-5">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-sm">
@@ -93,67 +74,154 @@
           </div>
           <div>
             <h1 class="text-white font-bold text-xl">TestNotifier</h1>
-            <p class="text-blue-100 text-xs" id="tier-name">DVSA Test Monitor</p>
+            <p class="text-blue-100 text-xs">DVSA Test Monitor</p>
           </div>
         </div>
-        <button id="settings-btn" class="text-white hover:bg-white/10 p-2 rounded-lg transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
-          </svg>
-        </button>
       </div>
 
       <!-- Stats Grid -->
       <div class="grid grid-cols-3 gap-2">
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-white font-bold text-2xl" id="stat-monitors">3</div>
+          <div class="text-white font-bold text-2xl">3</div>
           <div class="text-blue-100 text-xs">Monitors</div>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-[#28a745] font-bold text-2xl" id="stat-found">4</div>
+          <div class="text-[#28a745] font-bold text-2xl">4</div>
           <div class="text-blue-100 text-xs">Found</div>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-white font-bold text-2xl" id="stat-lastcheck">2m</div>
+          <div class="text-white font-bold text-2xl">2m</div>
           <div class="text-blue-100 text-xs">Last Check</div>
         </div>
       </div>
     </div>
 
-    <!-- Content Area - Scrollable -->
-    <div class="p-5 bg-gray-50 space-y-3 scroll-content" style="max-height: 400px; overflow-y: auto;">
-      
-      <!-- Quick Actions -->
-      <div class="grid grid-cols-2 gap-2">
-        <button id="add-monitor-btn" class="bg-[#28a745] hover:bg-[#218838] transition-colors text-white py-3.5 px-5 rounded-xl font-bold text-sm shadow-sm">
-          + Add Monitor
-        </button>
-        <button id="stop-all-btn" class="bg-red-600 hover:bg-red-700 transition-colors text-white py-3.5 px-5 rounded-xl font-bold text-sm shadow-sm">
-          🛑 Stop All
-        </button>
+    <!-- Content -->
+    <div class="p-5 bg-gray-50 space-y-3">
+      <!-- Add Monitor Button -->
+      <button class="w-full bg-[#28a745] hover:bg-[#218838] transition-colors text-white py-3.5 px-5 rounded-xl font-bold text-base shadow-sm">
+        + Add New Monitor
+      </button>
+
+      <!-- Monitor Card 1 - Sarah Johnson -->
+      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
+        <div class="flex items-start justify-between mb-2">
+          <div>
+            <div class="font-semibold text-gray-900 mb-1">Sarah Johnson</div>
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+              <!-- Calendar Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>15 Mar 2025</span>
+              <span>•</span>
+              <!-- Map Pin Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>Manchester</span>
+            </div>
+          </div>
+          <div class="bg-green-50 px-2 py-1 rounded text-xs font-semibold text-green-700">
+            Active
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-green-600 text-sm font-semibold pt-2 border-t border-gray-100">
+          <!-- Check Circle Icon -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          3 slots found!
+        </div>
       </div>
 
-      <!-- Monitors Container -->
-      <div id="monitors-container">
-        <!-- Monitor cards will be injected here by popup.js -->
+      <!-- Monitor Card 2 - James Wilson -->
+      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
+        <div class="flex items-start justify-between mb-2">
+          <div>
+            <div class="font-semibold text-gray-900 mb-1">James Wilson</div>
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+              <!-- Calendar Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>22 Apr 2025</span>
+              <span>•</span>
+              <!-- Map Pin Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>London</span>
+            </div>
+          </div>
+          <div class="bg-green-50 px-2 py-1 rounded text-xs font-semibold text-green-700">
+            Active
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-gray-500 text-sm pt-2 border-t border-gray-100">
+          <!-- Search Icon -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Searching...
+        </div>
       </div>
-      
+
+      <!-- Monitor Card 3 - Emily Davis -->
+      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
+        <div class="flex items-start justify-between mb-2">
+          <div>
+            <div class="font-semibold text-gray-900 mb-1">Emily Davis</div>
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+              <!-- Calendar Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>10 May 2025</span>
+              <span>•</span>
+              <!-- Map Pin Icon -->
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>Birmingham</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-green-600 text-sm font-semibold pt-2 border-t border-gray-100">
+          <!-- Check Circle Icon -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          1 slot found!
+        </div>
+      </div>
     </div>
 
     <!-- Footer -->
     <div class="border-t border-gray-200 px-5 py-3 bg-white flex items-center justify-between">
       <div class="flex items-center gap-2 text-xs text-gray-600">
-        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" id="connection-dot"></div>
-        <span id="connection-text">Connected to DVSA</span>
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        Connected to DVSA
       </div>
-      <button id="help-btn" class="text-[#1d70b8] text-xs font-semibold hover:underline">Help</button>
+      <button class="text-[#1d70b8] text-xs font-semibold hover:underline">Help</button>
     </div>
     
   </div>
-
-  <!-- Modal Container -->
-  <div id="modal-container"></div>
 
   <!-- Load Extension Logic -->
   <script src="popup.js"></script>
