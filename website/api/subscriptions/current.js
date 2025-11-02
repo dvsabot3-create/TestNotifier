@@ -1,11 +1,11 @@
-import Stripe from 'stripe';
-import jwt from 'jsonwebtoken';
-import { connectDatabase } from '../../config/database.js';
-import User from '../../models/User.js';
+const Stripe = require('stripe');
+const jwt = require('jsonwebtoken');
+const { connectDatabase } = require('../../config/database');
+const User = require('../../models/User');
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -211,4 +211,5 @@ function getPlanLimits(planType) {
   return limits[planType] || limits['free'];
 }
 
+module.exports = handler;
 

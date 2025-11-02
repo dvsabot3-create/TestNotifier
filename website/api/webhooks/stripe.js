@@ -1,11 +1,11 @@
-import Stripe from 'stripe';
-import { connectDatabase } from '../../config/database.js';
-import User from '../../models/User.js';
+const Stripe = require('stripe');
+const { connectDatabase } = require('../../config/database');
+const User = require('../../models/User');
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   // Connect to database
   await connectDatabase();
   if (req.method !== 'POST') {
@@ -419,4 +419,6 @@ function mapPlanIdToTier(priceId) {
   if (priceId.includes('pro') || priceId.includes('professional')) return 'professional';
   return 'free';
 }
+
+module.exports = handler;
 
