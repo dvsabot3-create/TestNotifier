@@ -1,60 +1,123 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get parameters from URL
-        const authStatus = searchParams.get('auth');
-        const token = searchParams.get('token');
-        const userData = searchParams.get('user');
-        const error = searchParams.get('error');
-        const redirect = searchParams.get('redirect') || '/';
+        // Check for error parameter
+        const errorParam = searchParams.get('error');
+        if (errorParam) {
+          let errorMessage = 'Authentication failed';
 
-        // Handle errors
-        if (error) {
-          console.error('Authentication error:', error);
-          navigate(`${redirect}?auth=error&error=${encodeURIComponent(error)}`);
+          switch (errorParam) {
+            case 'oauth_failed':
+              errorMessage = 'Google authentication failed. Please try again.';
+              break;
+            case 'token_generation_failed':
+              errorMessage = 'Failed to generate authentication tokens. Please try again.';
+              break;
+            default:
+              errorMessage = 'An unexpected error occurred during authentication.';
+          }
+
+          setError(errorMessage);
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
           return;
         }
 
-        // Handle successful authentication
-        if (authStatus === 'success' && token && userData) {
-          try {
-            // Parse user data
-            const user = JSON.parse(decodeURIComponent(userData));
+        // Extract tokens and user data from URL parameters
+        const accessToken = searchParams.get('accessToken');
+        const refreshToken = searchParams.get('refreshToken');
+        const userId = searchParams.get('userId');
+        const email = searchParams.get('email');
+        const firstName = searchParams.get('firstName');
+        const lastName = searchParams.get('lastName');
+        const avatar = searchParams.get('avatar');
 
-            // Save authentication data
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+        console.log('OAuth Callback - Received params:', {
+          accessToken: accessToken ? 'present' : 'missing',
+          refreshToken: refreshToken ? 'present' : 'missing',
+          userId,
+          email,
+          firstName,
+          lastName,
+          avatar: avatar ? 'present' : 'missing'
+        });
 
-            // Redirect to the original destination or dashboard
-            const targetPath = redirect === '/' ? '/dashboard' : redirect;
-            navigate(targetPath);
-          } catch (parseError) {
-            console.error('Failed to parse user data:', parseError);
-            navigate(`${redirect}?auth=error&error=invalid_user_data`);
-          }
-        } else {
-          // Invalid callback parameters
-          console.error('Invalid callback parameters');
-          navigate(`${redirect}?auth=error&error=invalid_callback`);
+        // Validate required parameters
+        if (!accessToken || !refreshToken || !userId || !email) {
+          console.error('Missing required OAuth parameters');
+          setError('Invalid authentication response. Please try again.');
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
+          return;
         }
+
+        // Create user object
+        const userData = {
+          id: userId,
+          email,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          avatar: avatar || undefined,
+          isEmailVerified: true,
+          subscription: {
+            tier: 'free',
+            status: 'active'
+          },
+          createdAt: new Date().toISOString()
+        };
+
+        // Save authentication data (compatible with auth library)
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        console.log('OAuth Callback - User data saved to localStorage');
+
+        // Navigate to dashboard on success
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
+
       } catch (callbackError) {
         console.error('Callback handling error:', callbackError);
-        navigate(`/?auth=error&error=processing_error`);
+        setError('Failed to complete authentication. Please try again.');
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       }
     };
 
     handleCallback();
   }, [navigate, searchParams]);
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Failed</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-sm text-gray-500">Redirecting to home page...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Completing authentication...</h2>
