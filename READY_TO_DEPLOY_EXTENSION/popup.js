@@ -1550,7 +1550,7 @@ class TestNotifierPopup {
       if (editBtn) {
         editBtn.addEventListener('click', () => {
           this.closeModal();
-          this.showAlert('Edit Monitor', 'Edit functionality coming in next update.');
+          this.showEditMonitorModal(index);
         });
       }
       
@@ -2321,6 +2321,441 @@ class TestNotifierPopup {
     this.updateUI();
     this.addActivity(`✅ Added monitor for ${name}`);
     this.showAlert('Monitor Added!', `Now monitoring test slots for ${name} at ${window.selectedCentres.length} test centre${window.selectedCentres.length !== 1 ? 's' : ''}.`);
+  }
+
+  /**
+   * Show Edit Monitor Modal - FULL IMPLEMENTATION
+   */
+  showEditMonitorModal(index) {
+    const monitor = this.monitors[index];
+    
+    // UK Test Centres Database (same as Add Monitor)
+    const testCentres = [
+      // London & South East
+      { name: 'London (Wood Green)', postcode: 'N22', area: 'London', region: 'London' },
+      { name: 'London (Palmers Green)', postcode: 'N13', area: 'London', region: 'London' },
+      { name: 'London (Barking)', postcode: 'IG11', area: 'London', region: 'London' },
+      { name: 'London (Hendon)', postcode: 'NW4', area: 'London', region: 'London' },
+      { name: 'London (Southall)', postcode: 'UB2', area: 'London', region: 'London' },
+      { name: 'London (Mill Hill)', postcode: 'NW7', area: 'London', region: 'London' },
+      { name: 'London (Wanstead)', postcode: 'E11', area: 'London', region: 'London' },
+      { name: 'Manchester (Bury Old Road)', postcode: 'M25', area: 'Manchester', region: 'North West' },
+      { name: 'Manchester (Cheetham Hill)', postcode: 'M8', area: 'Manchester', region: 'North West' },
+      { name: 'Manchester (Belle Vue)', postcode: 'M12', area: 'Manchester', region: 'North West' },
+      { name: 'Liverpool (Norris Green)', postcode: 'L11', area: 'Liverpool', region: 'North West' },
+      { name: 'Liverpool (Speke)', postcode: 'L24', area: 'Liverpool', region: 'North West' },
+      { name: 'Birmingham (Garretts Green)', postcode: 'B33', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Kingstanding)', postcode: 'B44', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Shirley)', postcode: 'B90', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Leeds (Harehills)', postcode: 'LS8', area: 'Leeds', region: 'Yorkshire' },
+      { name: 'Leeds (Horsforth)', postcode: 'LS18', area: 'Leeds', region: 'Yorkshire' },
+      { name: 'Sheffield (Handsworth)', postcode: 'S13', area: 'Sheffield', region: 'Yorkshire' },
+      { name: 'Glasgow (Shieldhall)', postcode: 'G51', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Edinburgh (Currie)', postcode: 'EH14', area: 'Edinburgh', region: 'Scotland' },
+      { name: 'Cardiff (Llanishen)', postcode: 'CF14', area: 'Cardiff', region: 'Wales' },
+      { name: 'Bristol (Brislington)', postcode: 'BS4', area: 'Bristol', region: 'South West' },
+      { name: 'Newcastle (Gosforth)', postcode: 'NE3', area: 'Newcastle', region: 'North East' },
+      { name: 'Nottingham (Colwick)', postcode: 'NG4', area: 'Nottingham', region: 'East Midlands' }
+    ];
+    
+    window.allTestCentres = testCentres;
+    
+    // Pre-select existing test centres
+    window.selectedCentres = (monitor.testCentresData || []).length > 0 
+      ? monitor.testCentresData 
+      : testCentres.filter(tc => monitor.testCentres.includes(tc.name));
+    
+    const content = `
+      <form id="edit-monitor-form" style="font-size: 13px;">
+        <!-- Student Name -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Student Name *</label>
+          <input type="text" id="edit-student-name" required value="${monitor.name}" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+          <div id="edit-name-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Email Address -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Email Address *</label>
+          <input type="email" id="edit-student-email" required value="${monitor.email || ''}" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+          <div id="edit-email-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Phone Number -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Phone Number *</label>
+          <input type="tel" id="edit-student-phone" required value="${monitor.phone || ''}" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+          <div id="edit-phone-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Current Test Date -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Current Test Date *</label>
+          <input type="date" id="edit-current-date" required value="${monitor.currentTestDate || monitor.targetDate}" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+        </div>
+        
+        <!-- Preferred Test Date -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Preferred Test Date (Optional)</label>
+          <input type="date" id="edit-preferred-date" value="${monitor.preferredTestDate || ''}" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+        </div>
+        
+        <!-- Test Centres -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Test Centres *</label>
+          <input type="text" id="edit-centre-search" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          " placeholder="Search to add more centres...">
+          <div id="edit-search-results" style="
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+          "></div>
+          <div id="edit-selected-centres" style="margin-top: 8px;"></div>
+          <div id="edit-centres-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Notification Preferences -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Notification Methods</label>
+          <div style="background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="edit-notif-email" ${monitor.notifications?.email ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                <span>📧 Email</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="edit-notif-sms" ${monitor.notifications?.sms ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                <span>📱 SMS</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="edit-notif-whatsapp" ${monitor.notifications?.whatsapp ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                <span>💬 WhatsApp</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="edit-notif-browser" ${monitor.notifications?.browser ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;">
+                <span>🔔 Browser</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Submit Buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px;">
+          <button type="button" class="edit-cancel-btn" style="
+            padding: 12px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          ">Cancel</button>
+          <button type="submit" style="
+            padding: 12px;
+            background: #1d70b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+          ">Save Changes</button>
+        </div>
+      </form>
+    `;
+    
+    const modal = this.createModal(`Edit Monitor: ${monitor.name}`, content, '550px');
+    document.body.appendChild(modal);
+    
+    // Setup edit form
+    this.setupEditMonitorForm(modal, index);
+  }
+
+  /**
+   * Setup Edit Monitor Form
+   */
+  setupEditMonitorForm(modal, monitorIndex) {
+    const monitor = this.monitors[monitorIndex];
+    const emailInput = modal.querySelector('#edit-student-email');
+    const phoneInput = modal.querySelector('#edit-student-phone');
+    const searchInput = modal.querySelector('#edit-centre-search');
+    const searchResults = modal.querySelector('#edit-search-results');
+    const selectedCentres = modal.querySelector('#edit-selected-centres');
+    const form = modal.querySelector('#edit-monitor-form');
+    const cancelBtn = modal.querySelector('.edit-cancel-btn');
+    
+    // Display currently selected centres
+    this.updateEditSelectedCentres(modal);
+    
+    // Email validation
+    emailInput.addEventListener('blur', () => {
+      const value = emailInput.value.trim();
+      const error = modal.querySelector('#edit-email-error');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (value && !emailPattern.test(value)) {
+        error.textContent = '❌ Invalid email format';
+        error.style.display = 'block';
+      } else {
+        error.style.display = 'none';
+      }
+    });
+    
+    // Phone validation
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value;
+      const error = modal.querySelector('#edit-phone-error');
+      
+      if (value && !value.startsWith('+')) {
+        if (value.startsWith('0')) {
+          value = '+44 ' + value.substring(1);
+        } else if (value.startsWith('44')) {
+          value = '+' + value;
+        }
+        e.target.value = value;
+      }
+      
+      const ukMobilePattern = /^\+44\s?[67]\d{9}$/;
+      if (value && !ukMobilePattern.test(value.replace(/\s/g, ''))) {
+        error.textContent = '❌ Invalid UK mobile number';
+        error.style.display = 'block';
+      } else {
+        error.style.display = 'none';
+      }
+    });
+    
+    // Test centre search (same as add monitor)
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      
+      if (query.length < 2) {
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      const filtered = window.allTestCentres.filter(centre =>
+        centre.name.toLowerCase().includes(query) ||
+        centre.area.toLowerCase().includes(query) ||
+        centre.postcode.toLowerCase().includes(query) ||
+        centre.region.toLowerCase().includes(query)
+      );
+      
+      if (filtered.length === 0) {
+        searchResults.innerHTML = '<div style="padding: 12px; color: #6b7280; font-size: 12px;">No test centres found</div>';
+      } else {
+        searchResults.innerHTML = filtered.slice(0, 10).map(centre => `
+          <div class="centre-option" data-centre='${JSON.stringify(centre)}' style="
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            <div style="font-weight: 600; font-size: 13px; color: #111827;">${centre.name}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">${centre.postcode} • ${centre.area} • ${centre.region}</div>
+          </div>
+        `).join('');
+      }
+      
+      searchResults.style.display = 'block';
+      
+      setTimeout(() => {
+        searchResults.querySelectorAll('.centre-option').forEach(el => {
+          el.addEventListener('click', () => {
+            const centre = JSON.parse(el.getAttribute('data-centre'));
+            
+            // Check limit
+            if (this.limits && this.limits.maxTestCentres !== null) {
+              if (window.selectedCentres.length >= this.limits.maxTestCentres) {
+                const error = modal.querySelector('#edit-centres-error');
+                error.textContent = `❌ Max ${this.limits.maxTestCentres} centres allowed`;
+                error.style.display = 'block';
+                return;
+              }
+            }
+            
+            if (!window.selectedCentres.find(c => c.name === centre.name)) {
+              window.selectedCentres.push(centre);
+              this.updateEditSelectedCentres(modal);
+            }
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+          });
+        });
+      }, 0);
+    });
+    
+    // Cancel button
+    cancelBtn.addEventListener('click', () => this.closeModal());
+    
+    // Form submission
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleEditMonitor(modal, monitorIndex);
+    });
+  }
+
+  /**
+   * Update selected centres in edit form
+   */
+  updateEditSelectedCentres(modal) {
+    const container = modal.querySelector('#edit-selected-centres');
+    container.innerHTML = window.selectedCentres.map((centre, i) => `
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #eff6ff;
+        border: 1px solid #3b82f6;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+      ">
+        <div style="font-size: 12px; font-weight: 600; color: #1e40af;">${centre.name}</div>
+        <button type="button" class="remove-edit-centre" data-index="${i}" style="
+          background: none;
+          border: none;
+          color: #dc2626;
+          cursor: pointer;
+          font-size: 16px;
+          padding: 0 4px;
+        ">×</button>
+      </div>
+    `).join('');
+    
+    setTimeout(() => {
+      container.querySelectorAll('.remove-edit-centre').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          window.selectedCentres.splice(idx, 1);
+          this.updateEditSelectedCentres(modal);
+        });
+      });
+    }, 0);
+  }
+
+  /**
+   * Handle edit monitor submission
+   */
+  handleEditMonitor(modal, monitorIndex) {
+    const monitor = this.monitors[monitorIndex];
+    
+    const name = modal.querySelector('#edit-student-name').value.trim();
+    const email = modal.querySelector('#edit-student-email').value.trim();
+    const phone = modal.querySelector('#edit-student-phone').value.trim();
+    const currentDate = modal.querySelector('#edit-current-date').value;
+    const preferredDate = modal.querySelector('#edit-preferred-date').value;
+    
+    const notifEmail = modal.querySelector('#edit-notif-email').checked;
+    const notifSMS = modal.querySelector('#edit-notif-sms').checked;
+    const notifWhatsApp = modal.querySelector('#edit-notif-whatsapp').checked;
+    const notifBrowser = modal.querySelector('#edit-notif-browser').checked;
+    
+    // Validation
+    let hasError = false;
+    const nameError = modal.querySelector('#edit-name-error');
+    const emailError = modal.querySelector('#edit-email-error');
+    const phoneError = modal.querySelector('#edit-phone-error');
+    
+    if (name.length < 2) {
+      nameError.textContent = '❌ Name must be at least 2 characters';
+      nameError.style.display = 'block';
+      hasError = true;
+    } else {
+      nameError.style.display = 'none';
+    }
+    
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      emailError.textContent = '❌ Valid email required';
+      emailError.style.display = 'block';
+      hasError = true;
+    } else {
+      emailError.style.display = 'none';
+    }
+    
+    const ukMobilePattern = /^\+44\s?[67]\d{9}$/;
+    if (!phone || !ukMobilePattern.test(phone.replace(/\s/g, ''))) {
+      phoneError.textContent = '❌ Valid UK mobile required';
+      phoneError.style.display = 'block';
+      hasError = true;
+    } else {
+      phoneError.style.display = 'none';
+    }
+    
+    if (window.selectedCentres.length === 0) {
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    // Update monitor
+    monitor.name = name;
+    monitor.email = email;
+    monitor.phone = phone.replace(/\s/g, '');
+    monitor.currentTestDate = currentDate;
+    monitor.preferredTestDate = preferredDate || null;
+    monitor.targetDate = currentDate;
+    monitor.testCentres = window.selectedCentres.map(c => c.name);
+    monitor.testCentresData = window.selectedCentres;
+    monitor.notifications = {
+      email: notifEmail,
+      sms: notifSMS,
+      whatsapp: notifWhatsApp,
+      browser: notifBrowser
+    };
+    monitor.lastUpdate = new Date().toISOString();
+    
+    // Save
+    chrome.storage.local.set({ monitors: this.monitors });
+    
+    // Send to background
+    chrome.runtime.sendMessage({
+      action: 'updateMonitor',
+      monitorId: monitor.id,
+      updates: monitor
+    });
+    
+    // Close and refresh
+    this.closeModal();
+    this.updateUI();
+    this.addActivity(`✏️ Updated monitor for ${name}`);
+    this.showAlert('Monitor Updated!', `✅ Changes saved for ${name}`);
   }
 
   /**
