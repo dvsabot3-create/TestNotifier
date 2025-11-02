@@ -129,8 +129,19 @@ export function AuthModal({ isOpen, onClose, redirectUrl, source }: AuthModalPro
     trackEvent('google_auth_click', 'authentication', source || 'modal');
 
     try {
+      // Check if user is in checkout flow
+      const checkoutInProgress = localStorage.getItem('checkout_in_progress');
+      const selectedPlan = localStorage.getItem('selected_plan');
+      
+      let finalRedirect = redirectUrl || '/';
+      
+      // If in checkout flow, redirect back to pricing with plan parameter
+      if (checkoutInProgress && selectedPlan) {
+        finalRedirect = `/?plan=${selectedPlan}&checkout=true`;
+      }
+
       // Redirect to Google OAuth
-      window.location.href = `/api/auth/google?redirect=${encodeURIComponent(redirectUrl || '/')}`;
+      window.location.href = `/api/auth/google?redirect=${encodeURIComponent(finalRedirect)}`;
     } catch (error) {
       setErrors({ submit: 'Google authentication failed. Please try again.' });
       trackEvent('google_auth_error', 'error', 'google_auth_failure');

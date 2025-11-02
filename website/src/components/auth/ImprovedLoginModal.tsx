@@ -76,7 +76,18 @@ const ImprovedLoginModal: React.FC<ImprovedLoginModalProps> = ({
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `/api/auth/google`;
+    // Check if user is in checkout flow
+    const checkoutInProgress = localStorage.getItem('checkout_in_progress');
+    const selectedPlan = localStorage.getItem('selected_plan');
+    
+    let redirectUrl = '/dashboard';
+    
+    // If in checkout flow, redirect back to pricing with plan parameter
+    if (checkoutInProgress && selectedPlan) {
+      redirectUrl = `/?plan=${selectedPlan}&checkout=true`;
+    }
+
+    window.location.href = `/api/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   if (!isOpen) return null;
