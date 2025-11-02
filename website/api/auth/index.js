@@ -86,7 +86,10 @@ router.get('/google/callback', (req, res, next) => {
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
       }
 
-      const jwtSecret = process.env.JWT_SECRET || 'your_fallback_secret_key';
+      if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET environment variable is not set');
+      }
+      const jwtSecret = process.env.JWT_SECRET;
       const accessToken = jwt.sign({ id: user.googleId, email: user.email }, jwtSecret, { expiresIn: '7d' });
       const refreshToken = jwt.sign({ id: user.googleId }, jwtSecret, { expiresIn: '30d' });
 
@@ -158,7 +161,10 @@ router.post('/register', async (req, res) => {
     });
     
     // Generate JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your_fallback_secret_key';
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not set');
+    }
+    const jwtSecret = process.env.JWT_SECRET;
     const token = jwt.sign(
       { id: user._id, email: user.email },
       jwtSecret,
@@ -233,7 +239,10 @@ router.post('/login', async (req, res) => {
     await user.save();
     
     // Generate JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your_fallback_secret_key';
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not set');
+    }
+    const jwtSecret = process.env.JWT_SECRET;
     const token = jwt.sign(
       { id: user._id, email: user.email },
       jwtSecret,

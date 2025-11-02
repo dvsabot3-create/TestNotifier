@@ -3,10 +3,10 @@
  * Helps diagnose white screen issues and performance problems
  */
 
-// Debug configuration
-const DEBUG_ENABLED = true;
-const PERFORMANCE_MONITORING = true;
-const ERROR_TRACKING = true;
+// Debug configuration - only enabled in development
+const DEBUG_ENABLED = process.env.NODE_ENV === 'development';
+const PERFORMANCE_MONITORING = process.env.NODE_ENV === 'development';
+const ERROR_TRACKING = true; // Always track errors for monitoring
 
 // Debug logger
 export const debug = {

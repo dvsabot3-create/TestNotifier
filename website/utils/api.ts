@@ -126,6 +126,7 @@ class ApiClient {
   private baseURL: string;
   private timeout: number;
   private defaultHeaders: Record<string, string>;
+  private csrfToken: string | null = null;
 
   constructor(baseURL: string, timeout: number = API_TIMEOUT) {
     this.baseURL = baseURL;
@@ -136,6 +137,28 @@ class ApiClient {
       'X-Client-Version': '1.0.0',
       'X-Platform': 'web'
     };
+    
+    // Fetch CSRF token on initialization
+    this.fetchCsrfToken();
+  }
+
+  /**
+   * Fetch CSRF token from server
+   */
+  private async fetchCsrfToken(): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseURL}/auth/csrf`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      const csrfToken = response.headers.get('X-CSRF-Token');
+      if (csrfToken) {
+        this.csrfToken = csrfToken;
+      }
+    } catch (error) {
+      logError('api', 'Failed to fetch CSRF token', error);
+    }
   }
 
   /**
@@ -158,9 +181,15 @@ class ApiClient {
       requestHeaders['Authorization'] = `Bearer ${token}`;
     }
 
+    // Add CSRF token for state-changing requests
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && this.csrfToken) {
+      requestHeaders['X-CSRF-Token'] = this.csrfToken;
+    }
+
     const requestOptions: RequestInit = {
       method,
       headers: requestHeaders,
+      credentials: 'include', // Include cookies for CSRF
       signal: AbortSignal.timeout(timeoutOverride || this.timeout)
     };
 
@@ -173,6 +202,12 @@ class ApiClient {
 
       const response = await fetch(url, requestOptions);
       const duration = Date.now() - startTime;
+
+      // Update CSRF token if server sends a new one
+      const newCsrfToken = response.headers.get('X-CSRF-Token');
+      if (newCsrfToken) {
+        this.csrfToken = newCsrfToken;
+      }
 
       // Track API call for analytics
       trackApiCall(endpoint, method, response.status, duration);

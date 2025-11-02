@@ -11,14 +11,28 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: '1.5rem',
+      padding: {
+        DEFAULT: '1rem',
+        sm: '1.5rem',
+        md: '2rem',
+        lg: '2.5rem',
+        xl: '3rem',
+      },
       screens: {
         sm: '640px',
         md: '768px',
-        lg: '1152px',
+        lg: '1024px',
         xl: '1280px',
         '2xl': '1536px',
       },
+    },
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
     },
     extend: {
       colors: {
@@ -36,11 +50,11 @@ export default {
           200: '#e9ecef',
           300: '#dee2e6',
           400: '#ced4da',
-          500: '#adb5bd',
-          600: '#6c757d',
-          700: '#4a4a4a',
-          800: '#2c2c2c',
-          900: '#1a1a1a',
+          500: '#6c757d', // 4.54:1 contrast on white
+          600: '#4a4a4a', // 9.74:1 contrast on white (improved from #6c757d)
+          700: '#2c2c2c', // 14.57:1 contrast on white
+          800: '#1a1a1a', // 17.98:1 contrast on white
+          900: '#000000', // 21:1 contrast on white
         },
         error: { DEFAULT: '#dc3545', light: '#f8d7da' },
         info: { DEFAULT: '#17a2b8', light: '#d1ecf1' },

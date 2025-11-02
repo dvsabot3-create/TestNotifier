@@ -3,7 +3,10 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const session = require('express-session');
 const SecureConfig = require('./config/secure-config');
+const { csrfTokenMiddleware, csrfProtection } = require('./middleware/csrf');
+const { connectDatabase } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -47,24 +50,99 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Rate limiting
-const limiter = rateLimit({
+// Session configuration for CSRF
+app.use(session({
+  secret: process.env.SESSION_SECRET || process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// CSRF Protection
+app.use(csrfTokenMiddleware);
+app.use('/api/', csrfProtection);
+
+// Rate limiting - General API
+const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  message: { error: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use('/api/', limiter);
+// Strict rate limiting for authentication endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Only 5 login/register attempts per 15 minutes
+  message: { error: 'Too many authentication attempts. Please try again in 15 minutes.' },
+  skipSuccessfulRequests: true, // Don't count successful requests
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-// Additional security headers
+// Strict rate limiting for payment endpoints
+const paymentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Only 10 payment requests per hour
+  message: { error: 'Too many payment requests. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', generalLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/create-checkout-session', paymentLimiter);
+app.use('/api/billing', paymentLimiter);
+
+// Comprehensive security headers
 app.use((req, res, next) => {
+  // Prevent MIME sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // Prevent clickjacking
   res.setHeader('X-Frame-Options', 'DENY');
+  
+  // Enable XSS protection (legacy browsers)
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Control referrer information
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  
+  // Restrict browser features
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()');
+  
+  // Strict Transport Security (HSTS) - force HTTPS
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
+  
+  // Expect-CT header for certificate transparency
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Expect-CT', 'max-age=86400, enforce');
+  }
+  
+  // Cross-Origin Resource Policy
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  
+  // Cross-Origin-Opener-Policy
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  
+  // Cross-Origin-Embedder-Policy
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  
+  // Disable caching for sensitive endpoints
+  if (req.path.includes('/api/auth') || req.path.includes('/api/billing')) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  
   next();
 });
 
@@ -123,6 +201,15 @@ try {
   console.warn('⚠️  Notifications API not available:', err.message);
 }
 
+try {
+  // Contact API
+  const contactHandler = require('./api/contact/index.js');
+  app.use('/api/contact', contactHandler);
+  console.log('✅ Contact API routes loaded');
+} catch (err) {
+  console.warn('⚠️  Contact API not available:', err.message);
+}
+
 // Health check endpoints
 app.get('/healthz', (req, res) => {
   res.json({ 
@@ -158,11 +245,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ TestNotifier website server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 Auth API: /api/auth`);
-  console.log(`💳 Billing API: /api/billing`);
-  console.log(`📦 Subscriptions API: /api/subscriptions`);
-});
+connectDatabase()
+  .then(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log('✅ Server + Database ready');
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📍 Port: ${PORT}`);
+      console.log(`🔐 Auth API: /api/auth`);
+      console.log(`💳 Billing API: /api/billing`);
+      console.log(`📦 Subscriptions API: /api/subscriptions`);
+    });
+  })
+  .catch(err => {
+    console.error('❌ Database failed:', err);
+    process.exit(1);
+  });

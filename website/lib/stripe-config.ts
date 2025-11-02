@@ -3,7 +3,14 @@
 
 export const STRIPE_CONFIG = {
   // Environment - trim whitespace to handle newline issues
-  publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() || 'pk_live_51SJt1s0xPOxdopWPtOEOLPS49ZMhwNys1OmwGUuh2HYjLZImqySfRv8YklLa0Dgz5uQ76okoNi3qwITrxe4O1QdD00Gt70Q5KS',
+  publishableKey: (() => {
+    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim();
+    if (!key) {
+      console.error('❌ STRIPE_PUBLISHABLE_KEY not set in environment variables');
+      throw new Error('Stripe publishable key is required');
+    }
+    return key;
+  })(),
   
   // Product IDs (Live Stripe - created by automated setup)
   products: {
@@ -58,7 +65,14 @@ export const STRIPE_CONFIG = {
 
   // Webhook Configuration
   webhook: {
-    secret: process.env.STRIPE_WEBHOOK_SECRET || 'whsec_NZ1OqwTmODWmiMt9zuDoATphoVmyDP5U',
+    secret: (() => {
+      const secret = process.env.STRIPE_WEBHOOK_SECRET;
+      if (!secret) {
+        console.error('❌ STRIPE_WEBHOOK_SECRET not set in environment variables');
+        throw new Error('Stripe webhook secret is required');
+      }
+      return secret;
+    })(),
     url: 'https://testnotifier.co.uk/api/webhooks/stripe'
   },
 
