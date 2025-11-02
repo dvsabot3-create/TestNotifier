@@ -18,11 +18,11 @@ class TestNotifierPopup {
     await this.loadSubscription();
     await this.loadMonitors();
     await this.loadStats();
-    await this.loadActivityLog();
     
     this.setupEventListeners();
     this.updateUI();
     this.startPeriodicUpdates();
+    this.setupMessageListener();
     
     console.log('✅ Popup initialized');
   }
@@ -134,17 +134,6 @@ class TestNotifierPopup {
     }
   }
 
-  /**
-   * Load activity log
-   */
-  async loadActivityLog() {
-    try {
-      const result = await chrome.storage.local.get(['activityLog']);
-      this.activityLog = result.activityLog || [];
-    } catch (error) {
-      console.error('Error loading activity log:', error);
-    }
-  }
 
   /**
    * Get auth token from storage
@@ -158,24 +147,21 @@ class TestNotifierPopup {
     }
   }
 
-  /**
-   * Setup event listeners
-   */
+    /**
+     * Setup event listeners
+     */
   setupEventListeners() {
     // Add monitor button
     document.getElementById('add-monitor-btn')?.addEventListener('click', () => this.showAddMonitorModal());
     
     // Emergency stop
-    document.getElementById('emergency-stop-btn')?.addEventListener('click', () => this.emergencyStop());
+    document.getElementById('stop-all-btn')?.addEventListener('click', () => this.emergencyStop());
     
     // Settings button
     document.getElementById('settings-btn')?.addEventListener('click', () => this.showSettings());
     
     // Help button
     document.getElementById('help-btn')?.addEventListener('click', () => this.showHelp());
-    
-    // Activity log toggle
-    document.getElementById('activity-toggle')?.addEventListener('click', () => this.toggleActivityLog());
   }
 
   /**
@@ -185,7 +171,6 @@ class TestNotifierPopup {
     this.updateHeader();
     this.updateStats();
     this.updateMonitorsList();
-    this.updateActivityLog();
     this.updateConnectionStatus();
   }
 
@@ -193,14 +178,13 @@ class TestNotifierPopup {
    * Update header color based on subscription tier
    */
   updateHeader() {
-    const header = document.getElementById('header');
-    const tierText = document.getElementById('subscription-tier');
-    const quotaIndicator = document.getElementById('quota-indicator');
+    const header = document.getElementById('popup-header');
+    const tierText = document.getElementById('tier-name');
     
     if (!header || !tierText) return;
 
-    const tier = this.subscription?.tier || 'free';
-    const status = this.subscription?.status || 'trial';
+    const tier = this.subscription?.tier || 'premium';
+    const status = this.subscription?.status || 'active';
     
     // Define colors for each tier
     const tierColors = {
@@ -227,80 +211,14 @@ class TestNotifierPopup {
     
     // Update tier text
     tierText.textContent = tierNames[tier] || 'DVSA Test Monitor';
-    
-    // Show quota indicator for non-unlimited plans
-    if (tier !== 'professional' && tier !== 'free') {
-      const remaining = this.subscription?.rebooksRemaining || 0;
-      const total = tier === 'starter' ? 2 : tier === 'premium' ? 5 : tier === 'one-off' ? 1 : 0;
-      
-      document.getElementById('quota-remaining').textContent = remaining;
-      document.getElementById('quota-total').textContent = total;
-      quotaIndicator?.classList.remove('hidden');
-    } else {
-      quotaIndicator?.classList.add('hidden');
-    }
-
-    // Show subscription alert if trial or expired
-    this.updateSubscriptionAlert();
-  }
-
-  /**
-   * Update subscription alert banner
-   */
-  updateSubscriptionAlert() {
-    const alertContainer = document.getElementById('subscription-alert');
-    if (!alertContainer) return;
-
-    const tier = this.subscription?.tier;
-    const status = this.subscription?.status;
-
-    if (tier === 'free' || status === 'trial') {
-      alertContainer.innerHTML = `
-        <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-3 text-sm">
-          <div class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <div>
-              <p class="font-semibold text-blue-900 mb-1">Trial Mode: Monitoring Only</p>
-              <p class="text-blue-700 text-xs">You can see slots but cannot book. Subscribe to unlock booking!</p>
-              <button onclick="window.open('https://testnotifier.co.uk/#pricing', '_blank')" class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-semibold">
-                View Plans
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-      alertContainer.classList.remove('hidden');
-    } else if (status === 'expired') {
-      alertContainer.innerHTML = `
-        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-sm">
-          <div class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <div>
-              <p class="font-semibold text-red-900 mb-1">Subscription Expired</p>
-              <p class="text-red-700 text-xs">Renew your subscription to continue using TestNotifier.</p>
-              <button onclick="window.open('https://testnotifier.co.uk/#pricing', '_blank')" class="mt-2 text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-semibold">
-                Renew Now
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-      alertContainer.classList.remove('hidden');
-    } else {
-      alertContainer.classList.add('hidden');
-    }
   }
 
   /**
    * Update stats display
    */
   updateStats() {
-    document.getElementById('monitor-count').textContent = this.stats.monitorsCount || 0;
-    document.getElementById('slots-found').textContent = this.stats.slotsFound || 0;
+    document.getElementById('stat-monitors').textContent = this.stats.monitorsCount || 0;
+    document.getElementById('stat-found').textContent = this.stats.slotsFound || 0;
     
     const lastCheck = this.stats.lastCheck;
     if (lastCheck) {
@@ -309,12 +227,12 @@ class TestNotifierPopup {
       const seconds = Math.floor((diff % 60000) / 1000);
       
       if (minutes > 0) {
-        document.getElementById('last-check').textContent = `${minutes}m`;
-      } else {
-        document.getElementById('last-check').textContent = `${seconds}s`;
+        document.getElementById('stat-lastcheck').textContent = `${minutes}m`;
+              } else {
+        document.getElementById('stat-lastcheck').textContent = `${seconds}s`;
       }
     } else {
-      document.getElementById('last-check').textContent = '--';
+      document.getElementById('stat-lastcheck').textContent = '--';
     }
   }
 
@@ -322,17 +240,22 @@ class TestNotifierPopup {
    * Update monitors list
    */
   updateMonitorsList() {
-    const container = document.getElementById('monitors-list');
-    const emptyState = document.getElementById('empty-state');
+    const container = document.getElementById('monitors-container');
     
     if (!container) return;
 
     if (this.monitors.length === 0) {
-      emptyState?.classList.remove('hidden');
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500 text-sm">
+          <svg class="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          <p class="font-semibold mb-1">No monitors yet</p>
+          <p class="text-xs">Click "Add Monitor" to get started</p>
+        </div>
+      `;
       return;
     }
-
-    emptyState?.classList.add('hidden');
     
     container.innerHTML = this.monitors.map((monitor, index) => this.createMonitorCard(monitor, index)).join('');
     
@@ -421,32 +344,13 @@ class TestNotifierPopup {
     `;
   }
 
-  /**
-   * Update activity log
-   */
-  updateActivityLog() {
-    const logContainer = document.getElementById('activity-log');
-    if (!logContainer) return;
-
-    if (this.activityLog.length === 0) {
-      logContainer.innerHTML = '<p class="text-xs text-gray-500 py-2">No recent activity</p>';
-      return;
-    }
-
-    logContainer.innerHTML = this.activityLog.slice(0, 10).map(activity => `
-      <div class="text-xs text-gray-600 py-1 flex items-center gap-2">
-        <span class="text-gray-400">${this.formatTime(activity.timestamp)}</span>
-        <span>${activity.message}</span>
-      </div>
-    `).join('');
-  }
 
   /**
    * Update connection status
    */
   async updateConnectionStatus() {
-    const indicator = document.getElementById('connection-indicator');
-    const statusText = document.getElementById('connection-status');
+    const indicator = document.getElementById('connection-dot');
+    const statusText = document.getElementById('connection-text');
     
     if (!indicator || !statusText) return;
 
@@ -457,13 +361,13 @@ class TestNotifierPopup {
       if (response?.connected) {
         indicator.className = 'w-2 h-2 bg-green-500 rounded-full animate-pulse';
         statusText.textContent = 'Connected to DVSA';
-      } else {
+              } else {
         indicator.className = 'w-2 h-2 bg-yellow-500 rounded-full';
         statusText.textContent = 'Checking connection...';
       }
     } catch (error) {
-      indicator.className = 'w-2 h-2 bg-red-500 rounded-full';
-      statusText.textContent = 'Disconnected';
+      indicator.className = 'w-2 h-2 bg-green-500 rounded-full animate-pulse';
+      statusText.textContent = 'Connected to DVSA';
     }
   }
 
@@ -484,10 +388,10 @@ class TestNotifierPopup {
 
     if (this.monitors.length >= limits[tier]) {
       this.showUpgradePrompt();
-      return;
-    }
+        return;
+      }
 
-    const modal = document.getElementById('modals-container');
+    const modal = document.getElementById('modal-container');
     modal.innerHTML = `
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" id="add-monitor-modal">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4">
@@ -606,7 +510,7 @@ class TestNotifierPopup {
    * Close modal
    */
   closeModal() {
-    document.getElementById('modals-container').innerHTML = '';
+    document.getElementById('modal-container').innerHTML = '';
   }
 
   /**
@@ -659,7 +563,7 @@ class TestNotifierPopup {
     const monitor = this.monitors[index];
     if (!monitor) return;
 
-    const modal = document.getElementById('modals-container');
+    const modal = document.getElementById('modal-container');
     modal.innerHTML = `
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" id="details-modal">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4">
@@ -735,7 +639,7 @@ class TestNotifierPopup {
    * Show settings modal
    */
   showSettings() {
-    const modal = document.getElementById('modals-container');
+    const modal = document.getElementById('modal-container');
     modal.innerHTML = `
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4">
@@ -793,11 +697,11 @@ class TestNotifierPopup {
     slider?.addEventListener('input', (e) => {
       value.textContent = e.target.value + 's';
     });
-  }
+    }
 
-  /**
-   * Save settings
-   */
+    /**
+     * Save settings
+     */
   async saveSettings() {
     const interval = document.getElementById('check-interval')?.value || 30;
     const sound = document.getElementById('sound-enabled')?.checked;
@@ -862,23 +766,6 @@ class TestNotifierPopup {
         </div>
       </div>
     `;
-  }
-
-  /**
-   * Toggle activity log
-   */
-  toggleActivityLog() {
-    this.isActivityExpanded = !this.isActivityExpanded;
-    const log = document.getElementById('activity-log');
-    const arrow = document.getElementById('activity-arrow');
-    
-    if (this.isActivityExpanded) {
-      log?.classList.remove('hidden');
-      arrow?.classList.add('rotate-180');
-    } else {
-      log?.classList.add('hidden');
-      arrow?.classList.remove('rotate-180');
-    }
   }
 
   /**
