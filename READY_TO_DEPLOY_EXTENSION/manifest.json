@@ -21,7 +21,8 @@
         "https://driverpracticaltest.dvsa.gov.uk/*"
       ],
       "js": [
-        "content-script.js"
+        "content-script.js",
+        "dvsa-auto-booking.js"
       ],
       "run_at": "document_start",
       "all_frames": true,
