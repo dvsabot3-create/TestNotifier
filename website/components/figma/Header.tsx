@@ -69,7 +69,7 @@ export function Header() {
             <img
               src="/assets/logos/tn-logov2.png"
               alt="TN Test Notifier"
-              className="w-auto h-7 transition-opacity group-hover:opacity-80 cursor-pointer"
+              className="w-auto h-5 transition-opacity group-hover:opacity-80 cursor-pointer"
             />
           </div>
 
