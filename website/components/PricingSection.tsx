@@ -19,22 +19,77 @@ export function PricingSection() {
     // No need for modal if user already selected a plan
   }, [isAuthenticated]);
 
-  const handlePlanSelect = (planId: string) => {
-    // Store selected plan in localStorage for persistence across auth flow
+  const handlePlanSelect = async (planId: string) => {
+    // Store selected plan in localStorage
     localStorage.setItem('selected_plan', planId);
     localStorage.setItem('plan_selection_time', Date.now().toString());
     
     setSelectedPlan(planId);
 
     if (!isAuthenticated) {
-      // Store that we're in checkout flow
+      // Not authenticated - need to login first
       localStorage.setItem('checkout_in_progress', 'true');
       setShowAuthModal(true);
       return;
     }
 
-    // User is authenticated, show subscription modal
-    setShowSubscriptionModal(true);
+    // User IS authenticated - go STRAIGHT to Stripe checkout
+    console.log('User already authenticated - going straight to checkout for:', planId);
+    
+    const PLAN_TO_PRICE_ID: Record<string, string> = {
+      'oneoff': 'price_1SMSgh0xPOxdopWPJGe2jU3M',
+      'starter': 'price_1SMSgi0xPOxdopWPUKIVTL2s',
+      'premium': 'price_1SMSgj0xPOxdopWPWujQSxG8',
+      'professional': 'price_1SMSgl0xPOxdopWPQqujVkKi'
+    };
+
+    const PLAN_NAMES: Record<string, string> = {
+      'oneoff': 'One-Off Rebook',
+      'starter': 'Starter',
+      'premium': 'Premium',
+      'professional': 'Professional'
+    };
+
+    try {
+      const priceId = PLAN_TO_PRICE_ID[planId];
+      const planName = PLAN_NAMES[planId];
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+      const userData = localStorage.getItem('user_data') || localStorage.getItem('user');
+      
+      if (!userData) {
+        throw new Error('User data not found');
+      }
+
+      const user = JSON.parse(userData);
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          priceId: priceId,
+          planName: planName,
+          planType: planId === 'oneoff' ? 'one-time' : 'subscription',
+          customerEmail: user.email,
+          successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/cancel`
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        // IMMEDIATE redirect to Stripe
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(`Failed to start checkout: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact support.`);
+    }
   };
 
   const handleAuthSuccess = () => {
