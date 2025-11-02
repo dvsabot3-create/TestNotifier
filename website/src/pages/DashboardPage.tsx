@@ -8,24 +8,56 @@ const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+    const loadUserData = async () => {
+      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+      const userData = localStorage.getItem('user') || localStorage.getItem('user_data');
 
-    if (!token || !userData) {
-      navigate('/');
-      return;
-    }
+      if (!token || !userData) {
+        navigate('/');
+        return;
+      }
 
-    try {
-      const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-    } catch (error) {
-      console.error('Failed to parse user data:', error);
-      localStorage.clear();
-      navigate('/');
-    } finally {
-      setLoading(false);
-    }
+      try {
+        const parsedUser = JSON.parse(userData);
+        
+        // Fetch REAL subscription status from API
+        try {
+          const response = await fetch('/api/subscriptions/current', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            const subscriptionData = await response.json();
+            
+            // Update user with real subscription data
+            parsedUser.subscription = {
+              tier: subscriptionData.tier || 'free',
+              status: subscriptionData.status || 'active',
+              currentPeriodEnd: subscriptionData.currentPeriodEnd,
+              cancelAtPeriodEnd: subscriptionData.cancelAtPeriodEnd
+            };
+
+            // Update localStorage with fresh data
+            localStorage.setItem('user_data', JSON.stringify(parsedUser));
+            localStorage.setItem('user', JSON.stringify(parsedUser));
+          }
+        } catch (apiError) {
+          console.warn('Could not fetch subscription data, using cached:', apiError);
+        }
+
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
+        localStorage.clear();
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
   }, [navigate]);
 
   const handleLogout = () => {
