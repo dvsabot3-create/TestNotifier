@@ -14,18 +14,35 @@ export function PricingSection() {
 
   // Check URL parameters for plan selection (from auth redirect)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const planParam = params.get('plan');
-    const checkoutParam = params.get('checkout');
-    
-    if (planParam && checkoutParam === 'true' && isAuthenticated) {
-      console.log('Auto-opening subscription modal for plan:', planParam);
-      setSelectedPlan(planParam);
-      setShowSubscriptionModal(true);
+    // Small delay to ensure auth state is updated
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const planParam = params.get('plan');
+      const checkoutParam = params.get('checkout');
       
-      // Clean up URL parameters
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+      if (planParam && checkoutParam === 'true') {
+        console.log('Detected checkout flow for plan:', planParam);
+        setSelectedPlan(planParam);
+        
+        // Check authentication
+        const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+        const userData = localStorage.getItem('user_data') || localStorage.getItem('user');
+        
+        if (token && userData) {
+          console.log('User authenticated, opening subscription modal');
+          setShowSubscriptionModal(true);
+        } else {
+          console.log('User not authenticated, opening auth modal');
+          localStorage.setItem('checkout_in_progress', 'true');
+          setShowAuthModal(true);
+        }
+        
+        // Clean up URL parameters
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated]);
 
   const handlePlanSelect = (planId: string) => {
