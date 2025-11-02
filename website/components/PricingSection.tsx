@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Check, X, Star, Sparkles, Shield, Zap, TrendingUp, Crown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthModal } from "./auth/AuthModal";
 import { SubscriptionModal } from "./subscription/SubscriptionModal";
 import { useAuth } from "../src/contexts/AuthContext";
@@ -11,6 +11,22 @@ export function PricingSection() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('');
+
+  // Check URL parameters for plan selection (from auth redirect)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const planParam = params.get('plan');
+    const checkoutParam = params.get('checkout');
+    
+    if (planParam && checkoutParam === 'true' && isAuthenticated) {
+      console.log('Auto-opening subscription modal for plan:', planParam);
+      setSelectedPlan(planParam);
+      setShowSubscriptionModal(true);
+      
+      // Clean up URL parameters
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [isAuthenticated]);
 
   const handlePlanSelect = (planId: string) => {
     // Store selected plan in localStorage for persistence across auth flow
