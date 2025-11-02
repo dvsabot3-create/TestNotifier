@@ -22,12 +22,35 @@ export function ContactSupport() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitSuccess(true);
+        setFormData({ name: '', email: '', subject: '', message: '', priority: 'normal' });
+      } else {
+        // Handle validation errors
+        if (result.errors) {
+          const errorMessages = result.errors.map((error: any) => error.message).join('\n');
+          alert(`Please fix the following errors:\n${errorMessages}`);
+        } else {
+          alert(result.message || 'Failed to send message. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      alert('Failed to send message. Please try again later or contact us directly at hello@testnotifier.co.uk');
+    } finally {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setFormData({ name: '', email: '', subject: '', message: '', priority: 'normal' });
-    }, 2000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

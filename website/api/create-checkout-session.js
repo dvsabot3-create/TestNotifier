@@ -50,7 +50,7 @@ async function handler(req, res) {
     // Create checkout session
     const baseUrl = (req.headers.origin || process.env.FRONTEND_URL?.trim() || 'https://testnotifier.co.uk').replace(/\n/g, '');
     const successUrl = `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${baseUrl}/pricing`;
+    const cancelUrl = `${baseUrl}/cancel`;
 
     // Build checkout session configuration
     const sessionConfig = {
@@ -64,6 +64,7 @@ async function handler(req, res) {
       mode: planType === 'one-time' ? 'payment' : 'subscription',
       success_url: successUrl,
       cancel_url: cancelUrl,
+      customer_email: customerEmail,  // Pre-fill email
       metadata: {
         planName: planName,
         planType: planType,

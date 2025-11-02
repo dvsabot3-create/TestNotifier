@@ -26,6 +26,9 @@ import DashboardPage from './src/pages/DashboardPage';
 import DownloadExtension from './pages/DownloadExtension';
 import { HelpCenter } from './pages/HelpCenter';
 import { ContactSupport } from './pages/ContactSupport';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Settings from './pages/Settings';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,6 +103,9 @@ export default function App() {
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/support" element={<ContactSupport />} />
             <Route path="/contact" element={<ContactSupport />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/cancel" element={<CancelPage />} />
             <Route path="*" element={<HomePage />} />

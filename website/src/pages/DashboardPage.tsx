@@ -31,12 +31,15 @@ const DashboardPage: React.FC = () => {
           if (response.ok) {
             const subscriptionData = await response.json();
             
+            // Handle both response formats: { subscription: {...} } or {...}
+            const subData = subscriptionData.subscription || subscriptionData;
+            
             // Update user with real subscription data
             parsedUser.subscription = {
-              tier: subscriptionData.tier || 'free',
-              status: subscriptionData.status || 'active',
-              currentPeriodEnd: subscriptionData.currentPeriodEnd,
-              cancelAtPeriodEnd: subscriptionData.cancelAtPeriodEnd
+              tier: subData.tier || 'free',
+              status: subData.status || 'active',
+              currentPeriodEnd: subData.currentPeriodEnd,
+              cancelAtPeriodEnd: subData.cancelAtPeriodEnd
             };
 
             // Update localStorage with fresh data

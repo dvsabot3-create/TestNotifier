@@ -69,25 +69,9 @@ async function handler(req, res) {
   }
 }
 
-// Helper function to update customer email to hello@testnotifier.co.uk
-async function updateCustomerEmail(customerId, email = 'hello@testnotifier.co.uk') {
-  try {
-    await stripe.customers.update(customerId, {
-      email: email,
-      metadata: {
-        support_email: email,
-        business_email: email,
-        consolidated_email: 'true',
-        email_updated_date: new Date().toISOString()
-      }
-    });
-    console.log(`✅ Updated customer ${customerId} with email ${email}`);
-    return true;
-  } catch (error) {
-    console.error('❌ Error updating customer email:', error);
-    return false;
-  }
-}
+// REMOVED: Questionable email update logic
+// Do NOT change customer emails - prevents them receiving receipts
+// Stripe sends invoices to customer email, not metadata
 
 // Webhook event handlers
 async function handleCheckoutCompleted(session) {
@@ -134,7 +118,7 @@ async function handleCheckoutCompleted(session) {
     
     // Update customer email for support
     if (customerId) {
-      await updateCustomerEmail(customerId);
+      // Removed email update - let Stripe handle customer emails
     }
     
     console.log('✅ Checkout completed successfully for:', customerEmail);
@@ -177,7 +161,7 @@ async function handleSubscriptionCreated(subscription) {
     
     // Update customer email
     if (customerId) {
-      await updateCustomerEmail(customerId);
+      // Removed email update - let Stripe handle customer emails
     }
   } catch (error) {
     console.error('❌ Error handling subscription creation:', error);
@@ -211,7 +195,7 @@ async function handleSubscriptionUpdated(subscription) {
     }
     
     if (customerId) {
-      await updateCustomerEmail(customerId);
+      // Removed email update - let Stripe handle customer emails
     }
   } catch (error) {
     console.error('❌ Error handling subscription update:', error);
@@ -242,7 +226,7 @@ async function handleSubscriptionDeleted(subscription) {
     }
     
     if (customerId) {
-      await updateCustomerEmail(customerId);
+      // Removed email update - let Stripe handle customer emails
     }
   } catch (error) {
     console.error('❌ Error handling subscription deletion:', error);
@@ -390,7 +374,7 @@ async function handlePaymentIntentFailed(paymentIntent) {
     }
     
     if (customerId) {
-      await updateCustomerEmail(customerId);
+      // Removed email update - let Stripe handle customer emails
     }
   } catch (error) {
     console.error('❌ Error handling payment failure:', error);

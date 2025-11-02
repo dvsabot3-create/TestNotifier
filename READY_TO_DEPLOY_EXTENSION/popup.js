@@ -46,7 +46,19 @@ class TestNotifierPopup {
     console.log('🚀 Initializing TestNotifier popup (COMPLETE VERSION)...');
     
     try {
+      // Check if user is authenticated
+      const result = await chrome.storage.local.get(['authToken']);
+      
+      if (!result.authToken) {
+        // Not authenticated - show login screen
+        console.log('⚠️ User not authenticated - showing login screen');
+        this.showLoginScreen();
+        return;
+      }
+      
+      // User is authenticated - load app
       await this.loadAllData();
+      this.hideLoginScreen();
       this.setupEventListeners();
       this.setupMessageListener();
       this.updateUI();
@@ -56,6 +68,72 @@ class TestNotifierPopup {
     } catch (error) {
       console.error('❌ Error initializing popup:', error);
       this.showError('Initialization failed. Please reload the extension.');
+    }
+  }
+  
+  /**
+   * Show login screen
+   */
+  showLoginScreen() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('main-app').style.display = 'none';
+    document.querySelector('.content').style.display = 'none';
+    document.querySelector('.footer').style.display = 'none';
+    
+    // Setup login button
+    document.getElementById('btn-signin-google').addEventListener('click', () => {
+      this.handleGoogleSignIn();
+    });
+  }
+  
+  /**
+   * Hide login screen
+   */
+  hideLoginScreen() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('main-app').style.display = 'block';
+    document.querySelector('.content').style.display = 'block';
+    document.querySelector('.footer').style.display = 'flex';
+  }
+  
+  /**
+   * Handle Google Sign In from extension
+   */
+  async handleGoogleSignIn() {
+    try {
+      // Open website login in new tab with extension=true parameter
+      const loginUrl = 'https://testnotifier.co.uk/?action=extension-login';
+      await chrome.tabs.create({ url: loginUrl });
+      
+      // Listen for auth token message from website
+      window.addEventListener('message', async (event) => {
+        if (event.data.type === 'TESTNOTIFIER_AUTH' && event.data.token) {
+          // Store token
+          await chrome.storage.local.set({ 
+            authToken: event.data.token,
+            user: event.data.user
+          });
+          
+          // Reload popup
+          window.location.reload();
+        }
+      });
+      
+      // Also listen via chrome.runtime.onMessage for cross-origin
+      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'AUTH_SUCCESS') {
+          chrome.storage.local.set({
+            authToken: message.token,
+            user: message.user
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error during sign in:', error);
+      alert('Failed to open sign in page. Please visit testnotifier.co.uk directly.');
     }
   }
 
@@ -129,7 +207,9 @@ class TestNotifierPopup {
     console.log('🔐 Loading subscription from backend API...');
     
     try {
-      const response = await fetch('https://testnotifier.co.uk/api/subscriptions/current', {
+      const apiUrl = 'https://testnotifier.co.uk/api/subscriptions/current';
+      
+      const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -138,7 +218,11 @@ class TestNotifierPopup {
       });
       
       if (response.ok) {
-        const subscription = await response.json();
+        const responseData = await response.json();
+        
+        // Handle both response formats: { subscription: {...} } or {...}
+        const subscription = responseData.subscription || responseData;
+        
         console.log('✅ Subscription loaded:', subscription.tier);
         
         // Save to storage for offline use
