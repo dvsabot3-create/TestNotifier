@@ -34,30 +34,78 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleDownloadExtension = () => {
-    window.open('/download-extension', '_blank');
+    const tier = user?.subscription?.tier || 'free';
+    
+    // Map subscription tier to extension file
+    const extensionFiles: Record<string, string> = {
+      'professional': '/downloads/testnotifier-extension-professional.zip',
+      'premium': '/downloads/testnotifier-extension-final.zip',
+      'starter': '/downloads/testnotifier-extension.zip',
+      'oneoff': '/downloads/testnotifier-extension-simple.zip',
+      'free': '/downloads/testnotifier-extension.zip'
+    };
+
+    const downloadUrl = extensionFiles[tier] || extensionFiles['free'];
+    const filename = `testnotifier-extension-${tier}.zip`;
+
+    // Create download link
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Track download
+    if (window.gtag) {
+      window.gtag('event', 'extension_download', {
+        event_category: 'extension',
+        event_label: tier,
+        value: 1
+      });
+    }
+
+    // Show success notification
+    alert(`✅ Extension downloaded!\n\nFile: ${filename}\n\nNext steps:\n1. Extract the ZIP file\n2. Go to chrome://extensions\n3. Enable Developer mode\n4. Click "Load unpacked"\n5. Select the extracted folder`);
   };
 
   const handleManageBilling = async () => {
     try {
-      // Create Stripe billing portal session via backend
-      const response = await fetch('/api/billing/create-portal-session', {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login again to manage billing.');
+        navigate('/');
+        return;
+      }
+
+      // Create Stripe billing portal session
+      const response = await fetch('/api/billing/portal', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          returnUrl: window.location.origin + '/dashboard'
+        })
       });
       
       if (response.ok) {
-        const { url } = await response.json();
-        window.open(url, '_blank');
+        const data = await response.json();
+        if (data.url || data.data?.url) {
+          window.location.href = data.url || data.data.url;
+        } else {
+          throw new Error('No portal URL returned');
+        }
       } else {
-        console.error('Failed to create billing portal session');
-        alert('Unable to open billing portal. Please contact support.');
+        const errorData = await response.json();
+        console.error('Failed to create billing portal session:', errorData);
+        alert('Unable to open billing portal. Please contact support at hello@testnotifier.co.uk');
       }
     } catch (error) {
       console.error('Error creating billing portal session:', error);
-      alert('Unable to open billing portal. Please contact support.');
+      alert('Unable to open billing portal. Please contact support at hello@testnotifier.co.uk');
     }
   };
 
@@ -171,7 +219,7 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
             <button
-              onClick={() => navigate('/#pricing')}
+              onClick={() => window.location.href = '/#pricing'}
               className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
               {status === 'inactive' ? 'Choose a Plan' : 'Upgrade Plan'}
@@ -214,7 +262,7 @@ const DashboardPage: React.FC = () => {
             </button>
 
             <button
-              onClick={() => navigate('/settings')}
+              onClick={() => window.location.href = '/settings'}
               className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors"
             >
               <Settings className="w-6 h-6 text-purple-600" />

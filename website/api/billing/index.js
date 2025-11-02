@@ -9,8 +9,8 @@ async function handler(req, res) {
         return subscription(req, res);
 
       case 'portal':
-        const { portal } = await import('./portal.js');
-        return portal(req, res);
+        const portalHandler = require('./portal.js');
+        return portalHandler(req, res);
 
       case 'plans':
         const { plans } = await import('./plans.js');
