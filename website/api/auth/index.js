@@ -1,7 +1,8 @@
-const express = require('express');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import jwt from 'jsonwebtoken';
+
 const router = express.Router();
 
 // Configure passport with Google Strategy
@@ -74,4 +75,4 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-module.exports = router;
+export default router;

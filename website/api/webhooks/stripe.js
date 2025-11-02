@@ -1,7 +1,9 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import Stripe from 'stripe';
+import { connectDatabase } from '../../config/database.js';
+import User from '../../models/User.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const { connectDatabase } = require('../../config/database');
-const User = require('../../models/User');
 
 export default async function handler(req, res) {
   // Connect to database

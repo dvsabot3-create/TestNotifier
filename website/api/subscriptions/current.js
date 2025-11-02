@@ -1,7 +1,9 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const jwt = require('jsonwebtoken');
-const { connectDatabase } = require('../../config/database');
-const User = require('../../models/User');
+import Stripe from 'stripe';
+import jwt from 'jsonwebtoken';
+import { connectDatabase } from '../../config/database.js';
+import User from '../../models/User.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

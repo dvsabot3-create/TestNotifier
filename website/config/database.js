@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 let isConnected = false;
 
-async function connectDatabase() {
+export async function connectDatabase() {
   if (isConnected) {
     console.log('✅ Using existing database connection');
     return;
@@ -40,5 +40,5 @@ async function connectDatabase() {
   }
 }
 
-module.exports = { connectDatabase, isConnected: () => isConnected };
+export const getConnectionStatus = () => isConnected;
 

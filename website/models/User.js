@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   // Basic Information
@@ -162,5 +162,5 @@ userSchema.methods.incrementRebookUsage = async function() {
   await this.save();
 };
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);
 
