@@ -38,7 +38,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'oneoff',
     name: 'One-Off Rebook',
-    price: 30.00,
+    price: 25.00,
     interval: 'once',
     description: 'Single rebook attempt',
     features: [
@@ -49,13 +49,13 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'No recurring charges',
       '5 daily notifications max'
     ],
-    buttonText: 'Pay £30 Once',
-    priceId: 'price_oneoff'
+    buttonText: 'Pay £25 Once',
+    priceId: 'price_1SMSgh0xPOxdopWPJGe2jU3M'
   },
   {
     id: 'starter',
     name: 'Starter',
-    price: 25.00,
+    price: 19.00,
     interval: 'month',
     description: 'For occasional needs',
     features: [
@@ -66,17 +66,15 @@ const subscriptionPlans: SubscriptionPlan[] = [
       '3-day preview access',
       'Cancel anytime'
     ],
-    trialDays: 7,
-    trialLimitation: 'Monitoring only during trial',
-    buttonText: 'Start 7-Day Trial',
-    priceId: 'price_starter_monthly',
+    buttonText: 'Subscribe Now',
+    priceId: 'price_1SMSgi0xPOxdopWPUKIVTL2s',
     rebooksPerDay: 2,
     notificationsPerDay: 10
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 45.00,
+    price: 29.00,
     interval: 'month',
     description: 'Best for active learners',
     features: [
@@ -90,17 +88,15 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Cancel anytime'
     ],
     popular: true,
-    trialDays: 7,
-    trialLimitation: 'Monitoring only during trial',
-    buttonText: 'Start 7-Day Trial',
-    priceId: 'price_premium_monthly',
+    buttonText: 'Subscribe Now',
+    priceId: 'price_1SMSgj0xPOxdopWPWujQSxG8',
     rebooksPerDay: 5,
     notificationsPerDay: 25
   },
   {
-    id: 'pro',
+    id: 'professional',
     name: 'Professional',
-    price: 80.00,
+    price: 89.00,
     interval: 'month',
     description: 'For driving instructors',
     features: [
@@ -113,10 +109,8 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Priority phone support',
       'Stealth mode (anti-detection)'
     ],
-    trialDays: 14,
-    trialLimitation: 'Full access + 2 rebooks during trial',
-    buttonText: 'Start 14-Day Trial',
-    priceId: 'price_pro_monthly'
+    buttonText: 'Subscribe Now',
+    priceId: 'price_1SMSgl0xPOxdopWPQqujVkKi'
   }
 ];
 
@@ -146,30 +140,45 @@ export function SubscriptionModal({ isOpen, onClose, source, currentPlan }: Subs
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/subscription/create-checkout-session', {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+      const userData = localStorage.getItem('user_data') || localStorage.getItem('user');
+      
+      if (!token || !userData) {
+        alert('Please login to subscribe');
+        setIsLoading(false);
+        return;
+      }
+
+      const user = JSON.parse(userData);
+
+      // Use the correct API endpoint
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           priceId: plan.priceId,
-          planId: planId,
-          billingInterval: billingInterval,
-          successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/subscription/cancel`
+          planName: plan.name,
+          planType: plan.interval === 'once' ? 'one-time' : 'subscription',
+          customerEmail: user.email,
+          successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/cancel`
         })
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        window.location.href = data.checkoutUrl;
+      if (response.ok && data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
       } else {
-        throw new Error(data.message || 'Failed to create checkout session');
+        throw new Error(data.error || 'Failed to create checkout session');
       }
     } catch (error) {
       console.error('Subscription error:', error);
+      alert(`Failed to start checkout: ${error instanceof Error ? error.message : 'Unknown error'}`);
       trackEvent('subscription_error', 'error', 'checkout_session_failed');
     } finally {
       setIsLoading(false);
