@@ -3,16 +3,32 @@ import { Bell, Chrome, PlayCircle, Sparkles, Calendar, MapPin, Clock } from "luc
 
 export function HeroSection() {
   const handleInstallClick = () => {
-    // Download the extension zip file
-    const link = document.createElement('a');
-    link.href = '/downloads/testnotifier-extension.zip';
-    link.download = 'testnotifier-extension.zip';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Scroll to How It Works section which has installation guide
+    const howItWorksSection = document.querySelector('.how-it-works-section');
+    if (howItWorksSection) {
+      howItWorksSection.scrollIntoView({ behavior: 'smooth' });
+    }
     
-    // Show success message
-    alert('🎉 Extension downloaded!\n\n📁 Check your Downloads folder\n\n📖 Installation guide:\n1. Extract the ZIP file\n2. Open Chrome → Extensions\n3. Enable Developer mode\n4. Click "Load unpacked"\n5. Select the extracted folder\n\n✅ Ready to monitor test slots!');
+    // Show success message via custom modal
+    setTimeout(() => {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 24px 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 10000; max-width: 500px; border: 2px solid #28a745;';
+      modal.innerHTML = `
+        <div style="display: flex; align-items: start; gap: 16px;">
+          <div style="font-size: 32px;">🎉</div>
+          <div style="flex: 1;">
+            <h3 style="margin: 0 0 8px 0; color: #1d70b8; font-size: 18px; font-weight: 600;">Extension Available!</h3>
+            <p style="margin: 0 0 12px 0; color: #374151; font-size: 14px; line-height: 1.5;">Scroll down to the installation guide to download and set up the extension in Chrome.</p>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="this.closest('div[style*=fixed]').remove();" style="background: #1d70b8; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">Got it!</button>
+            </div>
+          </div>
+          <button onclick="this.closest('div[style*=fixed]').remove();" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1;">×</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      setTimeout(() => modal.remove(), 8000);
+    }, 800);
   };
 
   const handleDemoClick = () => {
@@ -70,7 +86,7 @@ export function HeroSection() {
                 </span>
               </h1>
               <p className="text-xl text-white/80 leading-relaxed max-w-xl">
-                Get instant notifications when earlier DVSA test dates appear. Built for learners and instructors managing multiple pupils - with smart monitoring that actually works.
+                Get instant notifications when earlier DVSA test dates appear. Built for learners and driving instructors managing multiple pupils—with intelligent, reliable monitoring.
               </p>
             </div>
 

@@ -22,9 +22,6 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { icon: Twitter, href: "#", label: "Twitter", color: "#1DA1F2" },
-    { icon: Facebook, href: "#", label: "Facebook", color: "#4267B2" },
-    { icon: Linkedin, href: "#", label: "LinkedIn", color: "#0077b5" },
     { icon: Mail, href: "mailto:hello@testnotifier.co.uk", label: "Email", color: "#EA4335" }
   ];
 

@@ -2,9 +2,8 @@ import { trackApiCall } from './analytics';
 import { logError, logInfo } from './logging';
 
 // API Configuration
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://api.testnotifier.co.uk'
-  : 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  || (import.meta.env.PROD ? 'https://testnotifier.co.uk/api' : 'http://localhost:3001');
 
 const API_TIMEOUT = 30000; // 30 seconds
 

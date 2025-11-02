@@ -2,7 +2,8 @@ import axios from 'axios';
 import { trackUserRegistration, trackUserLogin } from '../config/monitoring';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  || (import.meta.env.PROD ? 'https://testnotifier.co.uk/api' : 'http://localhost:5001/api');
 
 // Create axios instance
 const api = axios.create({

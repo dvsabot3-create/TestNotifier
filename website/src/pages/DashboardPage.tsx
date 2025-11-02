@@ -37,8 +37,28 @@ const DashboardPage: React.FC = () => {
     window.open('/download-extension', '_blank');
   };
 
-  const handleManageBilling = () => {
-    window.open('https://billing.stripe.com/p/login/test_xxxx', '_blank');
+  const handleManageBilling = async () => {
+    try {
+      // Create Stripe billing portal session via backend
+      const response = await fetch('/api/billing/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const { url } = await response.json();
+        window.open(url, '_blank');
+      } else {
+        console.error('Failed to create billing portal session');
+        alert('Unable to open billing portal. Please contact support.');
+      }
+    } catch (error) {
+      console.error('Error creating billing portal session:', error);
+      alert('Unable to open billing portal. Please contact support.');
+    }
   };
 
   const getTierIcon = (tier: string) => {

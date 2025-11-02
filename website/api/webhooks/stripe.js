@@ -260,9 +260,41 @@ async function handlePaymentSucceeded(invoice) {
     await updateCustomerEmail(customerId);
   }
 
-  // TODO: Handle successful recurring payments
-  // - Extend subscription period
-  // - Send payment confirmation
+  // Handle successful recurring payments
+  try {
+    const User = require('../models/User'); // Assuming User model exists
+    const user = await User.findOne({ stripeCustomerId: customerId });
+    
+    if (user) {
+      // Update subscription status to active
+      user.subscription.status = 'active';
+      user.subscription.currentPeriodEnd = new Date(invoice.period_end * 1000);
+      user.subscription.lastPaymentDate = new Date();
+      
+      // Grant access based on subscription tier
+      const subscriptionItem = invoice.lines.data[0];
+      const priceId = subscriptionItem?.price?.id;
+      
+      // Map price IDs to tiers (these should match your Stripe price IDs)
+      const tierMap = {
+        // Add your actual Stripe price IDs here
+        'price_starter': 'starter',
+        'price_premium': 'premium',
+        'price_professional': 'professional'
+      };
+      
+      user.subscription.tier = tierMap[priceId] || user.subscription.tier;
+      
+      await user.save();
+      
+      // Send payment confirmation email (implement email service)
+      console.log(`✅ Payment confirmed for user ${user.email}, tier: ${user.subscription.tier}`);
+      // TODO: Implement actual email sending
+      // await sendEmail(user.email, 'Payment Confirmed', confirmationTemplate);
+    }
+  } catch (error) {
+    console.error('Error handling payment success:', error);
+  }
 }
 
 async function handlePaymentFailed(invoice) {
@@ -275,10 +307,35 @@ async function handlePaymentFailed(invoice) {
     await updateCustomerEmail(customerId);
   }
 
-  // TODO: Handle failed payments
-  // - Send payment failure notification
-  // - Implement retry logic
-  // - Handle subscription suspension
+  // Handle failed payments
+  try {
+    const User = require('../models/User');
+    const user = await User.findOne({ stripeCustomerId: customerId });
+    
+    if (user) {
+      // Update subscription status
+      const attemptCount = invoice.attempt_count || 1;
+      
+      if (attemptCount < 3) {
+        // Still retrying
+        user.subscription.status = 'past_due';
+        console.log(`⚠️ Payment failed for ${user.email}, attempt ${attemptCount}/3`);
+        // TODO: Send retry notification email
+        // await sendEmail(user.email, 'Payment Failed - Retrying', retryTemplate);
+      } else {
+        // Final failure - suspend service
+        user.subscription.status = 'suspended';
+        user.subscription.suspendedAt = new Date();
+        console.log(`❌ Payment failed final attempt for ${user.email}, suspending service`);
+        // TODO: Send final failure notification
+        // await sendEmail(user.email, 'Subscription Suspended', suspensionTemplate);
+      }
+      
+      await user.save();
+    }
+  } catch (error) {
+    console.error('Error handling payment failure:', error);
+  }
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent) {
@@ -291,9 +348,31 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
     await updateCustomerEmail(customerId);
   }
 
-  // TODO: Handle successful one-time payments
-  // - Grant access to service
-  // - Send confirmation email
+  // Handle successful one-time payments (e.g., One-Off Rebook)
+  try {
+    const User = require('../models/User');
+    const user = await User.findOne({ stripeCustomerId: customerId });
+    
+    if (user && paymentIntent.metadata?.type === 'oneoff') {
+      // Grant one-off rebook quota
+      user.rebookQuota = (user.rebookQuota || 0) + 1;
+      user.lastPurchaseDate = new Date();
+      user.oneOffPurchases = user.oneOffPurchases || [];
+      user.oneOffPurchases.push({
+        date: new Date(),
+        amount: paymentIntent.amount / 100, // Convert from cents
+        paymentIntentId: paymentIntent.id
+      });
+      
+      await user.save();
+      
+      console.log(`✅ One-off payment confirmed for ${user.email}, granted 1 rebook quota`);
+      // TODO: Send receipt and confirmation email
+      // await sendEmail(user.email, 'Purchase Confirmed', receiptTemplate);
+    }
+  } catch (error) {
+    console.error('Error handling payment intent success:', error);
+  }
 }
 
 async function handlePaymentIntentFailed(paymentIntent) {
