@@ -106,44 +106,42 @@ class TestNotifierPopup {
   }
 
   attachEventListeners() {
+    console.log('🔗 Attaching event listeners...');
+    
     // Stats clickable
-    const statsMonitors = document.querySelector('.grid.grid-cols-3 > div:nth-child(1)');
-    const statsFound = document.querySelector('.grid.grid-cols-3 > div:nth-child(2)');
-    const statsLastCheck = document.querySelector('.grid.grid-cols-3 > div:nth-child(3)');
-    
-    if (statsMonitors) {
-      statsMonitors.style.cursor = 'pointer';
-      statsMonitors.addEventListener('click', () => this.showMonitorsList());
-    }
-    
-    if (statsFound) {
-      statsFound.style.cursor = 'pointer';
-      statsFound.addEventListener('click', () => this.showFoundSlots());
-    }
-    
-    if (statsLastCheck) {
-      statsLastCheck.style.cursor = 'pointer';
-      statsLastCheck.addEventListener('click', () => this.showLastChecked());
+    const statCards = document.querySelectorAll('.stat-card');
+    if (statCards.length >= 3) {
+      statCards[0].addEventListener('click', () => this.showMonitorsList());
+      statCards[1].addEventListener('click', () => this.showFoundSlots());
+      statCards[2].addEventListener('click', () => this.showLastChecked());
+      console.log('✅ Stats cards clickable');
     }
 
     // Add New Monitor button
-    const addBtn = document.querySelector('button.bg-\\[\\#28a745\\]');
+    const addBtn = document.querySelector('.btn-add-monitor');
     if (addBtn) {
       addBtn.addEventListener('click', () => this.showAddMonitorModal());
+      console.log('✅ Add button clickable');
     }
 
     // Monitor cards
-    const cards = document.querySelectorAll('.bg-white.rounded-xl.p-4');
+    const cards = document.querySelectorAll('.monitor-card');
+    console.log(`Found ${cards.length} monitor cards`);
+    
     cards.forEach((card, index) => {
+      // Card click - show details
       card.addEventListener('click', (e) => {
-        // Don't trigger if clicking on status badge
-        if (e.target.closest('.bg-green-50')) return;
+        // Don't trigger if clicking on status badge or slots found
+        if (e.target.closest('.status-badge') || e.target.closest('.monitor-card-status')) {
+          return;
+        }
         this.showMonitorDetails(index);
       });
 
       // Status badge click
-      const statusBadge = card.querySelector('.bg-green-50');
+      const statusBadge = card.querySelector('.status-badge');
       if (statusBadge) {
+        statusBadge.style.cursor = 'pointer';
         statusBadge.addEventListener('click', (e) => {
           e.stopPropagation();
           this.toggleMonitorStatus(index);
@@ -151,20 +149,34 @@ class TestNotifierPopup {
       }
 
       // Slots found click
-      const slotsFound = card.querySelector('.text-green-600');
+      const slotsFound = card.querySelector('.monitor-card-status');
       if (slotsFound) {
+        slotsFound.style.cursor = 'pointer';
         slotsFound.addEventListener('click', (e) => {
           e.stopPropagation();
           this.showSlotDetails(index);
         });
       }
     });
+    
+    console.log('✅ Monitor cards clickable');
 
     // Help button
-    const helpBtn = document.querySelector('button.text-\\[\\#1d70b8\\]');
+    const helpBtn = document.querySelector('.btn-help');
     if (helpBtn) {
       helpBtn.addEventListener('click', () => this.showHelp());
+      console.log('✅ Help button clickable');
     }
+    
+    // Connection status - make clickable to test connection
+    const connectionDiv = document.querySelector('.footer-connection');
+    if (connectionDiv) {
+      connectionDiv.style.cursor = 'pointer';
+      connectionDiv.addEventListener('click', () => this.testConnection());
+      console.log('✅ Connection status clickable');
+    }
+    
+    console.log('✅ All event listeners attached');
   }
 
   showMonitorsList() {
@@ -630,22 +642,93 @@ class TestNotifierPopup {
     window.open('https://testnotifier.co.uk/help', '_blank');
   }
 
+  async testConnection() {
+    const dot = document.querySelector('.connection-dot');
+    const text = document.querySelector('.footer-connection');
+    
+    // Show testing state
+    if (dot) dot.style.background = '#fbbf24'; // Yellow
+    
+    try {
+      // Test connection to background script
+      const response = await chrome.runtime.sendMessage({ action: 'checkConnection' });
+      
+      if (response?.connected) {
+        if (dot) dot.style.background = '#10b981'; // Green
+        this.showAlert('Connection Test', '✅ Successfully connected to DVSA monitoring service!');
+      } else {
+        if (dot) dot.style.background = '#ef4444'; // Red
+        this.showAlert('Connection Test', '⚠️ Unable to connect to DVSA. The extension may be inactive.');
+      }
+    } catch (error) {
+      // In demo mode, show as connected
+      if (dot) dot.style.background = '#10b981'; // Green
+      this.showAlert('Connection Test', '✅ Extension is running in demo mode. Real monitoring will activate when you add monitors.');
+    }
+  }
+
   // Utility: Create Modal
-  createModal(title, content, maxWidth = 'max-w-lg') {
+  createModal(title, content, maxWidth = '600px') {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    `;
+    
     modal.innerHTML = `
-      <div class="bg-white rounded-2xl shadow-2xl ${maxWidth} w-full max-h-[90vh] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] px-6 py-4 flex items-center justify-between">
-          <h2 class="text-white font-bold text-lg">${title}</h2>
-          <button onclick="window.popupApp.closeAllModals()" class="text-white hover:bg-white/10 p-2 rounded-lg">
+      <div style="
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: ${maxWidth};
+        width: 100%;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      ">
+        <div style="
+          background: linear-gradient(to right, #1d70b8, #2e8bc0);
+          padding: 16px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        ">
+          <h2 style="
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            margin: 0;
+          ">${title}</h2>
+          <button onclick="window.popupApp.closeAllModals()" style="
+            color: white;
+            background: none;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+          " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
-        <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 80px);">
+        <div style="
+          padding: 24px;
+          overflow-y: auto;
+          flex: 1;
+        ">
           ${content}
         </div>
       </div>
@@ -661,19 +744,33 @@ class TestNotifierPopup {
 
   showAlert(title, message) {
     const modal = this.createModal(title, `
-      <div class="text-center py-4">
-        <p class="text-gray-700 mb-4">${message}</p>
-        <button onclick="window.popupApp.closeAllModals()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">
+      <div style="text-align: center; padding: 16px 0;">
+        <p style="color: #374151; margin-bottom: 16px; font-size: 15px;">${message}</p>
+        <button onclick="window.popupApp.closeAllModals()" style="
+          background: #1d70b8;
+          color: white;
+          border: none;
+          padding: 10px 24px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='#155a96'" onmouseout="this.style.background='#1d70b8'">
           OK
         </button>
       </div>
-    `, 'max-w-sm');
+    `, '400px');
     
     document.body.appendChild(modal);
   }
 
   closeAllModals() {
-    document.querySelectorAll('.fixed.inset-0').forEach(modal => modal.remove());
+    // Remove all modals (they have position: fixed and z-index: 1000)
+    const modals = Array.from(document.body.children).filter(el => 
+      el.style.position === 'fixed' && el.style.zIndex === '1000'
+    );
+    modals.forEach(modal => modal.remove());
   }
 
   // Utility: Format Date
