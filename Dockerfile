@@ -52,6 +52,10 @@ RUN ls -la dist/ && test -f dist/index.html || (echo "ERROR: dist/index.html not
 # Copy server file and API routes
 COPY website/server.js ./
 COPY website/api ./api
+COPY website/config ./config
+COPY website/middleware ./middleware
+COPY website/models ./models
+COPY website/public/downloads ./public/downloads
 
 # Expose port (Render will override this with PORT env var)
 EXPOSE 3000

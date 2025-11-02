@@ -1,5 +1,5 @@
 // Unified billing handler to reduce serverless functions
-export default async function handler(req, res) {
+async function handler(req, res) {
   const { method, query: { action } } = req;
 
   try {
@@ -24,3 +24,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+module.exports = handler;
