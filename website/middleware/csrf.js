@@ -59,6 +59,11 @@ function csrfProtection(req, res, next) {
     return next();
   }
 
+  // Skip CSRF for checkout session creation (uses Bearer token auth instead)
+  if (req.path.includes('/create-checkout-session')) {
+    return next();
+  }
+
   const sessionId = req.sessionID || req.ip;
   const tokenData = csrfTokens.get(sessionId);
   

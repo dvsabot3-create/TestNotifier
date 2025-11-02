@@ -24,6 +24,8 @@ import CancelPage from './pages/CancelPage';
 import AuthCallbackPage from './src/pages/AuthCallbackPage';
 import DashboardPage from './src/pages/DashboardPage';
 import DownloadExtension from './pages/DownloadExtension';
+import { HelpCenter } from './pages/HelpCenter';
+import { ContactSupport } from './pages/ContactSupport';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -95,6 +97,9 @@ export default function App() {
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/download-extension" element={<DownloadExtension />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/support" element={<ContactSupport />} />
+            <Route path="/contact" element={<ContactSupport />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/cancel" element={<CancelPage />} />
             <Route path="*" element={<HomePage />} />
