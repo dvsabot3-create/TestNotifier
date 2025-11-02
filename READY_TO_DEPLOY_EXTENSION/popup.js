@@ -108,12 +108,14 @@ class TestNotifierPopup {
         id: 'demo-1',
         name: 'Sarah Johnson',
         licence: 'JOHNS123456J99AB',
+        email: 'sarah.j@demo.com', // DEMO
+        phone: '+447123456789', // DEMO
         currentTestDate: '2025-03-15',
         preferredTestDate: '2025-02-20',
         targetDate: '2025-03-15', // Backward compat
         location: 'Manchester',
         testCentres: ['Manchester (Bury Old Road)', 'Manchester (Cheetham Hill)'],
-        notifications: { email: true, sms: true, browser: true },
+        notifications: { email: true, sms: true, whatsapp: false, browser: true },
         status: 'active',
         slotsFound: 3,
         foundSlots: [
@@ -127,12 +129,14 @@ class TestNotifierPopup {
         id: 'demo-2',
         name: 'James Wilson',
         licence: 'WILSO987654W99BC',
+        email: 'james.w@demo.com', // DEMO
+        phone: '+447987654321', // DEMO
         currentTestDate: '2025-04-22',
         preferredTestDate: null, // No preference - any earlier slot
         targetDate: '2025-04-22',
         location: 'London',
         testCentres: ['London (Wood Green)', 'London (Palmers Green)'],
-        notifications: { email: true, sms: true, browser: true },
+        notifications: { email: true, sms: true, whatsapp: false, browser: true },
         status: 'active',
         slotsFound: 0,
         foundSlots: [],
@@ -142,12 +146,14 @@ class TestNotifierPopup {
         id: 'demo-3',
         name: 'Emily Davis',
         licence: 'DAVIS555555D99CD',
+        email: 'emily.d@demo.com', // DEMO
+        phone: '+447555123456', // DEMO
         currentTestDate: '2025-05-10',
         preferredTestDate: '2025-04-25',
         targetDate: '2025-05-10',
         location: 'Birmingham',
         testCentres: ['Birmingham (Garretts Green)', 'Birmingham (Kingstanding)'],
-        notifications: { email: true, sms: false, browser: true },
+        notifications: { email: true, sms: true, whatsapp: true, browser: true }, // Professional plan
         status: 'active',
         slotsFound: 1,
         foundSlots: [
@@ -1236,6 +1242,23 @@ class TestNotifierPopup {
           <div style="font-family: monospace; color: #374151;">${monitor.licence}</div>
         </div>
         <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Email Address</div>
+          <div style="color: #374151;">📧 ${monitor.email || 'Not provided'}</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Phone Number</div>
+          <div style="color: #374151;">📱 ${monitor.phone || 'Not provided'}</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Notification Methods</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+            ${monitor.notifications?.email ? '<div style="background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">📧 Email</div>' : ''}
+            ${monitor.notifications?.sms ? '<div style="background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">📱 SMS</div>' : ''}
+            ${monitor.notifications?.whatsapp ? '<div style="background: #ede9fe; color: #6b21a8; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">💬 WhatsApp</div>' : ''}
+            ${monitor.notifications?.browser ? '<div style="background: #fef3c7; color: #78350f; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">🔔 Browser</div>' : ''}
+          </div>
+        </div>
+        <div style="margin-bottom: 16px;">
           <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Current Test Date</div>
           <div style="color: #374151;">${this.formatDate(monitor.currentTestDate || monitor.targetDate)}</div>
         </div>
@@ -1542,6 +1565,68 @@ class TestNotifierPopup {
           <div id="license-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
         </div>
         
+        <!-- Email Address -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Email Address *</label>
+          <input type="email" id="student-email" required style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          " placeholder="sarah.johnson@example.com">
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">📧 Email notifications included in all plans</div>
+          <div id="email-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Phone Number -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">
+            Phone Number <span style="font-weight: 400; color: #6b7280;">(for SMS/WhatsApp) *</span>
+          </label>
+          <input type="tel" id="student-phone" required style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          " placeholder="+44 7123 456789">
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">📱 UK mobile number (required for Starter/Premium/Professional)</div>
+          <div id="phone-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
+        </div>
+        
+        <!-- Notification Preferences -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Notification Methods</label>
+          <div style="background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="notif-email" checked style="cursor: pointer; width: 16px; height: 16px;">
+                <span style="font-weight: 500;">📧 Email Notifications</span>
+                <span style="font-size: 11px; color: #059669; background: #d1fae5; padding: 2px 6px; border-radius: 3px; margin-left: auto;">All Plans</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="notif-sms" checked style="cursor: pointer; width: 16px; height: 16px;">
+                <span style="font-weight: 500;">📱 SMS Notifications</span>
+                <span style="font-size: 11px; color: #1d70b8; background: #dbeafe; padding: 2px 6px; border-radius: 3px; margin-left: auto;">Starter+</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="notif-whatsapp" style="cursor: pointer; width: 16px; height: 16px;">
+                <span style="font-weight: 500;">💬 WhatsApp Notifications</span>
+                <span style="font-size: 11px; color: #7c3aed; background: #ede9fe; padding: 2px 6px; border-radius: 3px; margin-left: auto;">Professional</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="notif-browser" checked style="cursor: pointer; width: 16px; height: 16px;">
+                <span style="font-weight: 500;">🔔 Browser Notifications</span>
+                <span style="font-size: 11px; color: #059669; background: #d1fae5; padding: 2px 6px; border-radius: 3px; margin-left: auto;">All Plans</span>
+              </label>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 6px;">
+            ℹ️ Notification methods available depend on your subscription tier
+          </div>
+        </div>
+        
         <!-- Current Test Date -->
         <div style="margin-bottom: 16px;">
           <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Current Test Date *</label>
@@ -1628,6 +1713,8 @@ class TestNotifierPopup {
   setupAddMonitorForm(modal) {
     const nameInput = modal.querySelector('#student-name');
     const licenseInput = modal.querySelector('#license-number');
+    const emailInput = modal.querySelector('#student-email');
+    const phoneInput = modal.querySelector('#student-phone');
     const currentDateInput = modal.querySelector('#current-test-date');
     const preferredDateInput = modal.querySelector('#preferred-test-date');
     const searchInput = modal.querySelector('#centre-search');
@@ -1639,6 +1726,47 @@ class TestNotifierPopup {
     // Set minimum date to today
     currentDateInput.min = new Date().toISOString().split('T')[0];
     preferredDateInput.min = new Date().toISOString().split('T')[0];
+    
+    // Email validation
+    emailInput.addEventListener('blur', () => {
+      const value = emailInput.value.trim();
+      const error = modal.querySelector('#email-error');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (value && !emailPattern.test(value)) {
+        error.textContent = '❌ Invalid email format';
+        error.style.display = 'block';
+      } else {
+        error.style.display = 'none';
+      }
+    });
+    
+    // Phone validation (UK mobile)
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value;
+      const error = modal.querySelector('#phone-error');
+      
+      // Auto-format: add +44 if not present
+      if (value && !value.startsWith('+')) {
+        if (value.startsWith('0')) {
+          value = '+44 ' + value.substring(1);
+        } else if (value.startsWith('44')) {
+          value = '+' + value;
+        } else {
+          value = '+44 ' + value;
+        }
+        e.target.value = value;
+      }
+      
+      // Validate UK mobile format
+      const ukMobilePattern = /^\+44\s?[67]\d{9}$/;
+      if (value && !ukMobilePattern.test(value.replace(/\s/g, ''))) {
+        error.textContent = '❌ Invalid UK mobile number. Format: +44 7123 456789';
+        error.style.display = 'block';
+      } else {
+        error.style.display = 'none';
+      }
+    });
     
     // License validation
     licenseInput.addEventListener('input', (e) => {
@@ -1769,12 +1897,22 @@ class TestNotifierPopup {
   handleAddMonitor(modal) {
     const name = modal.querySelector('#student-name').value.trim();
     const license = modal.querySelector('#license-number').value.trim();
+    const email = modal.querySelector('#student-email').value.trim();
+    const phone = modal.querySelector('#student-phone').value.trim();
     const currentDate = modal.querySelector('#current-test-date').value;
     const preferredDate = modal.querySelector('#preferred-test-date').value;
+    
+    // Notification preferences
+    const notifEmail = modal.querySelector('#notif-email').checked;
+    const notifSMS = modal.querySelector('#notif-sms').checked;
+    const notifWhatsApp = modal.querySelector('#notif-whatsapp').checked;
+    const notifBrowser = modal.querySelector('#notif-browser').checked;
     
     // Validation
     const nameError = modal.querySelector('#name-error');
     const licenseError = modal.querySelector('#license-error');
+    const emailError = modal.querySelector('#email-error');
+    const phoneError = modal.querySelector('#phone-error');
     const dateError = modal.querySelector('#date-error');
     const centresError = modal.querySelector('#centres-error');
     
@@ -1807,6 +1945,26 @@ class TestNotifierPopup {
       }
     }
     
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      emailError.textContent = '❌ Valid email address required';
+      emailError.style.display = 'block';
+      hasError = true;
+    } else {
+      emailError.style.display = 'none';
+    }
+    
+    // Phone validation (UK mobile)
+    const ukMobilePattern = /^\+44\s?[67]\d{9}$/;
+    if (!phone || !ukMobilePattern.test(phone.replace(/\s/g, ''))) {
+      phoneError.textContent = '❌ Valid UK mobile number required (+44 7xxx xxx xxx)';
+      phoneError.style.display = 'block';
+      hasError = true;
+    } else {
+      phoneError.style.display = 'none';
+    }
+    
     // Date validation
     if (!currentDate || new Date(currentDate) < new Date()) {
       dateError.textContent = '❌ Current test date must be in the future';
@@ -1836,6 +1994,8 @@ class TestNotifierPopup {
       id: `monitor-${Date.now()}`,
       name,
       licence: license,
+      email: email,
+      phone: phone.replace(/\s/g, ''), // Remove spaces for storage
       currentTestDate: currentDate,
       preferredTestDate: preferredDate || null,
       targetDate: currentDate, // For backward compatibility
@@ -1847,7 +2007,12 @@ class TestNotifierPopup {
       location: window.selectedCentres[0].area,
       testCentres: window.selectedCentres.map(c => c.name),
       testCentresData: window.selectedCentres, // Full data with postcodes
-      notifications: { email: true, sms: true, browser: true },
+      notifications: {
+        email: notifEmail,
+        sms: notifSMS,
+        whatsapp: notifWhatsApp,
+        browser: notifBrowser
+      },
       status: 'active',
       slotsFound: 0,
       foundSlots: [],
