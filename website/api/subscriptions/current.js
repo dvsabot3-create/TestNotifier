@@ -84,6 +84,9 @@ function getPlanFeatures(planType) {
       rapidMode: false,
       stealthMode: false,
       prioritySupport: false,
+      analytics: false,
+      bulkOperations: false,
+      instructorMode: false
     },
     'starter': {
       multiPupil: true,
@@ -94,26 +97,36 @@ function getPlanFeatures(planType) {
       rapidMode: false,
       stealthMode: false,
       prioritySupport: false,
+      analytics: false,
+      bulkOperations: false,
+      instructorMode: false
     },
     'premium': {
       multiPupil: true,
       smsNotifications: true,
       whatsappNotifications: false,
       emailNotifications: true,
-      autoRebook: false,
+      autoRebook: true, // ✅ AUTO-BOOKING ENABLED
       rapidMode: true,
       stealthMode: false,
       prioritySupport: true,
+      analytics: true,
+      bulkOperations: true,
+      instructorMode: false
     },
     'professional': {
       multiPupil: true,
       smsNotifications: true,
-      whatsappNotifications: true,
+      whatsappNotifications: true, // ✅ WHATSAPP EXCLUSIVE
       emailNotifications: true,
       autoRebook: true,
       rapidMode: true,
-      stealthMode: true,
+      stealthMode: true, // ✅ STEALTH MODE EXCLUSIVE
       prioritySupport: true,
+      analytics: true,
+      bulkOperations: true,
+      instructorMode: true,
+      phoneSupport: true
     },
     'free': {
       multiPupil: false,
@@ -124,6 +137,9 @@ function getPlanFeatures(planType) {
       rapidMode: false,
       stealthMode: false,
       prioritySupport: false,
+      analytics: false,
+      bulkOperations: false,
+      instructorMode: false
     }
   };
   
@@ -132,11 +148,52 @@ function getPlanFeatures(planType) {
 
 function getPlanLimits(planType) {
   const limits = {
-    'oneoff': { pupils: 1, monitors: 1, notifications: 5 },
-    'starter': { pupils: 3, monitors: 3, notifications: 10 },
-    'premium': { pupils: 8, monitors: 8, notifications: 25 },
-    'professional': { pupils: 20, monitors: 999, notifications: 50 },
-    'free': { pupils: 1, monitors: 1, notifications: 1 }
+    'oneoff': { 
+      pupils: 1, 
+      monitors: 1, 
+      testCentres: 1,
+      rebooksPerDay: 1,
+      rebooksTotal: 1,
+      notificationsPerDay: 5,
+      checkFrequency: 120,
+      validityDays: 30
+    },
+    'starter': { 
+      pupils: 3, 
+      monitors: 10, 
+      testCentres: 3,
+      rebooksPerDay: 2,
+      notificationsPerDay: 10,
+      checkFrequency: 60,
+      validityDays: null
+    },
+    'premium': { 
+      pupils: 5, 
+      monitors: 20, 
+      testCentres: 5,
+      rebooksPerDay: 5,
+      notificationsPerDay: 25,
+      checkFrequency: 30,
+      validityDays: null
+    },
+    'professional': { 
+      pupils: 20, 
+      monitors: null, 
+      testCentres: 999,
+      rebooksPerDay: 10,
+      notificationsPerDay: 50,
+      checkFrequency: 15,
+      validityDays: null
+    },
+    'free': { 
+      pupils: 1, 
+      monitors: 1, 
+      testCentres: 1,
+      rebooksPerDay: 0,
+      notificationsPerDay: 1,
+      checkFrequency: 300,
+      validityDays: 7
+    }
   };
   
   return limits[planType] || limits['free'];

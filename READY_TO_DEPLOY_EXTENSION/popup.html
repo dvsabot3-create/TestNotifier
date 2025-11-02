@@ -25,10 +25,19 @@
       overflow-x: hidden;
     }
     
+    /* Tier Color System */
+    :root {
+      --tier-color: #28a745;
+      --tier-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      --tier-glow: rgba(40, 167, 69, 0.3);
+    }
+    
     /* Header */
     .header {
-      background: linear-gradient(to right, #1d70b8, #2e8bc0);
+      background: var(--tier-gradient);
       padding: 16px 20px;
+      position: relative;
+      box-shadow: 0 4px 20px var(--tier-glow);
     }
     
     .header-brand {
@@ -61,6 +70,23 @@
       color: #bfdbfe;
       font-size: 11px;
       margin-top: 2px;
+    }
+    
+    /* Tier Badge */
+    .tier-badge {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      padding: 6px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: white;
+      box-shadow: 0 0 20px var(--tier-glow);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
     
     /* Stats Bar */
@@ -559,6 +585,9 @@
   
   <!-- Header -->
   <div class="header">
+    <!-- Tier Badge -->
+    <div id="subscription-tier-badge" class="tier-badge">👑 PRO</div>
+    
     <!-- Brand -->
     <div class="header-brand">
       <div class="logo">

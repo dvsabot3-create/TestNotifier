@@ -161,37 +161,124 @@ class TestNotifierPopup {
     
     const tier = this.subscription.tier;
     
-    // Define tier limits
+    // Define tier limits with complete feature set
     const tierLimits = {
       'one-off': {
         maxMonitors: 1,
         maxTestCentres: 1,
-        maxRebooks: 1,
-        canAutoBook: false
+        maxRebooksPerDay: 1,
+        maxRebooksTotal: 1,
+        maxNotificationsPerDay: 5,
+        canAutoBook: false,
+        canUseSMS: false,
+        canUseWhatsApp: false,
+        canUseStealthMode: false,
+        canUseRapidMode: false,
+        checkFrequency: 120,
+        expiresInDays: 30
       },
       'starter': {
-        maxMonitors: 10, // Can monitor many students
-        maxTestCentres: 3, // But only 3 centres per student
-        maxRebooks: 2,
-        canAutoBook: false
+        maxMonitors: 10,
+        maxTestCentres: 3,
+        maxRebooksPerDay: 2,
+        maxNotificationsPerDay: 10,
+        canAutoBook: false,
+        canUseSMS: true,
+        canUseWhatsApp: false,
+        canUseStealthMode: false,
+        canUseRapidMode: false,
+        checkFrequency: 60,
+        duringTrial: { canRebook: false }
       },
       'premium': {
         maxMonitors: 20,
         maxTestCentres: 5,
-        maxRebooks: 5,
-        canAutoBook: true
+        maxRebooksPerDay: 5,
+        maxNotificationsPerDay: 25,
+        canAutoBook: true, // ✅ AUTO-BOOKING ENABLED
+        canUseSMS: true,
+        canUseWhatsApp: false,
+        canUseStealthMode: false,
+        canUseRapidMode: true,
+        checkFrequency: 30,
+        duringTrial: { canRebook: false }
       },
       'professional': {
         maxMonitors: null, // Unlimited
-        maxTestCentres: null, // Unlimited
-        maxRebooks: null, // Unlimited
-        canAutoBook: true
+        maxTestCentres: 999,
+        maxRebooksPerDay: 10,
+        maxNotificationsPerDay: 50,
+        canAutoBook: true,
+        canUseSMS: true,
+        canUseWhatsApp: true, // ✅ WHATSAPP EXCLUSIVE
+        canUseStealthMode: true, // ✅ STEALTH EXCLUSIVE
+        canUseRapidMode: true,
+        canUseInstructorMode: true,
+        checkFrequency: 15,
+        duringTrial: { canRebook: true, freeRebooks: 2 }
       }
     };
     
     this.limits = tierLimits[tier] || tierLimits['one-off'];
     
     console.log('🔒 Subscription limits enforced:', this.limits);
+  }
+  
+  /**
+   * Update extension header color based on subscription tier
+   */
+  updateExtensionHeaderColor() {
+    const tier = this.subscription?.tier || 'one-off';
+    
+    const tierColors = {
+      'one-off': {
+        primary: '#28a745',
+        gradient: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+        badge: '⚡ ONE-OFF',
+        glow: 'rgba(40, 167, 69, 0.3)'
+      },
+      'starter': {
+        primary: '#718096',
+        gradient: 'linear-gradient(135deg, #718096 0%, #4a5568 100%)',
+        badge: '🚀 STARTER',
+        glow: 'rgba(113, 128, 150, 0.3)'
+      },
+      'premium': {
+        primary: '#8b5cf6',
+        gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+        badge: '⭐ PREMIUM',
+        glow: 'rgba(139, 92, 246, 0.3)'
+      },
+      'professional': {
+        primary: '#1d70b8',
+        gradient: 'linear-gradient(135deg, #1d70b8 0%, #005ea5 100%)',
+        badge: '👑 PRO',
+        glow: 'rgba(29, 112, 184, 0.4)'
+      }
+    };
+    
+    const colors = tierColors[tier] || tierColors['one-off'];
+    
+    // Update header background
+    const header = document.querySelector('.header');
+    if (header) {
+      header.style.background = colors.gradient;
+      header.style.boxShadow = `0 4px 20px ${colors.glow}`;
+    }
+    
+    // Update tier badge
+    const tierBadge = document.getElementById('subscription-tier-badge');
+    if (tierBadge) {
+      tierBadge.textContent = colors.badge;
+      tierBadge.style.boxShadow = `0 0 20px ${colors.glow}`;
+    }
+    
+    // Set CSS variables for consistent theming
+    document.documentElement.style.setProperty('--tier-color', colors.primary);
+    document.documentElement.style.setProperty('--tier-gradient', colors.gradient);
+    document.documentElement.style.setProperty('--tier-glow', colors.glow);
+    
+    console.log(`🎨 Extension header color updated to: ${colors.badge}`);
   }
 
   /**
@@ -551,6 +638,7 @@ class TestNotifierPopup {
    * Update entire UI
    */
   updateUI() {
+    this.updateExtensionHeaderColor(); // Apply tier color coding
     this.updateHeader();
     this.updateStats();
     this.updateRiskIndicator();

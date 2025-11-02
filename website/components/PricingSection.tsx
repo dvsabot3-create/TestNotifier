@@ -31,8 +31,8 @@ export function PricingSection() {
 
   const plans = [
     {
-      name: "One-Off Rebook",
-      subtitle: "Single guaranteed rebook",
+      name: "One-Off Rescue",
+      subtitle: "Single urgent rebook",
       price: "£30",
       priceSuffix: "one-time",
       features: [
@@ -43,12 +43,13 @@ export function PricingSection() {
         { text: "No recurring charges", included: true },
         { text: "5 daily notifications max", included: true },
         { text: "SMS notifications", included: false },
-        { text: "Multiple rebooks", included: false }
+        { text: "Auto-rebooking", included: false }
       ],
       cta: "Pay £30 Once",
       highlighted: false,
       color: "#28a745",
-      badge: null
+      badge: null,
+      icon: "⚡"
     },
     {
       name: "Starter",
@@ -63,12 +64,14 @@ export function PricingSection() {
         { text: "Chrome extension access", included: true },
         { text: "Email support", included: true },
         { text: "7-day trial (monitoring only)", included: true },
+        { text: "Auto-rebooking", included: false },
         { text: "Cancel anytime", included: true }
       ],
-      cta: "Start Trial",
+      cta: "Start 7-Day Trial",
       highlighted: false,
-      color: "#6c757d",
+      color: "#718096",
       badge: null,
+      icon: "🚀",
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
@@ -82,19 +85,22 @@ export function PricingSection() {
         { text: "25 daily notifications max", included: true },
         { text: "Priority SMS + Email notifications", included: true },
         { text: "Rapid mode (500ms checks)", included: true },
+        { text: "Auto-rebooking enabled ✨", included: true },
         { text: "Advanced filtering", included: true },
+        { text: "Analytics dashboard", included: true },
         { text: "24/7 email support", included: true },
         { text: "7-day trial (monitoring only)", included: true }
       ],
-      cta: "Start Trial",
+      cta: "Start Premium Trial",
       highlighted: true,
-      color: "#1d70b8",
+      color: "#8b5cf6",
       badge: "Most Popular",
+      icon: "⭐",
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
       name: "Professional",
-      subtitle: "For driving schools",
+      subtitle: "Ultimate for instructors",
       price: "£80",
       priceSuffix: "/month",
       features: [
@@ -103,16 +109,17 @@ export function PricingSection() {
         { text: "50 daily notifications max", included: true },
         { text: "Multi-pupil dashboard", included: true },
         { text: "Per-pupil custom settings", included: true },
-        { text: "SMS + Email + WhatsApp alerts", included: true },
+        { text: "SMS + Email + WhatsApp alerts 📱", included: true },
+        { text: "Stealth mode (anti-detection) 🥷", included: true },
         { text: "Success rate analytics", included: true },
         { text: "Priority phone support", included: true },
-        { text: "Stealth mode (anti-detection)", included: true },
         { text: "14-day trial (includes 2 rebooks)", included: true }
       ],
-      cta: "Start Trial",
+      cta: "Start Professional Trial",
       highlighted: false,
-      color: "#8b5cf6",
-      badge: "For Instructors"
+      color: "#1d70b8",
+      badge: "Ultimate Professional",
+      icon: "👑"
     }
   ];
 
