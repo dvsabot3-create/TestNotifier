@@ -150,7 +150,16 @@ const DashboardPage: React.FC = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              {/* Logo */}
+              <a href="/" className="flex items-center hover:opacity-80 transition-opacity">
+                <img
+                  src="/assets/logos/tn-logov2.png"
+                  alt="TestNotifier"
+                  className="h-12 w-auto"
+                />
+              </a>
+              <div className="h-8 w-px bg-gray-300"></div>
               <h1 className="text-2xl font-bold text-gray-900">Account Portal</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -160,7 +169,7 @@ const DashboardPage: React.FC = () => {
                 )}
                 <span className="text-sm font-medium text-gray-700">{user.firstName} {user.lastName}</span>
               </div>
-              <button onClick={handleLogout} className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700">
+              <button onClick={handleLogout} className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">
                 <LogOut className="w-4 h-4" />
                 <span>Logout</span>
               </button>
