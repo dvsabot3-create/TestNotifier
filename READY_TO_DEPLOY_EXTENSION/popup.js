@@ -107,8 +107,10 @@ class TestNotifierPopup {
       {
         id: 'demo-1',
         name: 'Sarah Johnson',
-        licence: 'JOHNS123456J99',
-        targetDate: '2025-03-15',
+        licence: 'JOHNS123456J99AB',
+        currentTestDate: '2025-03-15',
+        preferredTestDate: '2025-02-20',
+        targetDate: '2025-03-15', // Backward compat
         location: 'Manchester',
         testCentres: ['Manchester (Bury Old Road)', 'Manchester (Cheetham Hill)'],
         notifications: { email: true, sms: true, browser: true },
@@ -124,7 +126,9 @@ class TestNotifierPopup {
       {
         id: 'demo-2',
         name: 'James Wilson',
-        licence: 'WILSO987654W99',
+        licence: 'WILSO987654W99BC',
+        currentTestDate: '2025-04-22',
+        preferredTestDate: null, // No preference - any earlier slot
         targetDate: '2025-04-22',
         location: 'London',
         testCentres: ['London (Wood Green)', 'London (Palmers Green)'],
@@ -137,7 +141,9 @@ class TestNotifierPopup {
       {
         id: 'demo-3',
         name: 'Emily Davis',
-        licence: 'DAVIS555555D99',
+        licence: 'DAVIS555555D99CD',
+        currentTestDate: '2025-05-10',
+        preferredTestDate: '2025-04-25',
         targetDate: '2025-05-10',
         location: 'Birmingham',
         testCentres: ['Birmingham (Garretts Green)', 'Birmingham (Kingstanding)'],
@@ -1113,8 +1119,8 @@ class TestNotifierPopup {
    * Show found slots
    */
   showFoundSlots() {
-    const allSlots = this.monitors.flatMap(m => 
-      m.foundSlots.map(slot => ({ ...slot, monitorName: m.name }))
+    const allSlots = this.monitors.flatMap((m, monitorIndex) => 
+      m.foundSlots.map(slot => ({ ...slot, monitorName: m.name, monitorIndex }))
     );
     
     const content = allSlots.length === 0 ? `
@@ -1127,7 +1133,12 @@ class TestNotifierPopup {
       <div>
         ${allSlots.map(slot => `
           <div style="padding: 12px; background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; margin-bottom: 8px;">
-            <div style="font-weight: 600; color: #065f46;">${slot.monitorName}</div>
+            <div class="monitor-name-link" data-monitor-index="${slot.monitorIndex}" style="
+              font-weight: 600;
+              color: #1d70b8;
+              cursor: pointer;
+              text-decoration: underline;
+            ">${slot.monitorName}</div>
             <div style="font-size: 13px; color: #047857; margin-top: 4px;">📅 ${this.formatDate(slot.date)} at ${slot.time}</div>
             <div style="font-size: 12px; color: #059669; margin-top: 2px;">📍 ${slot.centre}</div>
           </div>
@@ -1136,6 +1147,17 @@ class TestNotifierPopup {
     `;
     const modal = this.createModal('Found Slots', content, '450px');
     document.body.appendChild(modal);
+    
+    // Make monitor names clickable
+    setTimeout(() => {
+      modal.querySelectorAll('.monitor-name-link').forEach(link => {
+        link.addEventListener('click', () => {
+          const monitorIndex = parseInt(link.getAttribute('data-monitor-index'));
+          this.closeModal();
+          this.showMonitorDetails(monitorIndex);
+        });
+      });
+    }, 0);
   }
 
   /**
@@ -1215,8 +1237,15 @@ class TestNotifierPopup {
         </div>
         <div style="margin-bottom: 16px;">
           <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Current Test Date</div>
-          <div style="color: #374151;">${this.formatDate(monitor.targetDate)}</div>
+          <div style="color: #374151;">${this.formatDate(monitor.currentTestDate || monitor.targetDate)}</div>
         </div>
+        ${monitor.preferredTestDate ? `
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Preferred Test Date</div>
+            <div style="color: #059669; font-weight: 600;">${this.formatDate(monitor.preferredTestDate)}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Looking for slots BEFORE this date</div>
+          </div>
+        ` : ''}
         <div style="margin-bottom: 16px;">
           <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;">Test Centres</div>
           ${monitor.testCentres.map(c => `<div style="color: #374151; font-size: 12px; margin-top: 2px;">• ${c}</div>`).join('')}
@@ -1280,7 +1309,7 @@ class TestNotifierPopup {
     
     const content = `
       <div>
-        ${monitor.foundSlots.map(slot => `
+        ${monitor.foundSlots.map((slot, slotIndex) => `
           <div style="padding: 14px; background: #d1fae5; border: 2px solid #10b981; border-radius: 10px; margin-bottom: 10px;">
             <div style="font-weight: 700; font-size: 16px; color: #065f46; margin-bottom: 6px;">
               ${this.formatDate(slot.date)} at ${slot.time}
@@ -1288,8 +1317,18 @@ class TestNotifierPopup {
             <div style="font-size: 13px; color: #047857; margin-bottom: 8px;">
               📍 ${slot.centre}
             </div>
-            <button style="width: 100%; padding: 10px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-              Book This Slot
+            <button class="book-slot-btn" data-monitor-index="${index}" data-slot-index="${slotIndex}" style="
+              width: 100%;
+              padding: 10px;
+              background: #10b981;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: background 0.2s;
+            " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+              🚀 Book This Slot Now
             </button>
           </div>
         `).join('')}
@@ -1297,6 +1336,96 @@ class TestNotifierPopup {
     `;
     const modal = this.createModal(`Slots for ${monitor.name}`, content, '450px');
     document.body.appendChild(modal);
+    
+    // Attach booking button listeners - REAL AUTOMATION
+    setTimeout(() => {
+      modal.querySelectorAll('.book-slot-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const monitorIndex = parseInt(btn.getAttribute('data-monitor-index'));
+          const slotIndex = parseInt(btn.getAttribute('data-slot-index'));
+          await this.bookSlot(monitorIndex, slotIndex);
+        });
+      });
+    }, 0);
+  }
+
+  /**
+   * Book Slot - REAL AUTOMATION FOR PREMIUM MEMBERS
+   */
+  async bookSlot(monitorIndex, slotIndex) {
+    const monitor = this.monitors[monitorIndex];
+    const slot = monitor.foundSlots[slotIndex];
+    
+    console.log('📅 BOOKING SLOT:', slot, 'for', monitor.name);
+    
+    // Check subscription tier (only Premium and Professional can auto-book)
+    if (this.subscription.tier === 'free' || this.subscription.tier === 'one-off') {
+      this.closeModal();
+      this.showAlert('Upgrade Required', '⚠️ Auto-booking is only available for Premium and Professional members. Please upgrade your plan to use this feature.');
+      return;
+    }
+    
+    // Check rebook quota
+    const remaining = this.subscription.rebooksTotal - (this.stats.rebooksUsed || 0);
+    if (remaining <= 0 && this.subscription.tier !== 'professional') {
+      this.closeModal();
+      this.showAlert('Quota Exceeded', `⚠️ You have used all ${this.subscription.rebooksTotal} rebooks for this month. Upgrade to Professional for unlimited rebooks.`);
+      return;
+    }
+    
+    // Show confirmation
+    const confirmed = confirm(
+      `🚀 AUTO-BOOK SLOT\n\n` +
+      `Student: ${monitor.name}\n` +
+      `Date: ${this.formatDate(slot.date)} at ${slot.time}\n` +
+      `Centre: ${slot.centre}\n\n` +
+      `This will:\n` +
+      `1. Open DVSA booking page\n` +
+      `2. Fill in your details automatically\n` +
+      `3. Select this slot\n` +
+      `4. You review and confirm\n\n` +
+      `Proceed with auto-booking?`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      // Send booking request to background.js
+      const response = await chrome.runtime.sendMessage({
+        action: 'bookSlot',
+        slot: slot,
+        monitorId: monitor.id,
+        monitor: monitor
+      });
+      
+      if (response.success) {
+        // Update stats
+        this.stats.rebooksUsed++;
+        await chrome.storage.local.set({ stats: this.stats });
+        
+        // Close modal
+        this.closeModal();
+        
+        // Show success message
+        this.showAlert(
+          'Booking Started!',
+          `✅ Opening DVSA booking page and filling in details for ${monitor.name}. Please review and confirm the booking.`
+        );
+        
+        // Add to activity log
+        this.addActivity(`🚀 Auto-booking initiated for ${monitor.name}`);
+        
+        // Update UI
+        this.updateStats();
+        
+        console.log('✅ Booking initiated successfully');
+      } else {
+        throw new Error(response.error || 'Booking failed');
+      }
+    } catch (error) {
+      console.error('❌ Error booking slot:', error);
+      this.showAlert('Booking Error', `Failed to initiate booking: ${error.message}. Please try again or book manually.`);
+    }
   }
 
   /**
@@ -1416,13 +1545,27 @@ class TestNotifierPopup {
         <!-- Current Test Date -->
         <div style="margin-bottom: 16px;">
           <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Current Test Date *</label>
-          <input type="date" id="test-date" required style="
+          <input type="date" id="current-test-date" required style="
             width: 100%;
             padding: 10px;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 14px;
           ">
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">The test date you currently have booked</div>
+        </div>
+        
+        <!-- Preferred Test Date Range -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #374151;">Preferred Test Date (Optional)</label>
+          <input type="date" id="preferred-test-date" style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+          ">
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Monitor for any slots BEFORE this date (leave blank to find any earlier slot)</div>
           <div id="date-error" style="color: #dc2626; font-size: 11px; margin-top: 4px; display: none;"></div>
         </div>
         
@@ -1485,7 +1628,8 @@ class TestNotifierPopup {
   setupAddMonitorForm(modal) {
     const nameInput = modal.querySelector('#student-name');
     const licenseInput = modal.querySelector('#license-number');
-    const dateInput = modal.querySelector('#test-date');
+    const currentDateInput = modal.querySelector('#current-test-date');
+    const preferredDateInput = modal.querySelector('#preferred-test-date');
     const searchInput = modal.querySelector('#centre-search');
     const searchResults = modal.querySelector('#search-results');
     const selectedCentres = modal.querySelector('#selected-centres');
@@ -1493,7 +1637,8 @@ class TestNotifierPopup {
     const cancelBtn = modal.querySelector('.cancel-btn');
     
     // Set minimum date to today
-    dateInput.min = new Date().toISOString().split('T')[0];
+    currentDateInput.min = new Date().toISOString().split('T')[0];
+    preferredDateInput.min = new Date().toISOString().split('T')[0];
     
     // License validation
     licenseInput.addEventListener('input', (e) => {
@@ -1624,7 +1769,8 @@ class TestNotifierPopup {
   handleAddMonitor(modal) {
     const name = modal.querySelector('#student-name').value.trim();
     const license = modal.querySelector('#license-number').value.trim();
-    const date = modal.querySelector('#test-date').value;
+    const currentDate = modal.querySelector('#current-test-date').value;
+    const preferredDate = modal.querySelector('#preferred-test-date').value;
     
     // Validation
     const nameError = modal.querySelector('#name-error');
@@ -1662,8 +1808,12 @@ class TestNotifierPopup {
     }
     
     // Date validation
-    if (!date || new Date(date) < new Date()) {
-      dateError.textContent = '❌ Date must be in the future';
+    if (!currentDate || new Date(currentDate) < new Date()) {
+      dateError.textContent = '❌ Current test date must be in the future';
+      dateError.style.display = 'block';
+      hasError = true;
+    } else if (preferredDate && new Date(preferredDate) >= new Date(currentDate)) {
+      dateError.textContent = '❌ Preferred date must be BEFORE current test date';
       dateError.style.display = 'block';
       hasError = true;
     } else {
@@ -1686,14 +1836,23 @@ class TestNotifierPopup {
       id: `monitor-${Date.now()}`,
       name,
       licence: license,
-      targetDate: date,
+      currentTestDate: currentDate,
+      preferredTestDate: preferredDate || null,
+      targetDate: currentDate, // For backward compatibility
+      dateRange: {
+        from: new Date().toISOString().split('T')[0], // Today
+        to: currentDate, // Current test date
+        preferred: preferredDate || currentDate // Preferred or current
+      },
       location: window.selectedCentres[0].area,
       testCentres: window.selectedCentres.map(c => c.name),
+      testCentresData: window.selectedCentres, // Full data with postcodes
       notifications: { email: true, sms: true, browser: true },
       status: 'active',
       slotsFound: 0,
       foundSlots: [],
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
     
     // Add to monitors

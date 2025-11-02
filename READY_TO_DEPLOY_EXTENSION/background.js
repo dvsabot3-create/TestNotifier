@@ -1,25 +1,531 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
+/**
+ * TestNotifier Extension - Background Service Worker
+ * 
+ * Handles:
+ * - Extension lifecycle management
+ * - Communication between popup and content script
+ * - Monitoring coordination
+ * - State management
+ * - Notifications
+ */
 
-/***/ "./background.js":
-/*!***********************!*\
-  !*** ./background.js ***!
-  \***********************/
-/***/ (() => {
+// Extension state
+let state = {
+  monitors: [],
+  settings: {
+    autoCheck: true,
+    checkInterval: 30,
+    soundAlerts: true,
+    browserNotifications: true
+  },
+  isMonitoring: false,
+  subscription: null,
+  stats: {
+    monitorsCount: 0,
+    slotsFound: 0,
+    rebooksUsed: 0,
+    rebooksTotal: 5,
+    lastCheck: null
+  },
+  riskLevel: {
+    level: 'low',
+    percentage: 12
+  }
+};
 
-throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index.js):\nSyntaxError: /Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/background.js: Unexpected token (1304:4)\n\n  1302 |     return results;\n  1303 |\n> 1304 |   } catch (error) {\n       |     ^\n  1305 |     console.error('❌ Error sending multi-channel notification:', error);\n  1306 |     return { error: error.message };\n  1307 |   }\n    at constructor (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:367:19)\n    at Parser.raise (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:6630:19)\n    at Parser.unexpected (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:6650:16)\n    at Parser.parseExprAtom (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:11451:16)\n    at Parser.parseExprSubscripts (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:11085:23)\n    at Parser.parseUpdate (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:11070:21)\n    at Parser.parseMaybeUnary (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:11050:23)\n    at Parser.parseMaybeUnaryOrPrivate (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10903:61)\n    at Parser.parseExprOps (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10908:23)\n    at Parser.parseMaybeConditional (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10885:23)\n    at Parser.parseMaybeAssign (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10835:21)\n    at Parser.parseExpressionBase (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10788:23)\n    at /Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10784:39\n    at Parser.allowInAnd (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12431:16)\n    at Parser.parseExpression (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:10784:17)\n    at Parser.parseStatementContent (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12904:23)\n    at Parser.parseStatementLike (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12776:17)\n    at Parser.parseStatementListItem (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12756:17)\n    at Parser.parseBlockOrModuleBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13325:61)\n    at Parser.parseBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13318:10)\n    at Parser.parseBlock (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13306:10)\n    at Parser.parseTryStatement (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13214:23)\n    at Parser.parseStatementContent (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12813:21)\n    at Parser.parseStatementLike (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12776:17)\n    at Parser.parseStatementListItem (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12756:17)\n    at Parser.parseBlockOrModuleBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13325:61)\n    at Parser.parseBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13318:10)\n    at Parser.parseBlock (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13306:10)\n    at Parser.parseFunctionBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12110:24)\n    at Parser.parseFunctionBodyAndFinish (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12096:10)\n    at /Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13454:12\n    at Parser.withSmartMixTopicForbiddingContext (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12413:14)\n    at Parser.parseFunction (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13453:10)\n    at Parser.parseFunctionStatement (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13134:17)\n    at Parser.parseStatementContent (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12899:25)\n    at Parser.parseStatementLike (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12776:17)\n    at Parser.parseModuleItem (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12753:17)\n    at Parser.parseBlockOrModuleBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13325:36)\n    at Parser.parseBlockBody (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:13318:10)\n    at Parser.parseProgram (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12634:10)\n    at Parser.parseTopLevel (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:12624:25)\n    at Parser.parse (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:14501:10)\n    at parse (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/parser/lib/index.js:14535:38)\n    at parser (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/core/lib/parser/index.js:41:34)\n    at parser.next (<anonymous>)\n    at normalizeFile (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)\n    at normalizeFile.next (<anonymous>)\n    at run (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/core/lib/transformation/index.js:22:50)\n    at run.next (<anonymous>)\n    at transform (/Users/mosman/Documents/DVLA BOT/dvsa-queen-extension/node_modules/@babel/core/lib/transform.js:22:33)");
+// Monitoring intervals
+let monitoringInterval = null;
 
-/***/ })
+/**
+ * Extension installed/updated
+ */
+chrome.runtime.onInstalled.addListener(async (details) => {
+  console.log('🚀 TestNotifier installed/updated:', details.reason);
+  
+  if (details.reason === 'install') {
+    // First install - initialize
+    await initializeExtension();
+  } else if (details.reason === 'update') {
+    // Extension updated
+    console.log('Updated to version:', chrome.runtime.getManifest().version);
+  }
+});
 
-/******/ 	});
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module doesn't tell about it's top-level declarations so it can't be inlined
-/******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./background.js"]();
-/******/ 	
-/******/ })()
-;
-//# sourceMappingURL=background.js.map
+/**
+ * Initialize extension
+ */
+async function initializeExtension() {
+  console.log('Initializing TestNotifier...');
+  
+  // Load saved state or use defaults
+  const result = await chrome.storage.local.get([
+    'monitors',
+    'settings',
+    'subscription',
+    'stats',
+    'riskLevel'
+  ]);
+  
+  state.monitors = result.monitors || [];
+  state.settings = result.settings || state.settings;
+  state.subscription = result.subscription || null;
+  state.stats = result.stats || state.stats;
+  state.riskLevel = result.riskLevel || state.riskLevel;
+  
+  console.log('✅ Extension initialized', state);
+}
+
+/**
+ * Message handler - Communication hub
+ */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('📨 Message received:', message.action);
+  
+  // Handle async operations
+  handleMessage(message, sender).then(response => {
+    sendResponse(response);
+  }).catch(error => {
+    console.error('Error handling message:', error);
+    sendResponse({ success: false, error: error.message });
+  });
+  
+  return true; // Keep message channel open for async response
+});
+
+/**
+ * Handle messages from popup and content script
+ */
+async function handleMessage(message, sender) {
+  switch (message.action) {
+    case 'emergencyStop':
+      return await handleEmergencyStop();
+      
+    case 'manualCheck':
+      return await handleManualCheck();
+      
+    case 'addMonitor':
+      return await handleAddMonitor(message.monitor);
+      
+    case 'updateMonitor':
+      return await handleUpdateMonitor(message.monitorId, message.updates);
+      
+    case 'deleteMonitor':
+      return await handleDeleteMonitor(message.monitorId);
+      
+    case 'toggleMonitor':
+      return await handleToggleMonitor(message.monitorId, message.status);
+      
+    case 'updateSettings':
+      return await handleUpdateSettings(message.settings);
+      
+    case 'getMonitors':
+      return { success: true, monitors: state.monitors };
+      
+    case 'getStats':
+      return { success: true, stats: state.stats };
+      
+    case 'getRisk':
+      return { success: true, riskLevel: state.riskLevel };
+      
+    case 'checkSubscription':
+      return await checkSubscription();
+      
+    case 'checkConnection':
+      return { success: true, connected: true };
+      
+    case 'bookSlot':
+      return await handleBookSlot(message.slot, message.monitorId);
+      
+    default:
+      console.warn('Unknown action:', message.action);
+      return { success: false, error: 'Unknown action' };
+  }
+}
+
+/**
+ * Emergency Stop - Halt all monitoring
+ */
+async function handleEmergencyStop() {
+  console.log('🛑 EMERGENCY STOP ACTIVATED');
+  
+  // Stop monitoring interval
+  if (monitoringInterval) {
+    clearInterval(monitoringInterval);
+    monitoringInterval = null;
+  }
+  
+  // Pause all monitors
+  state.monitors.forEach(m => m.status = 'paused');
+  state.isMonitoring = false;
+  
+  // Save state
+  await chrome.storage.local.set({ 
+    monitors: state.monitors,
+    isMonitoring: false
+  });
+  
+  // Show notification
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'icons/icon128.png',
+    title: 'Emergency Stop Activated',
+    message: 'All monitoring has been stopped.',
+    priority: 2
+  });
+  
+  console.log('✅ Emergency stop completed');
+  
+  return { success: true, message: 'All monitoring stopped' };
+}
+
+/**
+ * Manual Check - Trigger immediate DVSA check
+ */
+async function handleManualCheck() {
+  console.log('🔍 Manual stealth check triggered');
+  
+  // Get all active tabs with DVSA page
+  const tabs = await chrome.tabs.query({
+    url: 'https://driverpracticaltest.dvsa.gov.uk/*'
+  });
+  
+  if (tabs.length > 0) {
+    // Send message to content script to perform check
+    for (const tab of tabs) {
+      await chrome.tabs.sendMessage(tab.id, {
+        action: 'performStealthCheck',
+        monitors: state.monitors.filter(m => m.status === 'active')
+      });
+    }
+  } else {
+    // No DVSA tab open - open one
+    await chrome.tabs.create({
+      url: 'https://driverpracticaltest.dvsa.gov.uk/',
+      active: false
+    });
+  }
+  
+  // Update last check time
+  state.stats.lastCheck = new Date().toISOString();
+  await chrome.storage.local.set({ stats: state.stats });
+  
+  return { success: true, message: 'Manual check initiated' };
+}
+
+/**
+ * Add Monitor
+ */
+async function handleAddMonitor(monitor) {
+  console.log('➕ Adding monitor:', monitor.name);
+  
+  // Add to state
+  state.monitors.push(monitor);
+  state.stats.monitorsCount = state.monitors.length;
+  
+  // Save to storage
+  await chrome.storage.local.set({ 
+    monitors: state.monitors,
+    stats: state.stats
+  });
+  
+  // Start monitoring if not already running
+  if (state.settings.autoCheck && !state.isMonitoring) {
+    startMonitoring();
+  }
+  
+  return { success: true, message: `Monitor added for ${monitor.name}` };
+}
+
+/**
+ * Update Monitor
+ */
+async function handleUpdateMonitor(monitorId, updates) {
+  const monitor = state.monitors.find(m => m.id === monitorId);
+  if (!monitor) {
+    return { success: false, error: 'Monitor not found' };
+  }
+  
+  Object.assign(monitor, updates);
+  
+  await chrome.storage.local.set({ monitors: state.monitors });
+  
+  return { success: true, message: 'Monitor updated' };
+}
+
+/**
+ * Delete Monitor
+ */
+async function handleDeleteMonitor(monitorId) {
+  state.monitors = state.monitors.filter(m => m.id !== monitorId);
+  state.stats.monitorsCount = state.monitors.length;
+  
+  await chrome.storage.local.set({ 
+    monitors: state.monitors,
+    stats: state.stats
+  });
+  
+  return { success: true, message: 'Monitor deleted' };
+}
+
+/**
+ * Toggle Monitor Status
+ */
+async function handleToggleMonitor(monitorId, status) {
+  const monitor = state.monitors.find(m => m.id === monitorId);
+  if (!monitor) {
+    return { success: false, error: 'Monitor not found' };
+  }
+  
+  monitor.status = status;
+  
+  await chrome.storage.local.set({ monitors: state.monitors });
+  
+  return { success: true, message: `Monitor ${status}` };
+}
+
+/**
+ * Update Settings
+ */
+async function handleUpdateSettings(settings) {
+  state.settings = { ...state.settings, ...settings };
+  
+  await chrome.storage.local.set({ settings: state.settings });
+  
+  // Restart monitoring with new interval if active
+  if (state.isMonitoring) {
+    stopMonitoring();
+    if (state.settings.autoCheck) {
+      startMonitoring();
+    }
+  }
+  
+  return { success: true, message: 'Settings updated' };
+}
+
+/**
+ * Book Slot - Trigger automated booking
+ */
+async function handleBookSlot(slot, monitorId) {
+  console.log('📅 Booking slot:', slot);
+  
+  const monitor = state.monitors.find(m => m.id === monitorId);
+  if (!monitor) {
+    return { success: false, error: 'Monitor not found' };
+  }
+  
+  // Check subscription quota
+  const remaining = state.subscription?.rebooksTotal - (state.stats.rebooksUsed || 0);
+  if (remaining <= 0 && state.subscription?.tier !== 'professional') {
+    return { success: false, error: 'No rebooks remaining. Please upgrade your plan.' };
+  }
+  
+  // Open DVSA booking page
+  const tab = await chrome.tabs.create({
+    url: 'https://driverpracticaltest.dvsa.gov.uk/login',
+    active: true
+  });
+  
+  // Wait for page load, then send booking request to content script
+  chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+    if (tabId === tab.id && info.status === 'complete') {
+      chrome.tabs.sendMessage(tab.id, {
+        action: 'autoBook',
+        slot: slot,
+        monitor: monitor
+      });
+      
+      chrome.tabs.onUpdated.removeListener(listener);
+    }
+  });
+  
+  // Update stats
+  state.stats.rebooksUsed++;
+  await chrome.storage.local.set({ stats: state.stats });
+  
+  return { success: true, message: 'Booking initiated' };
+}
+
+/**
+ * Check Subscription Status
+ */
+async function checkSubscription() {
+  try {
+    // Get auth token
+    const result = await chrome.storage.local.get(['authToken']);
+    
+    if (!result.authToken) {
+      return { success: false, error: 'Not authenticated' };
+    }
+    
+    // Call backend API
+    const response = await fetch('https://testnotifier.co.uk/api/subscriptions/current', {
+      headers: {
+        'Authorization': `Bearer ${result.authToken}`
+      }
+    });
+    
+    if (response.ok) {
+      const subscription = await response.json();
+      state.subscription = subscription;
+      await chrome.storage.local.set({ subscription });
+      return { success: true, subscription };
+    } else {
+      return { success: false, error: 'Failed to fetch subscription' };
+    }
+  } catch (error) {
+    console.error('Error checking subscription:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Start Monitoring
+ */
+function startMonitoring() {
+  if (state.isMonitoring) return;
+  
+  console.log('▶️ Starting monitoring...');
+  state.isMonitoring = true;
+  
+  // Check immediately
+  performCheck();
+  
+  // Then check at intervals
+  monitoringInterval = setInterval(() => {
+    performCheck();
+  }, state.settings.checkInterval * 1000);
+}
+
+/**
+ * Stop Monitoring
+ */
+function stopMonitoring() {
+  if (!state.isMonitoring) return;
+  
+  console.log('⏸️ Stopping monitoring...');
+  state.isMonitoring = false;
+  
+  if (monitoringInterval) {
+    clearInterval(monitoringInterval);
+    monitoringInterval = null;
+  }
+}
+
+/**
+ * Perform Check on all active monitors
+ */
+async function performCheck() {
+  const activeMonitors = state.monitors.filter(m => m.status === 'active');
+  
+  if (activeMonitors.length === 0) {
+    console.log('No active monitors');
+    return;
+  }
+  
+  console.log(`🔍 Checking ${activeMonitors.length} monitor(s)...`);
+  
+  // Get or create DVSA tab
+  const tabs = await chrome.tabs.query({
+    url: 'https://driverpracticaltest.dvsa.gov.uk/*'
+  });
+  
+  let dvsaTab;
+  if (tabs.length > 0) {
+    dvsaTab = tabs[0];
+  } else {
+    // Create hidden tab for checking
+    dvsaTab = await chrome.tabs.create({
+      url: 'https://driverpracticaltest.dvsa.gov.uk/',
+      active: false
+    });
+  }
+  
+  // Send check request to content script
+  try {
+    const response = await chrome.tabs.sendMessage(dvsaTab.id, {
+      action: 'performStealthCheck',
+      monitors: activeMonitors
+    });
+    
+    if (response?.slotsFound) {
+      // Process found slots
+      handleSlotsFound(response.slotsFound);
+    }
+    
+    // Update last check time
+    state.stats.lastCheck = new Date().toISOString();
+    await chrome.storage.local.set({ stats: state.stats });
+    
+  } catch (error) {
+    console.error('Error performing check:', error);
+  }
+}
+
+/**
+ * Handle found slots
+ */
+function handleSlotsFound(slotsData) {
+  console.log('🎉 Slots found!', slotsData);
+  
+  slotsData.forEach(({ monitorId, slots }) => {
+    const monitor = state.monitors.find(m => m.id === monitorId);
+    if (!monitor) return;
+    
+    // Update monitor with found slots
+    monitor.foundSlots = slots;
+    monitor.slotsFound = slots.length;
+    monitor.lastUpdate = new Date().toISOString();
+    
+    // Update total stats
+    state.stats.slotsFound += slots.length;
+    
+    // Send notification
+    if (state.settings.browserNotifications) {
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icons/icon128.png',
+        title: `${slots.length} Slot${slots.length !== 1 ? 's' : ''} Found!`,
+        message: `Found for ${monitor.name} - Click to book`,
+        priority: 2
+      });
+    }
+    
+    // Play sound
+    if (state.settings.soundAlerts) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'playNotificationSound' });
+        }
+      });
+    }
+  });
+  
+  // Save updated monitors
+  chrome.storage.local.set({ 
+    monitors: state.monitors,
+    stats: state.stats
+  });
+}
+
+/**
+ * Notification click handler
+ */
+chrome.notifications.onClicked.addListener((notificationId) => {
+  // Open popup when notification clicked
+  chrome.action.openPopup();
+});
+
+/**
+ * Load state on startup
+ */
+(async function() {
+  await initializeExtension();
+  
+  // Start monitoring if auto-check is enabled and there are active monitors
+  if (state.settings.autoCheck && state.monitors.some(m => m.status === 'active')) {
+    startMonitoring();
+  }
+})();
+
+console.log('✅ Background service worker loaded');
+
