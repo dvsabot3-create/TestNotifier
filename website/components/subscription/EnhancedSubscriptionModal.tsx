@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
-import { Check, X, Star, Shield, Clock, Loader2, AlertCircle, Crown, Zap, TrendingUp } from 'lucide-react';
+import { Check, X, Star, Shield, Clock, Loader2, AlertCircle, Crown, Zap, TrendingUp, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -108,8 +108,8 @@ const plans: Plan[] = [
     priceAnnual: 432.00,
     interval: 'month',
     description: 'Best for active learners',
-    icon: <Star className="w-6 h-6" />,
-    gradient: 'from-[#1d70b8] to-[#2e8bc0]',
+    icon: <Sparkles className="w-6 h-6" />,
+    gradient: 'from-violet-600 to-purple-600',
     priceId: 'price_premium_monthly',
     popular: true,
     trialDays: 7,
@@ -120,7 +120,9 @@ const plans: Plan[] = [
       '25 daily notifications max',
       'Priority SMS + Email notifications',
       'Rapid mode (500ms checks)',
+      'Auto-rebooking enabled',
       'Advanced date filtering',
+      'Analytics dashboard',
       'Chrome extension full access',
       '24/7 email support',
       '7-day monitoring trial',
@@ -139,9 +141,9 @@ const plans: Plan[] = [
     price: 80.00,
     priceAnnual: 768.00,
     interval: 'month',
-    description: 'For driving instructors',
+    description: 'Ultimate for driving instructors',
     icon: <Crown className="w-6 h-6" />,
-    gradient: 'from-purple-600 to-pink-600',
+    gradient: 'from-blue-600 to-blue-700',
     priceId: 'price_pro_monthly',
     trialDays: 14,
     trialLimitation: 'Trial: Full access including 2 free rebooks',

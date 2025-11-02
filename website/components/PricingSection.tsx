@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Check, X, Star, Sparkles, Shield, Zap } from "lucide-react";
+import { Check, X, Star, Sparkles, Shield, Zap, TrendingUp, Crown } from "lucide-react";
 import { useState } from "react";
 import { AuthModal } from "./auth/AuthModal";
 import { SubscriptionModal } from "./subscription/SubscriptionModal";
@@ -35,6 +35,8 @@ export function PricingSection() {
       subtitle: "Single urgent rebook",
       price: "£30",
       priceSuffix: "one-time",
+      icon: Zap,
+      iconColor: "#28a745",
       features: [
         { text: "One rebook attempt", included: true },
         { text: "Monitor 1 test center", included: true },
@@ -48,14 +50,15 @@ export function PricingSection() {
       cta: "Pay £30 Once",
       highlighted: false,
       color: "#28a745",
-      badge: null,
-      icon: "⚡"
+      badge: null
     },
     {
       name: "Starter",
       subtitle: "For occasional needs",
       price: "£25",
       priceSuffix: "/month",
+      icon: TrendingUp,
+      iconColor: "#718096",
       features: [
         { text: "Monitor up to 3 test centers", included: true },
         { text: "2 rebook attempts per day", included: true },
@@ -71,7 +74,6 @@ export function PricingSection() {
       highlighted: false,
       color: "#718096",
       badge: null,
-      icon: "🚀",
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
@@ -79,13 +81,15 @@ export function PricingSection() {
       subtitle: "Best for active learners",
       price: "£45",
       priceSuffix: "/month",
+      icon: Sparkles,
+      iconColor: "#8b5cf6",
       features: [
         { text: "Monitor up to 5 test centers", included: true },
         { text: "5 rebook attempts per day", included: true },
         { text: "25 daily notifications max", included: true },
         { text: "Priority SMS + Email notifications", included: true },
         { text: "Rapid mode (500ms checks)", included: true },
-        { text: "Auto-rebooking enabled ✨", included: true },
+        { text: "Auto-rebooking enabled", included: true },
         { text: "Advanced filtering", included: true },
         { text: "Analytics dashboard", included: true },
         { text: "24/7 email support", included: true },
@@ -95,7 +99,6 @@ export function PricingSection() {
       highlighted: true,
       color: "#8b5cf6",
       badge: "Most Popular",
-      icon: "⭐",
       note: "Trial allows monitoring only - rebooks start after first payment"
     },
     {
@@ -103,14 +106,16 @@ export function PricingSection() {
       subtitle: "Ultimate for instructors",
       price: "£80",
       priceSuffix: "/month",
+      icon: Crown,
+      iconColor: "#1d70b8",
       features: [
         { text: "Up to 20 pupils & 999 test centers", included: true },
         { text: "10 daily booking attempts", included: true },
         { text: "50 daily notifications max", included: true },
         { text: "Multi-pupil dashboard", included: true },
         { text: "Per-pupil custom settings", included: true },
-        { text: "SMS + Email + WhatsApp alerts 📱", included: true },
-        { text: "Stealth mode (anti-detection) 🥷", included: true },
+        { text: "SMS + Email + WhatsApp alerts", included: true },
+        { text: "Stealth mode (anti-detection)", included: true },
         { text: "Success rate analytics", included: true },
         { text: "Priority phone support", included: true },
         { text: "14-day trial (includes 2 rebooks)", included: true }
@@ -118,8 +123,7 @@ export function PricingSection() {
       cta: "Start Professional Trial",
       highlighted: false,
       color: "#1d70b8",
-      badge: "Ultimate Professional",
-      icon: "👑"
+      badge: "Ultimate Professional"
     }
   ];
 
@@ -169,6 +173,21 @@ export function PricingSection() {
               
               {/* Header */}
               <div className="text-center mb-8">
+                {/* Icon */}
+                <div 
+                  className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${plan.color}15`,
+                    border: `2px solid ${plan.color}30`
+                  }}
+                >
+                  <plan.icon 
+                    className="w-8 h-8" 
+                    style={{ color: plan.color }}
+                    strokeWidth={2.5}
+                  />
+                </div>
+                
                 <h3 className="text-2xl font-bold text-[#1d70b8] mb-2">
                   {plan.name}
                 </h3>

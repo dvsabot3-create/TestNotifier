@@ -234,25 +234,29 @@ class TestNotifierPopup {
       'one-off': {
         primary: '#28a745',
         gradient: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
-        badge: '⚡ ONE-OFF',
+        badge: 'ONE-OFF',
+        icon: this.getZapIcon(),
         glow: 'rgba(40, 167, 69, 0.3)'
       },
       'starter': {
         primary: '#718096',
         gradient: 'linear-gradient(135deg, #718096 0%, #4a5568 100%)',
-        badge: '🚀 STARTER',
+        badge: 'STARTER',
+        icon: this.getTrendingUpIcon(),
         glow: 'rgba(113, 128, 150, 0.3)'
       },
       'premium': {
         primary: '#8b5cf6',
         gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-        badge: '⭐ PREMIUM',
+        badge: 'PREMIUM',
+        icon: this.getSparklesIcon(),
         glow: 'rgba(139, 92, 246, 0.3)'
       },
       'professional': {
         primary: '#1d70b8',
         gradient: 'linear-gradient(135deg, #1d70b8 0%, #005ea5 100%)',
-        badge: '👑 PRO',
+        badge: 'PRO',
+        icon: this.getCrownIcon(),
         glow: 'rgba(29, 112, 184, 0.4)'
       }
     };
@@ -266,10 +270,10 @@ class TestNotifierPopup {
       header.style.boxShadow = `0 4px 20px ${colors.glow}`;
     }
     
-    // Update tier badge
+    // Update tier badge with icon
     const tierBadge = document.getElementById('subscription-tier-badge');
     if (tierBadge) {
-      tierBadge.textContent = colors.badge;
+      tierBadge.innerHTML = `${colors.icon} ${colors.badge}`;
       tierBadge.style.boxShadow = `0 0 20px ${colors.glow}`;
     }
     
@@ -279,6 +283,25 @@ class TestNotifierPopup {
     document.documentElement.style.setProperty('--tier-glow', colors.glow);
     
     console.log(`🎨 Extension header color updated to: ${colors.badge}`);
+  }
+  
+  /**
+   * Lucide-style SVG icons for tier badges
+   */
+  getZapIcon() {
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
+  }
+  
+  getTrendingUpIcon() {
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
+  }
+  
+  getSparklesIcon() {
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>`;
+  }
+  
+  getCrownIcon() {
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
   }
 
   /**

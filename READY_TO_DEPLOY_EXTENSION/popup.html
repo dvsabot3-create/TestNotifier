@@ -87,6 +87,14 @@
       color: white;
       box-shadow: 0 0 20px var(--tier-glow);
       border: 1px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .tier-badge svg {
+      stroke: white;
+      flex-shrink: 0;
     }
     
     /* Stats Bar */
@@ -586,7 +594,7 @@
   <!-- Header -->
   <div class="header">
     <!-- Tier Badge -->
-    <div id="subscription-tier-badge" class="tier-badge">👑 PRO</div>
+    <div id="subscription-tier-badge" class="tier-badge">PRO</div>
     
     <!-- Brand -->
     <div class="header-brand">
