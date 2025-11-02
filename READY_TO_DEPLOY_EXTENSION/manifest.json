@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TestNotifier - Multi-Pupil Manager",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Multi-pupil DVSA test slot finder for driving instructors - Monitor unlimited pupils with instant notifications",
   "permissions": [
     "activeTab",
