@@ -65,20 +65,12 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={handleLogoClick}>
+          <div className="flex items-center gap-2 cursor-pointer group" onClick={handleLogoClick}>
             <img
-              src="/assets/logos/tn.png"
-              alt="TestNotifier Icon"
-              className="w-auto h-8 transition-opacity group-hover:opacity-80 cursor-pointer"
+              src="/assets/logos/tn-logov2.png"
+              alt="Test Notifier"
+              className="w-auto h-6 transition-opacity group-hover:opacity-80 cursor-pointer"
             />
-            <div className="flex flex-col leading-tight">
-              <span className={`text-lg font-bold transition-colors ${scrolled ? 'text-gray-900' : 'text-white'}`}>
-                Test
-              </span>
-              <span className={`text-lg font-bold transition-colors ${scrolled ? 'text-gray-900' : 'text-white'}`}>
-                Notifier
-              </span>
-            </div>
           </div>
 
           {/* Desktop Navigation */}
