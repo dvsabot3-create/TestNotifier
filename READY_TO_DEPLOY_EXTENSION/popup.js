@@ -71,20 +71,38 @@ class TestNotifierPopup {
         'subscription',
         'settings',
         'activityLog',
-        'riskLevel'
+        'riskLevel',
+        'authToken'
       ]);
+      
+      // Load subscription from backend API (REAL VALIDATION)
+      if (result.authToken) {
+        try {
+          this.subscription = await this.loadSubscriptionFromAPI(result.authToken);
+        } catch (error) {
+          console.error('Failed to load subscription from API:', error);
+          this.subscription = result.subscription || this.getDemoSubscription(); // Fallback to demo
+        }
+      } else {
+        // Not authenticated - use demo data
+        console.log('⚠️ No auth token - using demo subscription');
+        this.subscription = this.getDemoSubscription(); // DEMO DATA
+      }
       
       // Use stored data or demo data
       this.monitors = result.monitors || this.getDemoMonitors(); // DEMO DATA
       this.stats = result.stats || this.getDemoStats(); // DEMO DATA
-      this.subscription = result.subscription || this.getDemoSubscription(); // DEMO DATA
       this.settings = result.settings || this.getDefaultSettings();
       this.activityLog = result.activityLog || this.getDemoActivity(); // DEMO DATA
       this.riskLevel = result.riskLevel || { level: 'low', percentage: 12 };
       
+      // Enforce subscription limits
+      this.enforceSubscriptionLimits();
+      
       console.log('📊 Data loaded:', {
         monitors: this.monitors.length,
         subscription: this.subscription.tier,
+        authenticated: !!result.authToken,
         settings: this.settings
       });
     } catch (error) {
@@ -96,6 +114,84 @@ class TestNotifierPopup {
       this.settings = this.getDefaultSettings();
       this.activityLog = this.getDemoActivity();
     }
+  }
+
+  /**
+   * Load subscription from backend API - REAL VALIDATION
+   */
+  async loadSubscriptionFromAPI(authToken) {
+    console.log('🔐 Loading subscription from backend API...');
+    
+    try {
+      const response = await fetch('https://testnotifier.co.uk/api/subscriptions/current', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const subscription = await response.json();
+        console.log('✅ Subscription loaded:', subscription.tier);
+        
+        // Save to storage for offline use
+        await chrome.storage.local.set({ subscription });
+        
+        return subscription;
+      } else if (response.status === 401) {
+        // Auth token expired
+        console.error('❌ Authentication expired');
+        await chrome.storage.local.remove(['authToken']);
+        throw new Error('Authentication expired. Please sign in again.');
+      } else {
+        throw new Error(`API returned ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error loading subscription from API:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Enforce subscription limits - REAL TIER ENFORCEMENT
+   */
+  enforceSubscriptionLimits() {
+    if (!this.subscription) return;
+    
+    const tier = this.subscription.tier;
+    
+    // Define tier limits
+    const tierLimits = {
+      'one-off': {
+        maxMonitors: 1,
+        maxTestCentres: 1,
+        maxRebooks: 1,
+        canAutoBook: false
+      },
+      'starter': {
+        maxMonitors: 10, // Can monitor many students
+        maxTestCentres: 3, // But only 3 centres per student
+        maxRebooks: 2,
+        canAutoBook: false
+      },
+      'premium': {
+        maxMonitors: 20,
+        maxTestCentres: 5,
+        maxRebooks: 5,
+        canAutoBook: true
+      },
+      'professional': {
+        maxMonitors: null, // Unlimited
+        maxTestCentres: null, // Unlimited
+        maxRebooks: null, // Unlimited
+        canAutoBook: true
+      }
+    };
+    
+    this.limits = tierLimits[tier] || tierLimits['one-off'];
+    
+    console.log('🔒 Subscription limits enforced:', this.limits);
   }
 
   /**
@@ -1381,18 +1477,24 @@ class TestNotifierPopup {
     
     console.log('📅 BOOKING SLOT:', slot, 'for', monitor.name);
     
-    // Check subscription tier (only Premium and Professional can auto-book)
-    if (this.subscription.tier === 'free' || this.subscription.tier === 'one-off') {
+    // SUBSCRIPTION ENFORCEMENT: Check if auto-booking is allowed
+    if (!this.limits || !this.limits.canAutoBook) {
       this.closeModal();
-      this.showAlert('Upgrade Required', '⚠️ Auto-booking is only available for Premium and Professional members. Please upgrade your plan to use this feature.');
+      this.showAlert(
+        'Upgrade Required', 
+        `⚠️ Auto-booking is only available for Premium and Professional plans.\n\nYour current plan: ${this.subscription?.tier || 'Free'}\n\nPlease upgrade to use this feature.`
+      );
       return;
     }
     
-    // Check rebook quota
+    // SUBSCRIPTION ENFORCEMENT: Check rebook quota
     const remaining = this.subscription.rebooksTotal - (this.stats.rebooksUsed || 0);
-    if (remaining <= 0 && this.subscription.tier !== 'professional') {
+    if (this.limits.maxRebooks !== null && remaining <= 0) {
       this.closeModal();
-      this.showAlert('Quota Exceeded', `⚠️ You have used all ${this.subscription.rebooksTotal} rebooks for this month. Upgrade to Professional for unlimited rebooks.`);
+      this.showAlert(
+        'Quota Exceeded', 
+        `⚠️ You have used all ${this.subscription.rebooksTotal} rebooks for this month.\n\nUpgrade to Professional for unlimited rebooks.`
+      );
       return;
     }
     
@@ -1465,6 +1567,17 @@ class TestNotifierPopup {
    * FULL Add Monitor Modal with UK Test Centres and Validation
    */
   showAddMonitorModal() {
+    // Check if user can add more monitors (SUBSCRIPTION ENFORCEMENT)
+    if (this.limits && this.limits.maxMonitors !== null) {
+      if (this.monitors.length >= this.limits.maxMonitors) {
+        this.showAlert(
+          'Monitor Limit Reached',
+          `⚠️ Your ${this.subscription.tier} plan allows ${this.limits.maxMonitors} monitor${this.limits.maxMonitors !== 1 ? 's' : ''}. You currently have ${this.monitors.length}.\n\nPlease upgrade to add more monitors.`
+        );
+        return;
+      }
+    }
+    
     // UK Test Centres Database
     const testCentres = [
       // London & South East
@@ -1830,9 +1943,25 @@ class TestNotifierPopup {
         searchResults.querySelectorAll('.centre-option').forEach(el => {
           el.addEventListener('click', () => {
             const centre = JSON.parse(el.getAttribute('data-centre'));
+            
+            // Check test centre limit (SUBSCRIPTION ENFORCEMENT)
+            if (this.limits && this.limits.maxTestCentres !== null) {
+              if (window.selectedCentres.length >= this.limits.maxTestCentres) {
+                const centresError = modal.querySelector('#centres-error');
+                centresError.textContent = `❌ Your ${this.subscription.tier} plan allows ${this.limits.maxTestCentres} test centre${this.limits.maxTestCentres !== 1 ? 's' : ''} per monitor. Upgrade for more.`;
+                centresError.style.display = 'block';
+                return;
+              }
+            }
+            
+            // Add centre if not duplicate
             if (!window.selectedCentres.find(c => c.name === centre.name)) {
               window.selectedCentres.push(centre);
               this.updateSelectedCentres(modal);
+              
+              // Clear error if any
+              const centresError = modal.querySelector('#centres-error');
+              centresError.style.display = 'none';
             }
             searchInput.value = '';
             searchResults.style.display = 'none';
