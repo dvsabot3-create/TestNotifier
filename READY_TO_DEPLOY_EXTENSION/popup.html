@@ -5,65 +5,296 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TestNotifier</title>
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
   <!-- Google Fonts - Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       width: 420px;
       min-height: 600px;
+      background: white;
     }
     
-    /* Custom animations */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    /* Container */
+    .popup-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 2px solid #e5e7eb;
+      overflow: hidden;
+      width: 420px;
     }
     
-    .animate-pulse {
+    /* Header */
+    .popup-header {
+      background: linear-gradient(to right, #1d70b8, #2e8bc0);
+      padding: 20px 24px;
+    }
+    
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-container {
+      width: 40px;
+      height: 40px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .brand-text h1 {
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    .brand-text p {
+      color: #bfdbfe;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .stat-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat-value {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    
+    .stat-value.green {
+      color: #28a745;
+    }
+    
+    .stat-label {
+      color: #bfdbfe;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    
+    /* Content Area */
+    .popup-content {
+      padding: 20px;
+      background: #f9fafb;
+    }
+    
+    .content-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    /* Add Monitor Button */
+    .btn-add-monitor {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s, transform 0.1s;
+    }
+    
+    .btn-add-monitor:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+    
+    .btn-add-monitor:active {
+      transform: translateY(0);
+    }
+    
+    /* Monitor Cards */
+    .monitor-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    
+    .monitor-card:hover {
+      border-color: #1d70b8;
+    }
+    
+    .monitor-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .monitor-card-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+    
+    .monitor-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .monitor-card-meta svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+    
+    .monitor-card-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .status-badge {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .monitor-card-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f3f4f6;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .monitor-card-status.found {
+      color: #059669;
+    }
+    
+    .monitor-card-status.searching {
+      color: #6b7280;
+    }
+    
+    .monitor-card-status svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    /* Footer */
+    .popup-footer {
+      border-top: 1px solid #e5e7eb;
+      padding: 12px 20px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .footer-connection {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .connection-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
       animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-  </style>
-  
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'tn-blue': '#1d70b8',
-            'tn-blue-light': '#2e8bc0',
-            'tn-green': '#28a745',
-            'tn-orange': '#ffc107',
-          },
-          fontFamily: {
-            'sans': ['Inter', 'sans-serif'],
-          }
-        }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
       }
     }
-  </script>
+    
+    .btn-help {
+      color: #1d70b8;
+      font-size: 12px;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    
+    .btn-help:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   
   <!-- Extension Popup -->
-  <div class="bg-white rounded-2xl shadow-2xl border-2 border-gray-200 overflow-hidden" style="width: 420px;">
+  <div class="popup-container">
     
     <!-- Header -->
-    <div class="bg-gradient-to-r from-[#1d70b8] to-[#2e8bc0] px-6 py-5">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-sm">
+    <div class="popup-header">
+      <div class="header-top">
+        <div class="header-brand">
+          <div class="logo-container">
             <!-- TestNotifier Logo SVG -->
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
               <rect width="100" height="100" rx="20" fill="#28a745"/>
               <path d="M30 35h15v30h-15z" fill="white"/>
               <path d="M55 35v30" stroke="white" stroke-width="15"/>
@@ -72,153 +303,154 @@
               <path d="M72 30l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div>
-            <h1 class="text-white font-bold text-xl">TestNotifier</h1>
-            <p class="text-blue-100 text-xs">DVSA Test Monitor v2.2</p>
+          <div class="brand-text">
+            <h1>TestNotifier</h1>
+            <p>DVSA Test Monitor v2.2</p>
           </div>
         </div>
       </div>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-3 gap-2">
-        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-white font-bold text-2xl">3</div>
-          <div class="text-blue-100 text-xs">Monitors</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Monitors</div>
         </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-[#28a745] font-bold text-2xl">4</div>
-          <div class="text-blue-100 text-xs">Found</div>
+        <div class="stat-card">
+          <div class="stat-value green">4</div>
+          <div class="stat-label">Found</div>
         </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
-          <div class="text-white font-bold text-2xl">2m</div>
-          <div class="text-blue-100 text-xs">Last Check</div>
+        <div class="stat-card">
+          <div class="stat-value">2m</div>
+          <div class="stat-label">Last Check</div>
         </div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="p-5 bg-gray-50 space-y-3">
-      <!-- Add Monitor Button -->
-      <button class="w-full bg-[#28a745] hover:bg-[#218838] transition-colors text-white py-3.5 px-5 rounded-xl font-bold text-base shadow-sm">
-        + Add New Monitor
-      </button>
+    <div class="popup-content">
+      <div class="content-inner">
+        
+        <!-- Add Monitor Button -->
+        <button class="btn-add-monitor">+ Add New Monitor</button>
 
-      <!-- Monitor Card 1 - Sarah Johnson -->
-      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
-        <div class="flex items-start justify-between mb-2">
-          <div>
-            <div class="font-semibold text-gray-900 mb-1">Sarah Johnson</div>
-            <div class="flex items-center gap-2 text-xs text-gray-600">
-              <!-- Calendar Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>15 Mar 2025</span>
-              <span>•</span>
-              <!-- Map Pin Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>Manchester</span>
+        <!-- Monitor Card 1 - Sarah Johnson -->
+        <div class="monitor-card">
+          <div class="monitor-card-header">
+            <div class="monitor-card-info">
+              <h3>Sarah Johnson</h3>
+              <div class="monitor-card-meta">
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  15 Mar 2025
+                </span>
+                <span>•</span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  Manchester
+                </span>
+              </div>
+            </div>
+            <div class="status-badge">Active</div>
+          </div>
+          <div class="monitor-card-status found">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            3 slots found!
+          </div>
+        </div>
+
+        <!-- Monitor Card 2 - James Wilson -->
+        <div class="monitor-card">
+          <div class="monitor-card-header">
+            <div class="monitor-card-info">
+              <h3>James Wilson</h3>
+              <div class="monitor-card-meta">
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  22 Apr 2025
+                </span>
+                <span>•</span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  London
+                </span>
+              </div>
+            </div>
+            <div class="status-badge">Active</div>
+          </div>
+          <div class="monitor-card-status searching">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Searching...
+          </div>
+        </div>
+
+        <!-- Monitor Card 3 - Emily Davis -->
+        <div class="monitor-card">
+          <div class="monitor-card-header">
+            <div class="monitor-card-info">
+              <h3>Emily Davis</h3>
+              <div class="monitor-card-meta">
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  10 May 2025
+                </span>
+                <span>•</span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  Birmingham
+                </span>
+              </div>
             </div>
           </div>
-          <div class="bg-green-50 px-2 py-1 rounded text-xs font-semibold text-green-700">
-            Active
+          <div class="monitor-card-status found">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            1 slot found!
           </div>
         </div>
-        <div class="flex items-center gap-2 text-green-600 text-sm font-semibold pt-2 border-t border-gray-100">
-          <!-- Check Circle Icon -->
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          3 slots found!
-        </div>
-      </div>
-
-      <!-- Monitor Card 2 - James Wilson -->
-      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
-        <div class="flex items-start justify-between mb-2">
-          <div>
-            <div class="font-semibold text-gray-900 mb-1">James Wilson</div>
-            <div class="flex items-center gap-2 text-xs text-gray-600">
-              <!-- Calendar Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>22 Apr 2025</span>
-              <span>•</span>
-              <!-- Map Pin Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>London</span>
-            </div>
-          </div>
-          <div class="bg-green-50 px-2 py-1 rounded text-xs font-semibold text-green-700">
-            Active
-          </div>
-        </div>
-        <div class="flex items-center gap-2 text-gray-500 text-sm pt-2 border-t border-gray-100">
-          <!-- Search Icon -->
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          Searching...
-        </div>
-      </div>
-
-      <!-- Monitor Card 3 - Emily Davis -->
-      <div class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-[#1d70b8] transition-colors cursor-pointer">
-        <div class="flex items-start justify-between mb-2">
-          <div>
-            <div class="font-semibold text-gray-900 mb-1">Emily Davis</div>
-            <div class="flex items-center gap-2 text-xs text-gray-600">
-              <!-- Calendar Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>10 May 2025</span>
-              <span>•</span>
-              <!-- Map Pin Icon -->
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>Birmingham</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 text-green-600 text-sm font-semibold pt-2 border-t border-gray-100">
-          <!-- Check Circle Icon -->
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          1 slot found!
-        </div>
+        
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="border-t border-gray-200 px-5 py-3 bg-white flex items-center justify-between">
-      <div class="flex items-center gap-2 text-xs text-gray-600">
-        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+    <div class="popup-footer">
+      <div class="footer-connection">
+        <div class="connection-dot"></div>
         Connected to DVSA
       </div>
-      <button class="text-[#1d70b8] text-xs font-semibold hover:underline">Help</button>
+      <button class="btn-help">Help</button>
     </div>
     
   </div>
