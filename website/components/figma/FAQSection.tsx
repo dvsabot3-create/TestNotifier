@@ -137,6 +137,7 @@ export function FAQSection() {
             <Button 
               size="lg"
               className="bg-[#1d70b8] hover:bg-[#2e8bc0] text-white"
+              onClick={() => window.location.href = 'mailto:hello@testnotifier.co.uk?subject=Support%20Request'}
             >
               <Mail className="w-5 h-5 mr-2" />
               Contact Support
@@ -145,8 +146,9 @@ export function FAQSection() {
               size="lg"
               variant="outline" 
               className="border-[#1d70b8] text-[#1d70b8] hover:bg-[#1d70b8]/5"
+              onClick={() => window.location.href = '#how-it-works'}
             >
-              View Documentation
+              View Setup Guide
             </Button>
           </div>
           <p className="text-sm text-[#6c757d] mt-6">

@@ -150,7 +150,7 @@ export function PricingSection() {
           {plans.map((plan, index) => (
             <Card 
               key={index}
-              className={`pricing-card opacity-0 p-8 relative transform transition-all hover:scale-105 ${
+              className={`pricing-card p-8 relative transform transition-all hover:scale-105 ${
                 plan.highlighted 
                   ? 'border-4 shadow-2xl lg:-mt-4 lg:mb-4' 
                   : 'border-2 shadow-lg'
