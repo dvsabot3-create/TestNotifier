@@ -11,6 +11,9 @@ const { connectDatabase } = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
+// Trust proxy - CRITICAL for Render (behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Initialize secure configuration
 let secureConfig;
 try {
