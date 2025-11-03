@@ -41,20 +41,27 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 // Configure passport with Google Strategy
+// Store state in memory (Passport doesn't preserve it by default)
+const oauthStateStore = new Map();
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
-      passReqToCallback: true,  // Enable access to req object
-      store: true  // Preserve state parameter
+      passReqToCallback: true  // Enable access to req object
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // Preserve state parameter through OAuth flow
-        const state = req.query.state || '/';
-        console.log('🔐 GoogleStrategy: Preserving state:', state);
+        // Get state from our memory store (set in /google route)
+        const stateKey = profile.id || profile.emails[0].value;
+        const state = oauthStateStore.get(stateKey) || '/';
+        
+        // Clean up
+        oauthStateStore.delete(stateKey);
+        
+        console.log('🔐 GoogleStrategy: Retrieved state:', state);
         
         const userData = {
           googleId: profile.id,
@@ -80,9 +87,19 @@ router.get('/google', (req, res, next) => {
   const redirectUrl = req.query.state || req.query.redirect || '/dashboard';
   console.log('🔐 Google OAuth initiated with redirect:', redirectUrl);
   
+  // Store state temporarily (will be retrieved in strategy using profile.id)
+  // We'll clean this up after callback
+  const tempStateKey = Date.now().toString();
+  oauthStateStore.set(tempStateKey, redirectUrl);
+  
+  // Also store with a cleanup timeout (5 minutes)
+  setTimeout(() => {
+    oauthStateStore.delete(tempStateKey);
+  }, 5 * 60 * 1000);
+  
   passport.authenticate('google', {
     scope: ['profile', 'email'],
-    state: redirectUrl,  // Pass redirectUrl as OAuth state
+    state: tempStateKey,  // Pass temp key as state
     session: false
   })(req, res, next);
 });
@@ -96,8 +113,15 @@ router.get('/google/callback', (req, res, next) => {
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
       }
 
-      // Get the redirect URL from userData (preserved by Passport strategy)
-      const redirectUrl = userData.state || req.query.state || '/';
+      // Get state from OAuth state parameter and retrieve our stored redirect URL
+      const stateKey = req.query.state;
+      const redirectUrl = userData.state || oauthStateStore.get(stateKey) || '/';
+      
+      // Clean up stored state
+      if (stateKey) {
+        oauthStateStore.delete(stateKey);
+      }
+      
       console.log('✅ Google OAuth callback - redirect URL:', redirectUrl, '(from userData.state)');
 
       // Connect to database
