@@ -184,40 +184,19 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              {/* Logo */}
-              <a href="/" className="flex items-center hover:opacity-80 transition-opacity">
-                <img
-                  src="/assets/logos/tn-logov2.png"
-                  alt="TestNotifier"
-                  className="h-12 w-auto"
-                />
-              </a>
-              <div className="h-8 w-px bg-gray-300"></div>
-              <h1 className="text-2xl font-bold text-gray-900">Account Portal</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                {user.avatar && (
-                  <img src={user.avatar} alt={user.firstName} className="w-8 h-8 rounded-full" />
-                )}
-                <span className="text-sm font-medium text-gray-700">{user.firstName} {user.lastName}</span>
-              </div>
-              <button onClick={handleLogout} className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Use same navbar as homepage */}
+      <Header />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+        
+        {/* Dashboard Title */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Account Portal</h1>
+          <p className="text-gray-600 mt-2">
+            Welcome back, {user.firstName}! Manage your subscription and download the extension.
+          </p>
+        </div>
         
         {/* Download Extension - Most Important */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-8 mb-8 text-white">
