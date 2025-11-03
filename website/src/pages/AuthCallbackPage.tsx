@@ -164,6 +164,15 @@ const AuthCallbackPage: React.FC = () => {
           return; // Don't navigate anywhere else
         }
 
+        // Check if this is an extension login
+        const isExtensionLogin = redirectUrl && redirectUrl.includes('extension-login');
+        
+        if (isExtensionLogin) {
+          // Redirect to extension auth success page which will send token to extension
+          navigate('/extension-auth-success');
+          return;
+        }
+
         // No checkout in progress - normal redirect
         setTimeout(() => {
           if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {

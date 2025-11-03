@@ -69,5 +69,12 @@
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://testnotifier.co.uk/*",
+      "http://localhost:3002/*",
+      "http://localhost:10000/*"
+    ]
   }
 }

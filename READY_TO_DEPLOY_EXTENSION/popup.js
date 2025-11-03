@@ -102,34 +102,46 @@ class TestNotifierPopup {
   async handleGoogleSignIn() {
     try {
       // Open website login in new tab with extension=true parameter
-      const loginUrl = 'https://testnotifier.co.uk/?action=extension-login';
-      await chrome.tabs.create({ url: loginUrl });
+      const loginUrl = 'https://testnotifier.co.uk/api/auth?action=google&state=/extension-login';
+      const newTab = await chrome.tabs.create({ url: loginUrl });
       
-      // Listen for auth token message from website
-      window.addEventListener('message', async (event) => {
-        if (event.data.type === 'TESTNOTIFIER_AUTH' && event.data.token) {
-          // Store token
-          await chrome.storage.local.set({ 
-            authToken: event.data.token,
-            user: event.data.user
-          });
+      console.log('🔐 Opened authentication tab:', newTab.id);
+      
+      // Set up message listener BEFORE opening tab
+      if (!this.authMessageListenerSet) {
+        // Listen for auth token message from website via chrome.runtime
+        chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+          console.log('📨 Received message in popup:', message);
           
-          // Reload popup
-          window.location.reload();
-        }
-      });
-      
-      // Also listen via chrome.runtime.onMessage for cross-origin
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'AUTH_SUCCESS') {
-          chrome.storage.local.set({
-            authToken: message.token,
-            user: message.user
-          }).then(() => {
+          if (message.type === 'AUTH_SUCCESS' || message.type === 'TESTNOTIFIER_AUTH') {
+            console.log('✅ Auth successful! Token received');
+            
+            // Store token
+            await chrome.storage.local.set({ 
+              authToken: message.token,
+              user: message.user
+            });
+            
+            console.log('💾 Token saved to storage');
+            
+            // Close the auth tab if it's still open
+            if (sender.tab && sender.tab.id) {
+              try {
+                await chrome.tabs.remove(sender.tab.id);
+              } catch (e) {
+                console.log('Could not close auth tab (may already be closed)');
+              }
+            }
+            
+            // Reload popup to show authenticated state
             window.location.reload();
-          });
-        }
-      });
+            
+            sendResponse({ success: true });
+          }
+        });
+        
+        this.authMessageListenerSet = true;
+      }
       
     } catch (error) {
       console.error('Error during sign in:', error);

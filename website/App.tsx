@@ -25,6 +25,7 @@ import CancelPage from './pages/CancelPage';
 import AuthCallbackPage from './src/pages/AuthCallbackPage';
 import DashboardPage from './src/pages/DashboardPage';
 import DownloadExtension from './pages/DownloadExtension';
+import ExtensionAuthSuccess from './src/pages/ExtensionAuthSuccess';
 import { HelpCenter } from './pages/HelpCenter';
 import { ContactSupport } from './pages/ContactSupport';
 import Privacy from './pages/Privacy';
@@ -100,6 +101,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route path="/extension-auth-success" element={<ExtensionAuthSuccess />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/download-extension" element={<DownloadExtension />} />
             <Route path="/help" element={<HelpCenter />} />
