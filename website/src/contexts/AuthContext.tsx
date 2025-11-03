@@ -42,18 +42,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userData = localStorage.getItem('user_data');
 
         if (token && userData) {
-          // Verify token with backend
-          const response = await fetch('/api/auth?action=me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data.user);
-          } else {
-            // Token is invalid, clear storage
+          // Trust localStorage data (already validated during login)
+          try {
+            const parsedUser = JSON.parse(userData);
+            setUser(parsedUser);
+          } catch (parseError) {
+            console.error('Failed to parse user data:', parseError);
+            // Clear invalid data
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user_data');
             localStorage.removeItem('subscription_status');

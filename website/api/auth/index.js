@@ -54,14 +54,18 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // Get state from our memory store (set in /google route)
-        const stateKey = profile.id || profile.emails[0].value;
-        const state = oauthStateStore.get(stateKey) || '/';
+        // Get state from Google OAuth (passed back from Google)
+        const encodedState = req.query.state || '';
+        let redirectUrl = '/';
         
-        // Clean up
-        oauthStateStore.delete(stateKey);
-        
-        console.log('🔐 GoogleStrategy: Retrieved state:', state);
+        try {
+          // Decode the base64 state to get original redirect URL
+          redirectUrl = encodedState ? Buffer.from(encodedState, 'base64').toString('utf8') : '/';
+          console.log('🔐 GoogleStrategy: Decoded redirect URL:', redirectUrl);
+        } catch (decodeError) {
+          console.error('Failed to decode state, using default:', decodeError);
+          redirectUrl = '/';
+        }
         
         const userData = {
           googleId: profile.id,
@@ -69,7 +73,7 @@ passport.use(
           firstName: profile.name.givenName || '',
           lastName: profile.name.familyName || '',
           avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
-          state: state  // Preserve state in userData
+          state: redirectUrl  // Preserve decoded state in userData
         };
         done(null, userData);
       } catch (error) {
@@ -83,23 +87,17 @@ passport.use(
 router.use(passport.initialize());
 
 router.get('/google', (req, res, next) => {
-  // Check both 'state' and 'redirect' parameters for backwards compatibility
+  // Get redirect URL from state parameter
   const redirectUrl = req.query.state || req.query.redirect || '/dashboard';
   console.log('🔐 Google OAuth initiated with redirect:', redirectUrl);
   
-  // Store state temporarily (will be retrieved in strategy using profile.id)
-  // We'll clean this up after callback
-  const tempStateKey = Date.now().toString();
-  oauthStateStore.set(tempStateKey, redirectUrl);
-  
-  // Also store with a cleanup timeout (5 minutes)
-  setTimeout(() => {
-    oauthStateStore.delete(tempStateKey);
-  }, 5 * 60 * 1000);
+  // Encode redirect URL as base64 to pass through Google OAuth state
+  const encodedState = Buffer.from(redirectUrl).toString('base64');
+  console.log('🔐 Encoded state for Google OAuth:', encodedState);
   
   passport.authenticate('google', {
     scope: ['profile', 'email'],
-    state: tempStateKey,  // Pass temp key as state
+    state: encodedState,  // Pass encoded redirect URL directly as OAuth state
     session: false
   })(req, res, next);
 });
