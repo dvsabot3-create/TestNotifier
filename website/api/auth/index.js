@@ -41,9 +41,6 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 // Configure passport with Google Strategy
-// Store state in memory (Passport doesn't preserve it by default)
-const oauthStateStore = new Map();
-
 passport.use(
   new GoogleStrategy(
     {
