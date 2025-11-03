@@ -1,0 +1,117 @@
+# Render Blueprint for TestNotifier
+# Infrastructure as Code - Automatic deployment configuration
+
+services:
+  # Main Web Service
+  - type: web
+    name: testnotifier-web
+    runtime: docker
+    repo: https://github.com/dvsabot3-create/TestNotifier
+    branch: fresh-deploy-nov1
+    rootDir: .
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    
+    # Auto-deploy on push
+    autoDeploy: true
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Custom domains
+    domains:
+      - testnotifier.co.uk
+      - www.testnotifier.co.uk
+    
+    # Environment variables
+    envVars:
+      # Frontend
+      - key: FRONTEND_URL
+        value: https://testnotifier.co.uk
+      
+      - key: NODE_ENV
+        value: production
+      
+      - key: PORT
+        value: 10000
+      
+      # Database (MongoDB Atlas)
+      - key: DATABASE_URL
+        sync: false  # Prompt for value (secret)
+      
+      # Google OAuth
+      - key: GOOGLE_CLIENT_ID
+        sync: false  # Prompt for value (secret)
+      
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false  # Prompt for value (secret)
+      
+      - key: GOOGLE_CALLBACK_URL
+        value: https://testnotifier.co.uk/api/auth/google/callback
+      
+      # JWT & Security
+      - key: JWT_SECRET
+        sync: false  # Prompt for value (secret)
+      
+      - key: SESSION_SECRET
+        generateValue: true  # Auto-generate secure secret
+      
+      # Stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false  # Prompt for value (secret)
+      
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false  # Prompt for value (secret)
+      
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false  # Prompt for value (secret)
+      
+      # SendGrid (Email)
+      - key: SENDGRID_API_KEY
+        sync: false  # Prompt for value (secret)
+      
+      - key: SENDGRID_FROM_EMAIL
+        value: hello@testnotifier.co.uk
+      
+      # Twilio (SMS & WhatsApp)
+      - key: TWILIO_ACCOUNT_SID
+        sync: false  # Prompt for value (secret)
+      
+      - key: TWILIO_AUTH_TOKEN
+        sync: false  # Prompt for value (secret)
+      
+      - key: TWILIO_PHONE_NUMBER
+        sync: false  # Optional - for SMS
+      
+      - key: TWILIO_WHATSAPP_NUMBER
+        value: whatsapp:+14155238886  # Twilio sandbox number
+      
+      # CORS
+      - key: CORS_ORIGIN
+        value: https://testnotifier.co.uk
+    
+    # Build configuration
+    buildFilter:
+      paths:
+        - website/**/*
+        - Dockerfile
+        - render.yaml
+      ignoredPaths:
+        - website/**/*.md
+        - website/**/*.test.*
+        - website/**/.DS_Store
+    
+    # Scaling (optional - for future growth)
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetCPUPercent: 70
+    
+    # Service previews (optional - for testing branches)
+    # previews:
+    #   generation: automatic
+
+# Note: No separate database service needed - using MongoDB Atlas (external)
+
