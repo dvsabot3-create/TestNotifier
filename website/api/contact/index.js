@@ -8,8 +8,6 @@ const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const sanitizeHtml = require('sanitize-html');
-const rateLimiter = require('../../utils/rate-limiter');
-const { logSecurity, logError } = require('../../utils/logger');
 
 const router = express.Router();
 
