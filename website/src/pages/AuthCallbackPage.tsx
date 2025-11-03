@@ -173,22 +173,13 @@ const AuthCallbackPage: React.FC = () => {
           return;
         }
 
-        // No checkout in progress - check if user has active subscription
+        // No checkout in progress - go to dashboard
+        // Dashboard will show subscription status and prompt to upgrade if needed
         setTimeout(() => {
           if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {
             navigate(redirectUrl);
           } else {
-            // Check subscription tier
-            const tier = userData.subscription?.tier || 'free';
-            
-            if (tier === 'free') {
-              // Free users MUST select a plan - redirect to pricing
-              console.log('Free user logged in - redirecting to pricing');
-              navigate('/#pricing');
-            } else {
-              // Paid users can go to dashboard
-              navigate('/dashboard');
-            }
+            navigate('/dashboard');
           }
         }, 500);
 

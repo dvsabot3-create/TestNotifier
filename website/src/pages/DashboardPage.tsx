@@ -105,16 +105,6 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleManageBilling = async () => {
-    // Check if user has a paid subscription
-    const tier = user.subscription?.tier || 'free';
-    
-    if (tier === 'free') {
-      // Free users can't manage billing - redirect to pricing
-      alert('Please select a subscription plan first.');
-      window.location.href = '/#pricing';
-      return;
-    }
-
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
       
@@ -146,11 +136,14 @@ const DashboardPage: React.FC = () => {
       } else {
         const errorData = await response.json();
         console.error('Failed to create billing portal session:', errorData);
-        alert('Unable to open billing portal. Please contact support at hello@testnotifier.co.uk');
+        // If they don't have a Stripe customer yet, they need to subscribe first
+        alert('Please select a subscription plan first.');
+        window.location.href = '/#pricing';
       }
     } catch (error) {
       console.error('Error creating billing portal session:', error);
-      alert('Unable to open billing portal. Please contact support at hello@testnotifier.co.uk');
+      alert('Unable to open billing portal. Please select a subscription plan.');
+      window.location.href = '/#pricing';
     }
   };
 
@@ -276,16 +269,16 @@ const DashboardPage: React.FC = () => {
               onClick={() => {
                 const tier = user.subscription?.tier || 'free';
                 if (tier === 'free') {
-                  // Free users go to pricing to select plan
+                  // No subscription yet - go to pricing to select plan
                   window.location.href = '/#pricing';
                 } else {
-                  // Paid users can manage billing via Stripe portal
+                  // Has subscription - can manage via Stripe portal
                   handleManageBilling();
                 }
               }}
               className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {tier === 'free' ? 'Choose a Plan' : 'Manage Subscription'}
+              {tier === 'free' ? 'Choose a Plan' : 'Upgrade Plan'}
             </button>
           </div>
 
