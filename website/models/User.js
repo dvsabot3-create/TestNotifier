@@ -80,6 +80,36 @@ const userSchema = new mongoose.Schema({
       default: 0
     }
   },
+
+  // Extension Data (synced from Chrome extension)
+  extensionData: {
+    stats: {
+      monitorsCount: { type: Number, default: 0 },
+      slotsFound: { type: Number, default: 0 },
+      rebooksUsed: { type: Number, default: 0 },
+      rebooksTotal: { type: Number, default: 0 },
+      notificationsSent: { type: Number, default: 0 },
+      lastCheck: { type: Date },
+      lastSync: { type: Date }
+    },
+    monitors: [{
+      testCentre: String,
+      active: Boolean,
+      lastSlotFound: Date,
+      slotsFoundThisWeek: Number
+    }],
+    riskLevel: {
+      level: { type: String, enum: ['low', 'medium', 'high'], default: 'low' },
+      percentage: { type: Number, default: 0 }
+    },
+    lastActivity: [{
+      timestamp: Date,
+      type: String,  // 'slot_found', 'rebook_success', 'notification_sent', 'monitoring_started'
+      message: String,
+      testCentre: String,
+      slotDate: Date
+    }]
+  },
   
   // Instructor Profile (Professional Tier)
   instructorProfile: {

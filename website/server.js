@@ -211,7 +211,16 @@ try {
   app.use('/api/contact', contactRouter);
   console.log('✅ Contact API routes loaded');
 } catch (err) {
-  console.warn('⚠️  Notifications API not available:', err.message);
+  console.warn('⚠️  Contact API not available:', err.message);
+}
+
+try {
+  // Extension Sync API (router)
+  const extensionSyncRouter = require('./api/extension/sync.js');
+  app.use('/api/extension', extensionSyncRouter);
+  console.log('✅ Extension sync API routes loaded');
+} catch (err) {
+  console.warn('⚠️  Extension sync API not available:', err.message);
 }
 
 // Health check endpoints
