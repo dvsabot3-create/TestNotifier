@@ -390,8 +390,9 @@ function mapPlanNameToTier(planName) {
     'Starter Plan': 'starter',
     'Premium': 'premium',
     'Premium Plan': 'premium',
-    'Professional': 'professional',
-    'Professional Plan': 'professional'
+    'ADI Professional': 'professional',
+    'Professional': 'professional', // Legacy mapping
+    'Professional Plan': 'professional' // Legacy mapping
   };
   return mapping[planName] || 'free';
 }

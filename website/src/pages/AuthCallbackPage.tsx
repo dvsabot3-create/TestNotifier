@@ -13,7 +13,7 @@ const PLAN_NAMES: Record<string, string> = {
   'oneoff': 'One-Off Rebook',
   'starter': 'Starter',
   'premium': 'Premium',
-  'professional': 'Professional'
+  'professional': 'ADI Professional'
 };
 
 const AuthCallbackPage: React.FC = () => {

@@ -294,16 +294,16 @@ class TestNotifierPopup {
         duringTrial: { canRebook: false }
       },
       'professional': {
-        maxMonitors: null, // Unlimited
+        maxMonitors: 20, // ADI Professional: 20 pupils
         maxTestCentres: 999,
         maxRebooksPerDay: 10,
         maxNotificationsPerDay: 50,
         canAutoBook: true,
         canUseSMS: true,
-        canUseWhatsApp: true, // ✅ WHATSAPP EXCLUSIVE
-        canUseStealthMode: true, // ✅ STEALTH EXCLUSIVE
+        canUseWhatsApp: true, // ✅ WHATSAPP EXCLUSIVE (ADI Professional)
+        canUseStealthMode: true, // ✅ STEALTH EXCLUSIVE (ADI Professional)
         canUseRapidMode: true,
-        canUseInstructorMode: true,
+        canUseInstructorMode: true, // ✅ ADI-SPECIFIC FEATURES
         checkFrequency: 15,
         duringTrial: { canRebook: true, freeRebooks: 2 }
       }
@@ -345,7 +345,7 @@ class TestNotifierPopup {
       'professional': {
         primary: '#1d70b8',
         gradient: 'linear-gradient(135deg, #1d70b8 0%, #005ea5 100%)',
-        badge: 'PRO',
+        badge: 'ADI PRO',
         icon: this.getCrownIcon(),
         glow: 'rgba(29, 112, 184, 0.4)'
       }
@@ -434,7 +434,7 @@ class TestNotifierPopup {
     // Activity tab
     this.attachActivityListeners();
     
-    // Instructor tab (Professional only)
+    // Instructor tab (ADI Professional only)
     this.attachInstructorListeners();
     
     // Footer
@@ -572,7 +572,7 @@ class TestNotifierPopup {
   }
 
   /**
-   * Instructor tab listeners (Professional only)
+   * Instructor tab listeners (ADI Professional only)
    */
   attachInstructorListeners() {
     // Travel radius slider
@@ -655,7 +655,7 @@ class TestNotifierPopup {
     this.updateMonitorsList();
     this.updateSettings();
     this.updateActivityLog();
-    this.updateInstructorStats(); // Update instructor stats if Professional tier
+    this.updateInstructorStats(); // Update instructor stats if ADI Professional tier
   }
 
   /**
@@ -669,12 +669,12 @@ class TestNotifierPopup {
         'one-off': 'One-Off Rebook',
         'starter': 'Starter Plan',
         'premium': 'Premium Plan',
-        'professional': 'Professional Plan'
+        'professional': 'ADI Professional'
       };
       tierElement.textContent = tierNames[this.subscription.tier] || 'DVSA Test Monitor';
     }
     
-    // Show/hide Instructor tab for Professional tier
+    // Show/hide Instructor tab for ADI Professional tier
     const instructorTab = document.getElementById('tab-instructor');
     if (instructorTab) {
       if (this.subscription?.tier === 'professional') {

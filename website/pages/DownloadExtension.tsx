@@ -23,7 +23,7 @@ export function DownloadExtension() {
         return {
           filename: 'testnotifier-extension-professional.zip',
           path: '/downloads/testnotifier-extension-professional.zip',
-          name: 'Professional Edition'
+          name: 'ADI Professional Edition'
         };
       case 'premium':
         return {

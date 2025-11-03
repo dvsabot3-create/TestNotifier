@@ -399,7 +399,7 @@ export function PricingSection() {
                 <li><strong>Need 1 rebook?</strong> £30 one-off</li>
                 <li><strong>Need 2-3/day?</strong> Starter (£25/month)</li>
                 <li><strong>Need 5+/day?</strong> Premium (£45/month)</li>
-                <li><strong>Instructor with 5+ pupils?</strong> Professional (£80/month - best value!)</li>
+                <li><strong>Driving instructor with 5+ pupils?</strong> ADI Professional (£80/month - best value!)</li>
               </ul>
             </div>
           </div>

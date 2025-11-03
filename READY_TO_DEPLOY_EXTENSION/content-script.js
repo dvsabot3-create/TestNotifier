@@ -432,23 +432,34 @@ var DVSAQueenContent = /*#__PURE__*/function () {
               _context7.n = 1;
               return this.simulateRealisticPageInteraction();
             case 1:
-              // Mock available slots (would be real DVSA integration)
-              availableSlots = [{
-                date: '2024-12-15',
-                centre: 'LONDON-WD',
-                time: '09:00',
-                type: 'cancellation'
-              }, {
-                date: '2024-12-18',
-                centre: 'LONDON-WG',
-                time: '14:30',
-                type: 'new'
-              }, {
-                date: '2024-12-20',
-                centre: 'BIRMINGHAM',
-                time: '11:00',
-                type: 'cancellation'
-              }]; // Filter based on pupil preferences
+              // Real DVSA slot detection (replaces mock data)
+              console.log('🔄 Initializing real DVSA slot detector...');
+
+              // Initialize the slot detector (assuming it's already loaded)
+              let availableSlots;
+
+              try {
+                // Check if the slot detector is available
+                if (typeof DVSASlotDetector !== 'undefined') {
+                  console.log('🔍 Starting real DVSA slot detection...');
+                  const slotDetector = new DVSASlotDetector();
+                  availableSlots = await slotDetector.detectAvailableSlots();
+                  console.log(`✅ Real DVSA slot detection completed: ${availableSlots.length} slots found`);
+
+                  // Add activity log for real detection
+                  this.addActivityLog(`🔍 Real DVSA scan completed: ${availableSlots.length} slots detected`, 'success');
+                } else {
+                  console.warn('⚠️ DVSA Slot Detector not available, using fallback detection');
+                  availableSlots = await this.performFallbackSlotDetection();
+                }
+
+              } catch (error) {
+                console.error('❌ Real DVSA slot detection failed:', error);
+                this.addActivityLog(`❌ DVSA scan failed: ${error.message}`, 'error');
+                availableSlots = await this.performFallbackSlotDetection();
+              }
+
+              // Filter based on pupil preferences
               return _context7.a(2, availableSlots.filter(function (slot) {
                 return _this4.matchesPupilPreferences(slot);
               }));

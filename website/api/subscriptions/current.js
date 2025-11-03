@@ -1,215 +1,141 @@
-const Stripe = require('stripe');
+/**
+ * Get Current Subscription Status
+ * Returns the user's current subscription details for real-time sync
+ */
+
+const express = require('express');
+const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { connectDatabase } = require('../../config/database');
 const User = require('../../models/User');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+/**
+ * JWT Authentication Middleware
+ */
+const authenticateToken = async (req, res, next) => {
   try {
-    // Connect to database
-    await connectDatabase();
-    
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'Access token required'
+      });
     }
 
-    const token = authHeader.substring(7);
-    
-    // Verify JWT and get user
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-    
-    const userEmail = decoded.email || decoded.id;
-    
-    // Get user from database
-    const user = await User.findOne({ 
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user in database
+    const user = await User.findOne({
       $or: [
-        { email: userEmail },
+        { email: decoded.email },
         { _id: decoded.id }
       ]
     });
-    
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token'
+      });
     }
-    
-    const customerId = user.stripeCustomerId;
 
-    // Return user's subscription from database
-    const planType = user.subscription.tier;
-    const features = getPlanFeatures(planType);
-    const limits = getPlanLimits(planType);
-    
-    // Reset daily usage if needed
-    user.resetDailyUsage();
-    await user.save();
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid token'
+    });
+  }
+};
 
-    const subscriptionData = {
-      tier: user.subscription.tier,
-      status: user.subscription.status,
-      currentPeriodStart: user.subscription.currentPeriodStart,
-      currentPeriodEnd: user.subscription.currentPeriodEnd,
-      cancelAtPeriodEnd: user.subscription.cancelAtPeriodEnd,
-      trialEnd: user.subscription.trialEnd,
-      features: features,
-      limits: limits,
+/**
+ * Get current subscription status
+ * GET /api/subscriptions/current
+ */
+router.get('/current', authenticateToken, async (req, res) => {
+  try {
+    const user = req.user;
+
+    console.log(`📊 Subscription status requested for user: ${user.email} (${user.subscription?.tier || 'free'})`);
+
+    // Build subscription response
+    const subscription = {
+      id: user.subscription?.id || 'free',
+      tier: user.subscription?.tier || 'free',
+      status: user.subscription?.status || 'active',
+      currentPeriodStart: user.subscription?.currentPeriodStart || null,
+      currentPeriodEnd: user.subscription?.currentPeriodEnd || null,
+      cancelAtPeriodEnd: user.subscription?.cancelAtPeriodEnd || false,
       usage: {
-        rebooksToday: user.usage.rebooksToday,
-        rebooksThisMonth: user.usage.rebooksThisMonth,
-        notificationsToday: user.usage.notificationsToday,
-        canRebook: user.canRebook()
-      },
-      instructorProfile: user.subscription.tier === 'professional' ? user.instructorProfile : null
+        monitorsCount: user.monitors?.length || 0,
+        monitorsLimit: getTierMonitorLimit(user.subscription?.tier),
+        rebooksToday: user.usage?.rebooksToday || 0,
+        rebooksTotal: user.usage?.rebooksTotal || 0,
+        rebooksLimit: getTierRebookLimit(user.subscription?.tier),
+        notificationsSent: user.usage?.notificationsSent || 0,
+        notificationsLimit: getTierNotificationLimit(user.subscription?.tier)
+      }
     };
 
-    res.status(200).json({
-      subscription: subscriptionData
+    console.log(`✅ Subscription data returned for ${user.email}:`, {
+      tier: subscription.tier,
+      status: subscription.status,
+      monitors: subscription.usage.monitorsCount,
+      rebooksToday: subscription.usage.rebooksToday
+    });
+
+    res.json({
+      success: true,
+      subscription: subscription
     });
 
   } catch (error) {
-    console.error('Error fetching current subscription:', error);
-    res.status(500).json({ 
-      error: error.message 
+    console.error('❌ Error getting subscription status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve subscription status'
     });
   }
-}
+});
 
-function getPlanFeatures(planType) {
-  const features = {
-    'oneoff': {
-      multiPupil: false,
-      smsNotifications: false,
-      whatsappNotifications: false,
-      emailNotifications: true,
-      autoRebook: false,
-      rapidMode: false,
-      stealthMode: false,
-      prioritySupport: false,
-      analytics: false,
-      bulkOperations: false,
-      instructorMode: false
-    },
-    'starter': {
-      multiPupil: true,
-      smsNotifications: true,
-      whatsappNotifications: false,
-      emailNotifications: true,
-      autoRebook: false,
-      rapidMode: false,
-      stealthMode: false,
-      prioritySupport: false,
-      analytics: false,
-      bulkOperations: false,
-      instructorMode: false
-    },
-    'premium': {
-      multiPupil: true,
-      smsNotifications: true,
-      whatsappNotifications: false,
-      emailNotifications: true,
-      autoRebook: true, // ✅ AUTO-BOOKING ENABLED
-      rapidMode: true,
-      stealthMode: false,
-      prioritySupport: true,
-      analytics: true,
-      bulkOperations: true,
-      instructorMode: false
-    },
-    'professional': {
-      multiPupil: true,
-      smsNotifications: true,
-      whatsappNotifications: true, // ✅ WHATSAPP EXCLUSIVE
-      emailNotifications: true,
-      autoRebook: true,
-      rapidMode: true,
-      stealthMode: true, // ✅ STEALTH MODE EXCLUSIVE
-      prioritySupport: true,
-      analytics: true,
-      bulkOperations: true,
-      instructorMode: true,
-      phoneSupport: true
-    },
-    'free': {
-      multiPupil: false,
-      smsNotifications: false,
-      whatsappNotifications: false,
-      emailNotifications: true,
-      autoRebook: false,
-      rapidMode: false,
-      stealthMode: false,
-      prioritySupport: false,
-      analytics: false,
-      bulkOperations: false,
-      instructorMode: false
-    }
-  };
-  
-  return features[planType] || features['free'];
-}
-
-function getPlanLimits(planType) {
+/**
+ * Helper functions to get tier limits
+ */
+function getTierMonitorLimit(tier) {
   const limits = {
-    'oneoff': { 
-      pupils: 1, 
-      monitors: 1, 
-      testCentres: 1,
-      rebooksPerDay: 1,
-      rebooksTotal: 1,
-      notificationsPerDay: 5,
-      checkFrequency: 120,
-      validityDays: 30
-    },
-    'starter': { 
-      pupils: 3, 
-      monitors: 10, 
-      testCentres: 3,
-      rebooksPerDay: 2,
-      notificationsPerDay: 10,
-      checkFrequency: 60,
-      validityDays: null
-    },
-    'premium': { 
-      pupils: 5, 
-      monitors: 20, 
-      testCentres: 5,
-      rebooksPerDay: 5,
-      notificationsPerDay: 25,
-      checkFrequency: 30,
-      validityDays: null
-    },
-    'professional': { 
-      pupils: 20, 
-      monitors: null, 
-      testCentres: 999,
-      rebooksPerDay: 10,
-      notificationsPerDay: 50,
-      checkFrequency: 15,
-      validityDays: null
-    },
-    'free': { 
-      pupils: 1, 
-      monitors: 1, 
-      testCentres: 1,
-      rebooksPerDay: 0,
-      notificationsPerDay: 1,
-      checkFrequency: 300,
-      validityDays: 7
-    }
+    'free': 1,
+    'one-off': 1,
+    'starter': 3,
+    'premium': 10,
+    'professional': -1 // unlimited
   };
-  
-  return limits[planType] || limits['free'];
+  return limits[tier] || limits['free'];
 }
 
-module.exports = handler;
+function getTierRebookLimit(tier) {
+  const limits = {
+    'free': 0,
+    'one-off': 0,
+    'starter': 5,
+    'premium': 20,
+    'professional': -1 // unlimited
+  };
+  return limits[tier] || limits['free'];
+}
 
+function getTierNotificationLimit(tier) {
+  const limits = {
+    'free': 10,
+    'one-off': 5,
+    'starter': 100,
+    'premium': 500,
+    'professional': -1 // unlimited
+  };
+  return limits[tier] || limits['free'];
+}
+
+module.exports = router;

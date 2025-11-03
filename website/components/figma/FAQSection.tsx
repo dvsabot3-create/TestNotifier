@@ -31,7 +31,7 @@ export function FAQSection() {
     },
     {
       question: "Which test centers can I monitor?",
-      answer: "You can monitor any DVSA test center in England, Scotland, and Wales. Our One-Off plan allows 1 center, Starter plan allows up to 3 centers, Premium plan allows up to 5 centers, and Professional plan allows up to 999 centers. You can change which centers you're monitoring at any time."
+      answer: "You can monitor any DVSA test center in England, Scotland, and Wales. Our One-Off plan allows 1 center, Starter plan allows up to 3 centers, Premium plan allows up to 5 centers, and ADI Professional plan allows up to 999 centers. You can change which centers you're monitoring at any time."
     },
     {
       question: "Can I cancel anytime?",
@@ -51,11 +51,11 @@ export function FAQSection() {
     },
     {
       question: "What are the daily limits for each plan?",
-      answer: "All our subscription plans have daily usage limits to ensure fair service for all users: One-Off (£30): 1 rebook attempt, 5 notifications max per day. Starter (£25/month): 2 rebook attempts, 10 notifications max per day. Premium (£45/month): 5 rebook attempts, 25 notifications max per day. Professional (£80/month): 10 rebook attempts, 50 notifications max per day. These limits reset at midnight UTC each day."
+      answer: "All our subscription plans have daily usage limits to ensure fair service for all users: One-Off (£30): 1 rebook attempt, 5 notifications max per day. Starter (£25/month): 2 rebook attempts, 10 notifications max per day. Premium (£45/month): 5 rebook attempts, 25 notifications max per day. ADI Professional (£80/month): 10 rebook attempts, 50 notifications max per day. These limits reset at midnight UTC each day."
     },
     {
-      question: "How many pupils can I manage on the Professional plan?",
-      answer: "The Professional plan supports up to 20 pupils and monitoring of up to 999 test centers. Each pupil can have individual settings and preferences. This is designed for driving instructors managing multiple students. If you need more than 20 pupils, please contact us about enterprise solutions."
+      question: "How many pupils can I manage on the ADI Professional plan?",
+      answer: "The ADI Professional plan supports up to 20 pupils and monitoring of up to 999 test centers. Each pupil can have individual settings and preferences. This is specifically designed for Approved Driving Instructors (ADIs) managing multiple students in compliance with DVSA regulations. If you need more than 20 pupils, please contact us about enterprise solutions."
     },
     {
       question: "What's the difference between rebook attempts and notifications?",
@@ -71,7 +71,7 @@ export function FAQSection() {
     },
     {
       question: "Are there any hidden fees or charges?",
-      answer: "No hidden fees! Our pricing is completely transparent. The prices shown include VAT where applicable. The only additional costs are: Extra rebook attempts beyond your daily limit (not available on One-Off plan), SMS notifications (carrier charges may apply internationally), and WhatsApp notifications (Professional plan only). We never charge for setup, cancellation, or support."
+      answer: "No hidden fees! Our pricing is completely transparent. The prices shown include VAT where applicable. The only additional costs are: Extra rebook attempts beyond your daily limit (not available on One-Off plan), SMS notifications (carrier charges may apply internationally), and WhatsApp notifications (ADI Professional plan only). We never charge for setup, cancellation, or support."
     },
     {
       question: "Why is the extension Chrome-only?",
