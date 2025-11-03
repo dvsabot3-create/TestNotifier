@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from '../App';
 import { AuthProvider } from './lib/auth';
 import '../globals.css';
-import { injectSpeedInsights } from '@vercel/speed-insights';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Add global error handling for debugging
@@ -53,9 +52,6 @@ if (typeof window !== 'undefined') {
     });
   });
 }
-
-// Initialize Speed Insights
-injectSpeedInsights();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
