@@ -105,6 +105,16 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleManageBilling = async () => {
+    // Check if user has a paid subscription
+    const tier = user.subscription?.tier || 'free';
+    
+    if (tier === 'free') {
+      // Free users can't manage billing - redirect to pricing
+      alert('Please select a subscription plan first.');
+      window.location.href = '/#pricing';
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
       
