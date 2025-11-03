@@ -23,7 +23,7 @@ import { CTASection } from './components/figma/CTASection';
 import SuccessPage from './pages/SuccessPage';
 import CancelPage from './pages/CancelPage';
 import AuthCallbackPage from './src/pages/AuthCallbackPage';
-import DashboardPage from './src/pages/DashboardPage';
+import DashboardPage from './src/pages/DashboardPageNew';
 import DownloadExtension from './pages/DownloadExtension';
 import ExtensionAuthSuccess from './src/pages/ExtensionAuthSuccess';
 import { HelpCenter } from './pages/HelpCenter';
