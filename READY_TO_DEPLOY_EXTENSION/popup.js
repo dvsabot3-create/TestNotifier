@@ -101,8 +101,8 @@ class TestNotifierPopup {
    */
   async handleGoogleSignIn() {
     try {
-      // Open website login in new tab with extension=true parameter
-      const loginUrl = 'https://testnotifier.co.uk/api/auth?action=google&state=/extension-login';
+      // Open website login in new tab with extension state parameter
+      const loginUrl = 'https://testnotifier.co.uk/api/auth/google?state=/extension-login';
       const newTab = await chrome.tabs.create({ url: loginUrl });
       
       console.log('🔐 Opened authentication tab:', newTab.id);

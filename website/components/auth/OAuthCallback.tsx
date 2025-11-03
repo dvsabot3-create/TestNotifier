@@ -68,7 +68,50 @@ export function OAuthCallback() {
           user: userData,
         });
 
-        // Navigate to dashboard on success
+        // Check if this is an extension login (state=/extension-login)
+        const redirectParam = searchParams.get('redirect');
+        if (redirectParam === '/extension-login') {
+          // Send token to extension
+          console.log('🔌 Extension login detected - sending token to extension');
+          
+          // Try to send message to extension
+          if (window.chrome && chrome.runtime) {
+            try {
+              // Get all extensions and try to send message
+              chrome.runtime.sendMessage(
+                { type: 'TESTNOTIFIER_AUTH', token: accessToken },
+                () => {
+                  if (chrome.runtime.lastError) {
+                    console.log('Could not send to extension directly, trying broadcast');
+                  }
+                }
+              );
+            } catch (e) {
+              console.log('Extension message failed:', e);
+            }
+          }
+          
+          // Show success message and auto-close
+          setError(null);
+          const successDiv = document.createElement('div');
+          successDiv.innerHTML = `
+            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 32px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; z-index: 10000; max-width: 400px;">
+              <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+              <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: #1d70b8;">Successfully Logged In!</h2>
+              <p style="color: #6b7280; font-size: 16px; margin-bottom: 20px;">You can now return to the extension.</p>
+              <p style="color: #9ca3af; font-size: 14px;">This tab will close automatically...</p>
+            </div>
+          `;
+          document.body.appendChild(successDiv);
+          
+          // Close this tab after 2 seconds
+          setTimeout(() => {
+            window.close();
+          }, 2000);
+          return;
+        }
+
+        // Normal dashboard redirect
         navigate('/dashboard');
 
       } catch (error) {
