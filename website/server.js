@@ -176,39 +176,39 @@ try {
 }
 
 try {
-  // Stripe Webhooks
+  // Stripe Webhooks (function handler)
   const webhookHandler = require('./api/webhooks/stripe.js');
-  app.use('/api/webhooks', webhookHandler);
+  app.post('/api/webhooks/stripe', webhookHandler);
   console.log('✅ Stripe webhook routes loaded');
 } catch (err) {
   console.warn('⚠️  Stripe webhooks not available:', err.message);
 }
 
 try {
-  // Subscriptions API
-  const subscriptionsHandler = require('./api/subscriptions/current.js');
-  app.get('/api/subscriptions/current', subscriptionsHandler);
+  // Subscriptions API (router)
+  const subscriptionsRouter = require('./api/subscriptions/current.js');
+  app.use('/api/subscriptions', subscriptionsRouter);
   console.log('✅ Subscriptions API routes loaded');
 } catch (err) {
   console.warn('⚠️  Subscriptions API not available:', err.message);
 }
 
 try {
-  // Notifications API
-  const notificationsHandler = require('./api/notifications/send.js');
-  app.use('/api/notifications/send', notificationsHandler);
+  // Notifications API (router)
+  const notificationsRouter = require('./api/notifications/send.js');
+  app.use('/api/notifications', notificationsRouter);
   console.log('✅ Notifications API routes loaded');
 } catch (err) {
   console.warn('⚠️  Notifications API not available:', err.message);
 }
 
 try {
-  // Contact API
-  const contactHandler = require('./api/contact/index.js');
-  app.use('/api/contact', contactHandler);
+  // Contact API (router)
+  const contactRouter = require('./api/contact/index.js');
+  app.use('/api/contact', contactRouter);
   console.log('✅ Contact API routes loaded');
 } catch (err) {
-  console.warn('⚠️  Contact API not available:', err.message);
+  console.warn('⚠️  Notifications API not available:', err.message);
 }
 
 // Health check endpoints
