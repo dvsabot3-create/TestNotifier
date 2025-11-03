@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download, CreditCard, Settings, LogOut, Crown, Sparkles, Zap, TrendingUp } from 'lucide-react';
+import { Header } from '../../components/figma/Header';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
