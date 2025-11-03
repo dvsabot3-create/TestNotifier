@@ -1,14 +1,18 @@
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { HelpCircle, Mail } from "lucide-react";
+import { HelpCircle, Mail, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function FAQSection() {
-  const faqs = [
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
+
+  // Top 5 critical FAQs (always visible)
+  const criticalFaqs = [
     {
       question: "Is TestNotifier legal?",
       answer: "Yes, TestNotifier is fully compliant with DVSA terms of service. We only monitor publicly available information and send notifications. We do not access any private data or circumvent any security measures. We respect all DVSA rate limits and guidelines."
@@ -26,16 +30,20 @@ export function FAQSection() {
       answer: "Our 95% success rate means most users find earlier slots within 2-4 weeks. Cancellations happen regularly as people reschedule or cancel their tests. The key is being notified the moment they become available. If you're not finding slots, we can help you optimise your search criteria."
     },
     {
+      question: "Can I cancel anytime?",
+      answer: "Yes! You can cancel your subscription at any time with no questions asked. There are no long-term contracts or cancellation fees. Your subscription will remain active until the end of your billing period, and you won't be charged again."
+    }
+  ];
+
+  // Additional FAQs (shown when "Show More" is clicked)
+  const additionalFaqs = [
+    {
       question: "Is my data safe?",
       answer: "Absolutely. We use industry-standard encryption and never store your DVSA login credentials. We only store your notification preferences and contact information. All data is handled in compliance with GDPR regulations. We will never sell or share your data with third parties."
     },
     {
       question: "Which test centres can I monitor?",
       answer: "You can monitor any DVSA test centre in England, Scotland, and Wales. Our One-Off plan allows 1 centre, Starter plan allows up to 3 centres, Premium plan allows up to 5 centres, and ADI Professional plan allows up to 999 centres. You can change which centres you're monitoring at any time."
-    },
-    {
-      question: "Can I cancel anytime?",
-      answer: "Yes! You can cancel your subscription at any time with no questions asked. There are no long-term contracts or cancellation fees. Your subscription will remain active until the end of your billing period, and you won't be charged again."
     },
     {
       question: "Do you offer refunds?",
@@ -102,8 +110,9 @@ export function FAQSection() {
           </p>
         </div>
         
+        {/* Critical FAQs - Always Visible */}
         <Accordion type="single" collapsible className="w-full space-y-4">
-          {faqs.map((faq, index) => (
+          {criticalFaqs.map((faq, index) => (
             <AccordionItem 
               key={index} 
               value={`item-${index}`}
@@ -121,6 +130,58 @@ export function FAQSection() {
             </AccordionItem>
           ))}
         </Accordion>
+
+        {/* Show More Button */}
+        {!showAllFaqs && (
+          <div className="text-center mt-8">
+            <Button
+              onClick={() => setShowAllFaqs(true)}
+              variant="outline"
+              size="lg"
+              className="border-2 border-[#1d70b8] text-[#1d70b8] hover:bg-[#1d70b8] hover:text-white transition-all"
+            >
+              Show {additionalFaqs.length} More Questions
+              <ChevronDown className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
+        )}
+
+        {/* Additional FAQs - Expandable */}
+        {showAllFaqs && (
+          <div className="mt-8 space-y-4">
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              {additionalFaqs.map((faq, index) => (
+                <AccordionItem 
+                  key={`additional-${index}`} 
+                  value={`additional-item-${index}`}
+                  className="bg-gradient-to-br from-[#f8f9fa] to-white rounded-xl px-6 border-2 border-transparent hover:border-[#1d70b8]/20 transition-all shadow-sm hover:shadow-md"
+                >
+                  <AccordionTrigger className="text-left text-lg text-[#1d70b8] hover:no-underline py-6 hover:text-[#2e8bc0] transition-colors">
+                    <div className="flex items-start gap-3">
+                      <HelpCircle className="w-5 h-5 flex-shrink-0 mt-1 text-[#2e8bc0]" />
+                      <span>{faq.question}</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-[#6c757d] leading-relaxed pb-6 pl-8">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            
+            {/* Show Less Button */}
+            <div className="text-center mt-6">
+              <Button
+                onClick={() => setShowAllFaqs(false)}
+                variant="ghost"
+                size="sm"
+                className="text-[#1d70b8]"
+              >
+                Show Less
+              </Button>
+            </div>
+          </div>
+        )}
         
         {/* Contact Support Box */}
         <div className="mt-16 bg-gradient-to-r from-[#1d70b8]/5 via-[#2e8bc0]/5 to-[#1d70b8]/5 rounded-2xl p-10 text-center border-2 border-[#1d70b8]/10">
