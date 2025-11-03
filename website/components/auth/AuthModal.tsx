@@ -146,7 +146,7 @@ export function AuthModal({ isOpen, onClose, redirectUrl, source }: AuthModalPro
 
       // Redirect to Google OAuth with state parameter
       console.log('🔐 Starting Google OAuth with state:', finalRedirect);
-      window.location.href = `/api/auth?action=google&state=${encodeURIComponent(finalRedirect)}`;
+      window.location.href = `/api/auth/google?state=${encodeURIComponent(finalRedirect)}`;
     } catch (error) {
       setErrors({ submit: 'Google authentication failed. Please try again.' });
       trackEvent('google_auth_error', 'error', 'google_auth_failure');
