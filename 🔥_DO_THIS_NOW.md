@@ -23,8 +23,10 @@
 **I've generated a cryptographically secure secret for you. Copy this entire line:**
 
 ```
-[Generated in next step - see terminal output above]
+393ee034a1b7fe0955ab14dea151726ae0c4dee78e8c0ebacffa7f5e0243fd8b3f05e1e965d5a0fa1cd6fd70c1a7f7a7dc9fc5fa67de44fc5e1a59fc43a6d91b
 ```
+
+**This is a 128-character random hex string. Use this EXACT value in Render.**
 
 ### How to Update in Render:
 
