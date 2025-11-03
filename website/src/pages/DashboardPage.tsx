@@ -263,10 +263,19 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
             <button
-              onClick={() => window.location.href = '/#pricing'}
+              onClick={() => {
+                const tier = user.subscription?.tier || 'free';
+                if (tier === 'free') {
+                  // Free users go to pricing to select plan
+                  window.location.href = '/#pricing';
+                } else {
+                  // Paid users can manage billing via Stripe portal
+                  handleManageBilling();
+                }
+              }}
               className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {status === 'inactive' ? 'Choose a Plan' : 'Upgrade Plan'}
+              {tier === 'free' ? 'Choose a Plan' : 'Manage Subscription'}
             </button>
           </div>
 
