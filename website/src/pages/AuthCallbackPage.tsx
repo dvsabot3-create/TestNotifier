@@ -147,42 +147,37 @@ const AuthCallbackPage: React.FC = () => {
 
         console.log('OAuth Callback - User data saved to localStorage');
 
-        // Check if user was in checkout flow - CHECK MULTIPLE SOURCES
+        // Check if user was in checkout flow - CHECK REDIRECT URL
         const redirectUrl = searchParams.get('redirect');
-        const checkoutInProgress = localStorage.getItem('checkout_in_progress');
-        const selectedPlan = localStorage.getItem('selected_plan');
         
-        // ALSO check if redirect URL contains plan parameter (backup method)
-        const redirectHasPlan = redirectUrl && redirectUrl.includes('plan=');
-        let planFromUrl = null;
-        if (redirectHasPlan) {
-          const match = redirectUrl.match(/plan=(\w+)/);
-          planFromUrl = match ? match[1] : null;
-        }
+        console.log('🔍 Checking redirect URL:', redirectUrl);
         
-        // Determine if this is a checkout flow
-        const isCheckoutFlow = (checkoutInProgress && selectedPlan) || planFromUrl;
-        const planToCheckout = selectedPlan || planFromUrl;
-        
-        console.log('🔍 Checkout detection:', {
-          checkoutInProgress,
-          selectedPlan,
-          planFromUrl,
-          isCheckoutFlow,
-          planToCheckout
-        });
-
-        if (isCheckoutFlow && planToCheckout) {
-          // User was trying to subscribe - GO DIRECTLY TO STRIPE CHECKOUT
-          console.log('✅ User selected plan before auth - going STRAIGHT to Stripe checkout:', planToCheckout);
+        // Check if redirect URL contains "checkout:planId" format
+        if (redirectUrl && redirectUrl.startsWith('checkout:')) {
+          const planId = redirectUrl.replace('checkout:', '');
+          console.log('✅ CHECKOUT DETECTED - Going STRAIGHT to Stripe for plan:', planId);
           
-          // Clear flags
+          // Clear localStorage flags
           localStorage.removeItem('checkout_in_progress');
           localStorage.removeItem('selected_plan');
           
-          // Create checkout session immediately
-          createCheckoutSessionAndRedirect(planToCheckout, userData);
-          return; // Don't navigate anywhere else
+          // Create checkout session immediately - NO DASHBOARD
+          createCheckoutSessionAndRedirect(planId, userData);
+          return; // Stop here - don't navigate to dashboard
+        }
+        
+        // Backup: Check localStorage
+        const checkoutInProgress = localStorage.getItem('checkout_in_progress');
+        const selectedPlan = localStorage.getItem('selected_plan');
+        
+        if (checkoutInProgress && selectedPlan) {
+          console.log('✅ CHECKOUT from localStorage - Going to Stripe:', selectedPlan);
+          
+          localStorage.removeItem('checkout_in_progress');
+          localStorage.removeItem('selected_plan');
+          
+          createCheckoutSessionAndRedirect(selectedPlan, userData);
+          return;
         }
 
         // Check if this is an extension login
