@@ -69,10 +69,13 @@ passport.use(
 router.use(passport.initialize());
 
 router.get('/google', (req, res, next) => {
-  const redirectUrl = req.query.redirect || '/dashboard';
+  // Check both 'state' and 'redirect' parameters for backwards compatibility
+  const redirectUrl = req.query.state || req.query.redirect || '/dashboard';
+  console.log('🔐 Google OAuth initiated with redirect:', redirectUrl);
+  
   passport.authenticate('google', {
     scope: ['profile', 'email'],
-    state: redirectUrl,
+    state: redirectUrl,  // Pass redirectUrl as OAuth state
     session: false
   })(req, res, next);
 });
@@ -85,6 +88,10 @@ router.get('/google/callback', (req, res, next) => {
         const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
       }
+
+      // Get the redirect URL from OAuth state parameter
+      const redirectUrl = req.query.state || '/';
+      console.log('✅ Google OAuth callback - redirect URL:', redirectUrl);
 
       // Connect to database
       await connectDatabase();
@@ -132,7 +139,7 @@ router.get('/google/callback', (req, res, next) => {
       );
       const refreshToken = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '30d' });
 
-      const redirectUrl = req.query.state || '/';
+      // redirectUrl was already extracted above from req.query.state
       const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
       const callbackUrl = new URL('/auth/callback', frontendUrl);
       callbackUrl.searchParams.set('accessToken', accessToken);
@@ -143,6 +150,7 @@ router.get('/google/callback', (req, res, next) => {
       callbackUrl.searchParams.set('lastName', user.lastName);
       callbackUrl.searchParams.set('redirect', redirectUrl);
       
+      console.log('🔀 Redirecting to:', callbackUrl.toString());
       res.redirect(callbackUrl.toString());
     } catch (error) {
       console.error('Google OAuth token generation error:', error);
