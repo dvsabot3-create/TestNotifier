@@ -1,5 +1,80 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+const { connectDatabase } = require('../../config/database');
+const User = require('../../models/User');
 const router = express.Router();
+
+// JWT Authentication middleware
+const authenticateToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        error: 'No authentication token provided'
+      });
+    }
+
+    const token = authHeader.substring(7);
+
+    // Verify JWT
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired token'
+      });
+    }
+
+    // Connect to database and get user
+    await connectDatabase();
+
+    const userEmail = decoded.email || decoded.id;
+    const user = await User.findOne({
+      $or: [
+        { email: userEmail },
+        { _id: decoded.id }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Add user to request object
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Authentication failed'
+    });
+  }
+};
+
+// Rate limiting for notifications
+const notificationLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute window
+  max: 5, // Limit each user to 5 notifications per minute
+  message: {
+    success: false,
+    error: 'Too many notifications. Please wait a minute before sending more.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Key generator based on user ID
+  keyGenerator: (req) => {
+    return req.user ? req.user._id.toString() : req.ip;
+  }
+});
 
 // Notification service integrations
 const sendEmail = async (to, subject, html) => {
@@ -106,8 +181,8 @@ const sendWhatsApp = async (to, message) => {
   }
 };
 
-// Main notification endpoint
-router.post('/', async (req, res) => {
+// Main notification endpoint - PROTECTED
+router.post('/', authenticateToken, notificationLimiter, async (req, res) => {
   try {
     const {
       type,
@@ -116,9 +191,11 @@ router.post('/', async (req, res) => {
       email,
       phone,
       slot,
-      notificationTypes,
-      subscriptionTier
+      notificationTypes
     } = req.body;
+    
+    // Get REAL subscription tier from authenticated user's database record
+    const subscriptionTier = req.user.subscription.tier;
     
     // Validation
     if (!type || !notificationTypes || notificationTypes.length === 0) {

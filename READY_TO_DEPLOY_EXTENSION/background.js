@@ -149,6 +149,18 @@ async function handleMessage(message, sender) {
     case 'bookSlot':
       return await handleBookSlot(message.slot, message.monitorId);
       
+    case 'getFullState':
+      return {
+        success: true,
+        state: {
+          currentInstructor: state.currentInstructor || null,
+          pupils: state.pupils || [],
+          settings: state.settings,
+          monitors: state.monitors,
+          subscription: state.subscription
+        }
+      };
+      
     default:
       console.warn('Unknown action:', message.action);
       return { success: false, error: 'Unknown action' };

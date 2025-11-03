@@ -239,11 +239,6 @@ async function handlePaymentSucceeded(invoice) {
 
   const customerId = invoice.customer;
 
-  // Update customer email to hello@testnotifier.co.uk for consolidated support
-  if (customerId) {
-    await updateCustomerEmail(customerId);
-  }
-
   // Handle successful recurring payments
   try {
     const User = require('../models/User'); // Assuming User model exists
@@ -259,12 +254,12 @@ async function handlePaymentSucceeded(invoice) {
       const subscriptionItem = invoice.lines.data[0];
       const priceId = subscriptionItem?.price?.id;
       
-      // Map price IDs to tiers (these should match your Stripe price IDs)
+      // Map price IDs to tiers (REAL Stripe price IDs)
       const tierMap = {
-        // Add your actual Stripe price IDs here
-        'price_starter': 'starter',
-        'price_premium': 'premium',
-        'price_professional': 'professional'
+        'price_1SMSgh0xPOxdopWPJGe2jU3M': 'oneoff',
+        'price_1SMSgi0xPOxdopWPUKIVTL2s': 'starter',
+        'price_1SMSgj0xPOxdopWPWujQSxG8': 'premium',
+        'price_1SMSgl0xPOxdopWPQqujVkKi': 'professional'
       };
       
       user.subscription.tier = tierMap[priceId] || user.subscription.tier;
@@ -285,11 +280,6 @@ async function handlePaymentFailed(invoice) {
   console.log('Payment failed:', invoice.id);
 
   const customerId = invoice.customer;
-
-  // Update customer email to hello@testnotifier.co.uk for consolidated support
-  if (customerId) {
-    await updateCustomerEmail(customerId);
-  }
 
   // Handle failed payments
   try {
@@ -326,11 +316,6 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log('Payment intent succeeded:', paymentIntent.id);
 
   const customerId = paymentIntent.customer;
-
-  // Update customer email to hello@testnotifier.co.uk for consolidated support
-  if (customerId) {
-    await updateCustomerEmail(customerId);
-  }
 
   // Handle successful one-time payments (e.g., One-Off Rebook)
   try {

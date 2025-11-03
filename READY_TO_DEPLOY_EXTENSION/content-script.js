@@ -838,6 +838,15 @@ var DVSAQueenContent = /*#__PURE__*/function () {
       console.log('⚙️ Stealth settings updated:', this.settings);
     }
   }, {
+    key: "performFallbackSlotDetection",
+    value: function performFallbackSlotDetection() {
+      console.warn('⚠️ Real DVSA slot detection not implemented - returning empty array');
+      if (this.addActivityLog) {
+        this.addActivityLog('⚠️ Slot detection unavailable', 'warning');
+      }
+      return Promise.resolve([]);
+    }
+  }, {
     key: "matchesPupilPreferences",
     value: function matchesPupilPreferences(slot) {
       // Would implement real pupil preference matching

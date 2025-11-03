@@ -166,5 +166,5 @@ userSchema.methods.incrementRebookUsage = async function() {
   await this.save();
 };
 
-export default mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
 
