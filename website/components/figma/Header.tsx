@@ -68,10 +68,10 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer group h-full" onClick={handleLogoClick}>
             <img
-              src="/assets/logos/tn-test-notifier-logo.png"
+              src="/assets/logos/tn-logov2.png"
               alt="Test Notifier"
               className="w-auto transition-opacity group-hover:opacity-80 cursor-pointer"
-              style={{ height: '20px', maxHeight: '20px' }}
+              style={{ height: '32px', maxHeight: '32px' }}
             />
           </div>
 
