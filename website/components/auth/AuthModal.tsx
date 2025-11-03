@@ -133,15 +133,20 @@ export function AuthModal({ isOpen, onClose, redirectUrl, source }: AuthModalPro
       const checkoutInProgress = localStorage.getItem('checkout_in_progress');
       const selectedPlan = localStorage.getItem('selected_plan');
       
-      let finalRedirect = redirectUrl || '/';
+      let finalRedirect = '/dashboard';
       
-      // If in checkout flow, redirect back to pricing with plan parameter
+      // If user selected a plan - use special "checkout:planId" format
+      // This tells AuthCallbackPage to go STRAIGHT to Stripe (no dashboard)
       if (checkoutInProgress && selectedPlan) {
-        finalRedirect = `/?plan=${selectedPlan}&checkout=true`;
+        finalRedirect = `checkout:${selectedPlan}`;
+        console.log('🛒 User selected plan - will go STRAIGHT to Stripe after auth:', selectedPlan);
+      } else if (redirectUrl) {
+        finalRedirect = redirectUrl;
       }
 
-      // Redirect to Google OAuth
-      window.location.href = `/api/auth/google?redirect=${encodeURIComponent(finalRedirect)}`;
+      // Redirect to Google OAuth with state parameter
+      console.log('🔐 Starting Google OAuth with state:', finalRedirect);
+      window.location.href = `/api/auth?action=google&state=${encodeURIComponent(finalRedirect)}`;
     } catch (error) {
       setErrors({ submit: 'Google authentication failed. Please try again.' });
       trackEvent('google_auth_error', 'error', 'google_auth_failure');
