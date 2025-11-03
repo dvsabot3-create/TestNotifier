@@ -47,15 +47,22 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+      passReqToCallback: true,  // Enable access to req object
+      store: true  // Preserve state parameter
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
       try {
+        // Preserve state parameter through OAuth flow
+        const state = req.query.state || '/';
+        console.log('🔐 GoogleStrategy: Preserving state:', state);
+        
         const userData = {
           googleId: profile.id,
           email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
           firstName: profile.name.givenName || '',
           lastName: profile.name.familyName || '',
           avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
+          state: state  // Preserve state in userData
         };
         done(null, userData);
       } catch (error) {
@@ -89,9 +96,9 @@ router.get('/google/callback', (req, res, next) => {
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
       }
 
-      // Get the redirect URL from OAuth state parameter
-      const redirectUrl = req.query.state || '/';
-      console.log('✅ Google OAuth callback - redirect URL:', redirectUrl);
+      // Get the redirect URL from userData (preserved by Passport strategy)
+      const redirectUrl = userData.state || req.query.state || '/';
+      console.log('✅ Google OAuth callback - redirect URL:', redirectUrl, '(from userData.state)');
 
       // Connect to database
       await connectDatabase();
