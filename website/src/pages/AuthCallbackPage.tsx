@@ -20,6 +20,7 @@ const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [isExtensionLogin, setIsExtensionLogin] = useState<boolean>(false);
 
   /**
    * Create Stripe checkout session and redirect immediately
@@ -152,6 +153,37 @@ const AuthCallbackPage: React.FC = () => {
         
         console.log('🔍 Checking redirect URL:', redirectUrl);
         
+        // Check if this is an EXTENSION login (state=/extension-login)
+        if (redirectUrl === '/extension-login') {
+          console.log('🔌 Extension login detected - sending token to extension');
+          setIsExtensionLogin(true);
+          
+          // Try to send message to extension
+          if (window.chrome && (window as any).chrome.runtime) {
+            try {
+              // Send message to extension
+              (window as any).chrome.runtime.sendMessage(
+                { type: 'TESTNOTIFIER_AUTH', token: accessToken },
+                () => {
+                  if ((window as any).chrome.runtime.lastError) {
+                    console.log('Could not send to extension directly');
+                  } else {
+                    console.log('✅ Token sent to extension successfully');
+                  }
+                }
+              );
+            } catch (e) {
+              console.log('Extension message failed:', e);
+            }
+          }
+          
+          // Close this tab after 3 seconds
+          setTimeout(() => {
+            window.close();
+          }, 3000);
+          return;
+        }
+        
         // Check if redirect URL contains "checkout:planId" format
         if (redirectUrl && redirectUrl.startsWith('checkout:')) {
           const planId = redirectUrl.replace('checkout:', '');
@@ -221,6 +253,28 @@ const AuthCallbackPage: React.FC = () => {
 
     handleCallback();
   }, [navigate, searchParams]);
+
+  if (isExtensionLogin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+        <div style={{background: 'white', padding: '48px', borderRadius: '24px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center', maxWidth: '500px', margin: '20px'}}>
+          <div style={{fontSize: '64px', marginBottom: '24px'}}>✅</div>
+          <h1 style={{fontSize: '32px', fontWeight: '700', marginBottom: '16px', color: '#1d70b8'}}>Successfully Logged In!</h1>
+          <p style={{color: '#6b7280', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6'}}>Your account is now connected to the extension.</p>
+          <div style={{background: '#f3f4f6', padding: '20px', borderRadius: '12px', marginBottom: '24px'}}>
+            <p style={{color: '#374151', fontSize: '16px', fontWeight: '600', marginBottom: '12px'}}>Next Steps:</p>
+            <ol style={{textAlign: 'left', color: '#6b7280', fontSize: '14px', lineHeight: '1.8', paddingLeft: '20px', margin: 0}}>
+              <li>Close this tab</li>
+              <li>Return to the Chrome extension</li>
+              <li>The extension should now show your dashboard</li>
+            </ol>
+          </div>
+          <p style={{color: '#9ca3af', fontSize: '14px', marginBottom: '16px'}}>This window will close automatically in 3 seconds...</p>
+          <button onClick={() => window.close()} style={{background: '#1d70b8', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 112, 184, 0.3)'}}>Close Now</button>
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
