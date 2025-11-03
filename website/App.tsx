@@ -15,6 +15,7 @@ import { SolutionSection } from './components/figma/SolutionSection';
 import { DemoSection } from './components/figma/DemoSection';
 import { HowItWorksSection } from './components/figma/HowItWorksSection';
 import { PricingSection } from './components/PricingSection';
+import { ADISection } from './components/ADISection';
 import { ComplianceSection } from './components/figma/ComplianceSection';
 import { SocialProofSection } from './components/figma/SocialProofSection';
 import { FAQSection } from './components/figma/FAQSection';
@@ -80,6 +81,7 @@ function HomePage() {
       <DemoSection />
       <HowItWorksSection />
       <PricingSection />
+      <ADISection />
       <ComplianceSection />
       <SocialProofSection />
       <FAQSection />

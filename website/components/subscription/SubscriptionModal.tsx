@@ -95,7 +95,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
   },
   {
     id: 'professional',
-    name: 'Professional',
+    name: 'ADI Professional',
     price: 80.00,
     interval: 'month',
     description: 'For driving instructors',

@@ -185,19 +185,20 @@ export function PricingSection() {
     },
     {
       id: "professional",
-      name: "Professional",
-      subtitle: "Ultimate for instructors",
+      name: "ADI Professional",
+      subtitle: "For driving instructors",
       price: "£80",
       priceSuffix: "/month",
       icon: Crown,
       iconColor: "#1d70b8",
       features: [
-        { text: "Up to 20 pupils & 999 test centers", included: true },
+        { text: "Manage 20 pupils & 999 test centers", included: true },
         { text: "10 daily booking attempts", included: true },
         { text: "50 daily notifications max", included: true },
         { text: "Multi-pupil dashboard", included: true },
         { text: "Per-pupil custom settings", included: true },
         { text: "SMS + Email + WhatsApp alerts", included: true },
+        { text: "DVSA-compliant workflow", included: true },
         { text: "Stealth mode (anti-detection)", included: true },
         { text: "Success rate analytics", included: true },
         { text: "Priority phone support", included: true },
@@ -206,7 +207,7 @@ export function PricingSection() {
       cta: "Subscribe - £80/month",
       highlighted: false,
       color: "#1d70b8",
-      badge: "Ultimate Professional"
+      badge: "For ADIs"
     }
   ];
 
@@ -221,7 +222,7 @@ export function PricingSection() {
             Choose Your Plan
           </h2>
           <p className="pricing-description text-xl text-[#6c757d] max-w-3xl mx-auto mb-8">
-            Simple pricing for learners and instructors. One-off rescue bookings or comprehensive monitoring for driving schools.
+            Simple pricing for learners and ADIs. One-off rescue bookings or comprehensive monitoring for driving schools.
           </p>
           <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-800 px-4 py-2 rounded-full text-sm border border-yellow-200">
             <Sparkles className="w-4 h-4" />
