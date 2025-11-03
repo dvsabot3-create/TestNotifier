@@ -256,21 +256,26 @@ const AuthCallbackPage: React.FC = () => {
 
   if (isExtensionLogin) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-        <div style={{background: 'white', padding: '48px', borderRadius: '24px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center', maxWidth: '500px', margin: '20px'}}>
-          <div style={{fontSize: '64px', marginBottom: '24px'}}>✅</div>
-          <h1 style={{fontSize: '32px', fontWeight: '700', marginBottom: '16px', color: '#1d70b8'}}>Successfully Logged In!</h1>
-          <p style={{color: '#6b7280', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6'}}>Your account is now connected to the extension.</p>
-          <div style={{background: '#f3f4f6', padding: '20px', borderRadius: '12px', marginBottom: '24px'}}>
-            <p style={{color: '#374151', fontSize: '16px', fontWeight: '600', marginBottom: '12px'}}>Next Steps:</p>
-            <ol style={{textAlign: 'left', color: '#6b7280', fontSize: '14px', lineHeight: '1.8', paddingLeft: '20px', margin: 0}}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700">
+        <div className="bg-white p-12 rounded-3xl shadow-2xl text-center max-w-md mx-5">
+          <div className="text-6xl mb-6">✅</div>
+          <h1 className="text-3xl font-bold mb-4 text-blue-600">Successfully Logged In!</h1>
+          <p className="text-gray-600 text-lg mb-6">Your account is now connected to the extension.</p>
+          <div className="bg-gray-100 p-5 rounded-xl mb-6">
+            <p className="text-gray-800 font-semibold mb-3">Next Steps:</p>
+            <ol className="text-left text-gray-600 text-sm space-y-2 pl-5 list-decimal">
               <li>Close this tab</li>
               <li>Return to the Chrome extension</li>
               <li>The extension should now show your dashboard</li>
             </ol>
           </div>
-          <p style={{color: '#9ca3af', fontSize: '14px', marginBottom: '16px'}}>This window will close automatically in 3 seconds...</p>
-          <button onClick={() => window.close()} style={{background: '#1d70b8', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 112, 184, 0.3)'}}>Close Now</button>
+          <p className="text-gray-400 text-sm mb-4">This window will close automatically in 3 seconds...</p>
+          <button 
+            onClick={() => window.close()} 
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition-colors"
+          >
+            Close Now
+          </button>
         </div>
       </div>
     );
