@@ -67,7 +67,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer group" onClick={handleLogoClick}>
             <img
-              src="/assets/logos/tn-logov2.png"
+              src="/assets/logos/tn-test-notifier-logo.png"
               alt="Test Notifier"
               className="w-auto h-6 transition-opacity group-hover:opacity-80 cursor-pointer"
             />
