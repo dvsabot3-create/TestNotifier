@@ -27,27 +27,27 @@ export function DownloadExtension() {
         };
       case 'premium':
         return {
-          filename: 'testnotifier-extension-final.zip',
-          path: '/downloads/testnotifier-extension-final.zip',
+          filename: 'testnotifier-extension-premium.zip',
+          path: '/downloads/testnotifier-extension-premium.zip',
           name: 'Premium Edition'
         };
       case 'starter':
         return {
-          filename: 'testnotifier-extension.zip',
-          path: '/downloads/testnotifier-extension.zip',
+          filename: 'testnotifier-extension-starter.zip',
+          path: '/downloads/testnotifier-extension-starter.zip',
           name: 'Starter Edition'
         };
       case 'oneoff':
         return {
-          filename: 'testnotifier-extension-simple.zip',
-          path: '/downloads/testnotifier-extension-simple.zip',
+          filename: 'testnotifier-extension-oneoff.zip',
+          path: '/downloads/testnotifier-extension-oneoff.zip',
           name: 'One-Off Edition'
         };
       default:
         return {
-          filename: 'testnotifier-extension.zip',
-          path: '/downloads/testnotifier-extension.zip',
-          name: 'Free Edition'
+          filename: 'testnotifier-extension-starter.zip',
+          path: '/downloads/testnotifier-extension-starter.zip',
+          name: 'Starter Edition'
         };
     }
   };

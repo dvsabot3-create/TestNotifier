@@ -72,16 +72,16 @@ const DashboardPage: React.FC = () => {
   const handleDownloadExtension = () => {
     const tier = user?.subscription?.tier || 'free';
     
-    // Map subscription tier to extension file
+    // Map subscription tier to extension file (TIER-SPECIFIC ZIPS)
     const extensionFiles: Record<string, string> = {
       'professional': '/downloads/testnotifier-extension-professional.zip',
-      'premium': '/downloads/testnotifier-extension-final.zip',
-      'starter': '/downloads/testnotifier-extension.zip',
-      'oneoff': '/downloads/testnotifier-extension-simple.zip',
-      'free': '/downloads/testnotifier-extension.zip'
+      'premium': '/downloads/testnotifier-extension-premium.zip',
+      'starter': '/downloads/testnotifier-extension-starter.zip',
+      'oneoff': '/downloads/testnotifier-extension-oneoff.zip',
+      'free': '/downloads/testnotifier-extension-starter.zip'  // Default to starter for free users
     };
 
-    const downloadUrl = extensionFiles[tier] || extensionFiles['free'];
+    const downloadUrl = extensionFiles[tier] || extensionFiles['starter'];
     const filename = `testnotifier-extension-${tier}.zip`;
 
     // Create download link
