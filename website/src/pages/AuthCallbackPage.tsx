@@ -147,20 +147,41 @@ const AuthCallbackPage: React.FC = () => {
 
         console.log('OAuth Callback - User data saved to localStorage');
 
-        // Check if user was in checkout flow - GO STRAIGHT TO STRIPE
+        // Check if user was in checkout flow - CHECK MULTIPLE SOURCES
+        const redirectUrl = searchParams.get('redirect');
         const checkoutInProgress = localStorage.getItem('checkout_in_progress');
         const selectedPlan = localStorage.getItem('selected_plan');
-        const redirectUrl = searchParams.get('redirect');
+        
+        // ALSO check if redirect URL contains plan parameter (backup method)
+        const redirectHasPlan = redirectUrl && redirectUrl.includes('plan=');
+        let planFromUrl = null;
+        if (redirectHasPlan) {
+          const match = redirectUrl.match(/plan=(\w+)/);
+          planFromUrl = match ? match[1] : null;
+        }
+        
+        // Determine if this is a checkout flow
+        const isCheckoutFlow = (checkoutInProgress && selectedPlan) || planFromUrl;
+        const planToCheckout = selectedPlan || planFromUrl;
+        
+        console.log('🔍 Checkout detection:', {
+          checkoutInProgress,
+          selectedPlan,
+          planFromUrl,
+          isCheckoutFlow,
+          planToCheckout
+        });
 
-        if (checkoutInProgress && selectedPlan) {
+        if (isCheckoutFlow && planToCheckout) {
           // User was trying to subscribe - GO DIRECTLY TO STRIPE CHECKOUT
-          console.log('User selected plan before auth - going straight to checkout:', selectedPlan);
+          console.log('✅ User selected plan before auth - going STRAIGHT to Stripe checkout:', planToCheckout);
           
           // Clear flags
           localStorage.removeItem('checkout_in_progress');
+          localStorage.removeItem('selected_plan');
           
           // Create checkout session immediately
-          createCheckoutSessionAndRedirect(selectedPlan, userData);
+          createCheckoutSessionAndRedirect(planToCheckout, userData);
           return; // Don't navigate anywhere else
         }
 
