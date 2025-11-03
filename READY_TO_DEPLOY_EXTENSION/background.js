@@ -48,6 +48,56 @@ let state = {
 
 // Monitoring intervals
 let monitoringInterval = null;
+let dashboardSyncInterval = null;
+
+/**
+ * Sync extension data to dashboard backend
+ */
+async function syncToDashboard() {
+  try {
+    const { authToken } = await chrome.storage.local.get(['authToken']);
+    
+    if (!authToken) {
+      console.log('⏭️ Skipping dashboard sync - not authenticated');
+      return;
+    }
+
+    const syncData = {
+      stats: {
+        monitorsCount: state.monitors.length,
+        slotsFound: state.stats.slotsFound,
+        rebooksUsed: state.stats.rebooksUsed,
+        rebooksTotal: state.stats.rebooksTotal,
+        notificationsSent: state.stats.notificationsSent || 0,
+        lastCheck: state.stats.lastCheck
+      },
+      monitors: state.monitors.map(m => ({
+        testCentre: m.testCentre,
+        active: m.status === 'active',
+        lastSlotFound: m.lastSlotFound,
+        slotsFoundThisWeek: m.slotsFoundThisWeek || 0
+      })),
+      riskLevel: state.riskLevel
+    };
+
+    const response = await fetch('https://testnotifier.co.uk/api/extension/sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify(syncData)
+    });
+
+    if (response.ok) {
+      console.log('✅ Dashboard sync successful');
+    } else {
+      console.warn('⚠️ Dashboard sync failed:', response.status);
+    }
+  } catch (error) {
+    console.error('Dashboard sync error:', error);
+  }
+}
 
 /**
  * Extension installed/updated
@@ -62,6 +112,19 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     // Extension updated
     console.log('Updated to version:', chrome.runtime.getManifest().version);
   }
+  
+  // Start dashboard sync (every 5 minutes)
+  if (dashboardSyncInterval) {
+    clearInterval(dashboardSyncInterval);
+  }
+  
+  // Initial sync
+  syncToDashboard();
+  
+  // Then sync every 5 minutes
+  dashboardSyncInterval = setInterval(() => {
+    syncToDashboard();
+  }, 5 * 60 * 1000);
 });
 
 /**
