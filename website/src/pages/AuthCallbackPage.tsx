@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Plan to Stripe Price ID mapping
 const PLAN_TO_PRICE_ID: Record<string, string> = {
-  'oneoff': 'price_1SMSgh0xPOxdopWPJGe2jU3M',
-  'starter': 'price_1SMSgi0xPOxdopWPUKIVTL2s',
-  'premium': 'price_1SMSgj0xPOxdopWPWujQSxG8',
-  'professional': 'price_1SMSgl0xPOxdopWPQqujVkKi'
+  'oneoff': 'price_1SPEkE0xPOxdopWPVF6IYYUr',
+  'starter': 'price_1SPEkG0xPOxdopWPVVWGWu4M',
+  'premium': 'price_1SPEkH0xPOxdopWPUiOBFDPd',
+  'professional': 'price_1SPEkI0xPOxdopWP5bwrFwY5'
 };
 
 const PLAN_NAMES: Record<string, string> = {

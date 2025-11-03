@@ -25,13 +25,13 @@ const products = [
     },
     prices: [
       {
-        unit_amount: 2500, // £25.00 in pence
+        unit_amount: 3000, // £30.00 in pence
         currency: "gbp",
-        nickname: "One-Off Rebook - Limited Time",
+        nickname: "One-Off Rebook - Standard",
         metadata: {
           original_price: "3500", // £35.00 original price
-          discount: "29%",
-          savings: "1000" // £10.00 savings
+          discount: "14%",
+          savings: "500" // £5.00 savings
         }
       }
     ]
@@ -46,16 +46,16 @@ const products = [
     },
     prices: [
       {
-        unit_amount: 1900, // £19.00 in pence
+        unit_amount: 2500, // £25.00 in pence
         currency: "gbp",
         recurring: {
           interval: "month"
         },
-        nickname: "Starter Monthly - Limited Time",
+        nickname: "Starter Monthly",
         metadata: {
           original_price: "2900", // £29.00 original price
-          discount: "34%",
-          savings: "1000", // £10.00 savings
+          discount: "14%",
+          savings: "400", // £4.00 savings
           extra_rebook_price: "1500" // £15.00 per extra rebook
         }
       }
@@ -71,23 +71,23 @@ const products = [
     },
     prices: [
       {
-        unit_amount: 2900, // £29.00 in pence
+        unit_amount: 4500, // £45.00 in pence
         currency: "gbp",
         recurring: {
           interval: "month"
         },
-        nickname: "Premium Monthly - Limited Time",
+        nickname: "Premium Monthly",
         metadata: {
           original_price: "4900", // £49.00 original price
-          discount: "41%",
-          savings: "2000", // £20.00 savings
+          discount: "8%",
+          savings: "400", // £4.00 savings
           extra_rebook_price: "1200" // £12.00 per extra rebook
         }
       }
     ]
   },
   {
-    name: "Professional Plan",
+    name: "ADI Professional",
     description: "For driving schools - up to 20 pupils, 999 test centers, and 10 daily booking attempts",
     metadata: {
       type: "subscription",
@@ -96,16 +96,16 @@ const products = [
     },
     prices: [
       {
-        unit_amount: 4900, // £49.00 in pence
+        unit_amount: 8000, // £80.00 in pence
         currency: "gbp",
         recurring: {
           interval: "month"
         },
-        nickname: "Professional Monthly - Limited Time",
+        nickname: "ADI Professional Monthly",
         metadata: {
           original_price: "8900", // £89.00 original price
-          discount: "45%",
-          savings: "4000", // £40.00 savings
+          discount: "10%",
+          savings: "900", // £9.00 savings
           extra_rebook_price: "0" // No extra fees
         }
       }

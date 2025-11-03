@@ -256,10 +256,10 @@ async function handlePaymentSucceeded(invoice) {
       
       // Map price IDs to tiers (REAL Stripe price IDs)
       const tierMap = {
-        'price_1SMSgh0xPOxdopWPJGe2jU3M': 'oneoff',
-        'price_1SMSgi0xPOxdopWPUKIVTL2s': 'starter',
-        'price_1SMSgj0xPOxdopWPWujQSxG8': 'premium',
-        'price_1SMSgl0xPOxdopWPQqujVkKi': 'professional'
+        'price_1SPEkE0xPOxdopWPVF6IYYUr': 'oneoff',
+        'price_1SPEkG0xPOxdopWPVVWGWu4M': 'starter',
+        'price_1SPEkH0xPOxdopWPUiOBFDPd': 'premium',
+        'price_1SPEkI0xPOxdopWP5bwrFwY5': 'professional'
       };
       
       user.subscription.tier = tierMap[priceId] || user.subscription.tier;

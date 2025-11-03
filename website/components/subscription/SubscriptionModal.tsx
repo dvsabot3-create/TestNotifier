@@ -50,7 +50,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       '5 daily notifications max'
     ],
     buttonText: 'Pay £30 Once',
-    priceId: 'price_1SMSgh0xPOxdopWPJGe2jU3M'
+    priceId: 'price_1SPEkE0xPOxdopWPVF6IYYUr'
   },
   {
     id: 'starter',
@@ -67,7 +67,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Cancel anytime'
     ],
     buttonText: 'Subscribe - £25/month',
-    priceId: 'price_1SMSgi0xPOxdopWPUKIVTL2s',
+    priceId: 'price_1SPEkG0xPOxdopWPVVWGWu4M',
     rebooksPerDay: 2,
     notificationsPerDay: 10
   },
@@ -89,7 +89,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
     ],
     popular: true,
     buttonText: 'Subscribe - £45/month',
-    priceId: 'price_1SMSgj0xPOxdopWPWujQSxG8',
+    priceId: 'price_1SPEkH0xPOxdopWPUiOBFDPd',
     rebooksPerDay: 5,
     notificationsPerDay: 25
   },
@@ -110,7 +110,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Stealth mode (anti-detection)'
     ],
     buttonText: 'Subscribe - £80/month',
-    priceId: 'price_1SMSgl0xPOxdopWPQqujVkKi'
+    priceId: 'price_1SPEkI0xPOxdopWP5bwrFwY5'
   }
 ];
 
