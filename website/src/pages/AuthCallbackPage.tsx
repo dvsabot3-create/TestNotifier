@@ -189,13 +189,24 @@ const AuthCallbackPage: React.FC = () => {
           return;
         }
 
-        // No checkout in progress - go to dashboard
-        // Dashboard will show subscription status and prompt to upgrade if needed
+        // No checkout in progress - check subscription status
+        // Dashboard is ONLY for existing customers with subscriptions
+        // New users go to pricing page to select a plan
         setTimeout(() => {
-          if (redirectUrl && redirectUrl !== '/' && redirectUrl !== '/dashboard') {
-            navigate(redirectUrl);
-          } else {
+          // Check if user has an active subscription
+          const tier = userData.subscription?.tier || 'free';
+          const status = userData.subscription?.status || 'inactive';
+          
+          console.log('📊 User subscription check:', { tier, status });
+          
+          // If user has a paid subscription → Dashboard
+          if (tier !== 'free' && (status === 'active' || status === 'trialing')) {
+            console.log('✅ Existing customer - going to Dashboard');
             navigate('/dashboard');
+          } else {
+            // New user or no active subscription → Pricing page to select plan
+            console.log('🆕 New account detected - redirecting to pricing to select subscription');
+            navigate('/#pricing');
           }
         }, 500);
 
