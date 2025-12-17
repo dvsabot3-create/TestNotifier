@@ -3,23 +3,9 @@ const passport = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { connectDatabase } = require('../config/database');
 
 const router = express.Router();
-
-// Import User model and database connection
-const connectDatabase = async () => {
-  const mongoose = require('mongoose');
-  if (mongoose.connection.readyState === 1) return;
-  
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL not set');
-  }
-  
-  await mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
-};
 
 // Define User model inline to avoid import issues
 const mongoose = require('mongoose');
@@ -103,39 +89,57 @@ router.get('/google/callback', (req, res, next) => {
   passport.authenticate('google', { session: false }, async (err, userData, info) => {
     try {
       if (err || !userData) {
-        console.error('Google OAuth callback error:', err);
+        console.error('❌ Google OAuth callback error:', err);
+        console.error('❌ UserData:', userData);
+        console.error('❌ Info:', info);
         const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
         return res.redirect(`${frontendUrl}/auth/callback?error=oauth_failed`);
       }
 
       // Get state from OAuth state parameter and retrieve our stored redirect URL
       const stateKey = req.query.state;
-      const redirectUrl = userData.state || oauthStateStore.get(stateKey) || '/';
-      
-      // Clean up stored state
-      if (stateKey) {
-        oauthStateStore.delete(stateKey);
-      }
+      const redirectUrl = userData.state || '/'; // userData.state already contains the decoded redirect URL
+
+      // Clean up stored state (no oauthStateStore needed since we use encoded state)
+      // Note: oauthStateStore was undefined - we now use state passed through Google OAuth
       
       console.log('✅ Google OAuth callback - redirect URL:', redirectUrl, '(from userData.state)');
+      console.log('✅ Google OAuth userData:', {
+        googleId: userData.googleId,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName
+      });
+
+      // Validate required user data
+      if (!userData.googleId || !userData.email) {
+        throw new Error('Missing required user data from Google OAuth');
+      }
 
       // Connect to database
+      console.log('🔌 Connecting to database...');
       await connectDatabase();
+      console.log('✅ Database connected');
 
       // Find or create user in database
+      console.log('🔍 Looking up user by googleId:', userData.googleId);
       let user = await User.findOne({ googleId: userData.googleId });
       
       if (!user) {
+        console.log('🔍 User not found by googleId, checking by email:', userData.email.toLowerCase());
         // Check if user exists by email
         user = await User.findOne({ email: userData.email.toLowerCase() });
         
         if (user) {
+          console.log('✅ Found existing user by email, linking Google account');
           // Link Google account to existing user
           user.googleId = userData.googleId;
           user.firstName = user.firstName || userData.firstName;
           user.lastName = user.lastName || userData.lastName;
           await user.save();
+          console.log('✅ User updated with Google account');
         } else {
+          console.log('➕ Creating new user');
           // Create new user
           user = await User.create({
             googleId: userData.googleId,
@@ -147,39 +151,70 @@ router.get('/google/callback', (req, res, next) => {
               status: 'active'
             }
           });
+          console.log('✅ New user created:', user._id);
         }
+      } else {
+        console.log('✅ Found existing user:', user._id);
       }
 
+      // Validate user object
+      if (!user || !user._id) {
+        throw new Error('User object is invalid after creation/update');
+      }
+
+      // Validate JWT_SECRET
       if (!process.env.JWT_SECRET) {
         throw new Error('JWT_SECRET environment variable is not set');
       }
+      if (process.env.JWT_SECRET.length < 32) {
+        throw new Error('JWT_SECRET must be at least 32 characters long');
+      }
+
+      console.log('🔐 Generating JWT tokens...');
       const jwtSecret = process.env.JWT_SECRET;
       const accessToken = jwt.sign(
         { 
-          id: user._id, 
+          id: user._id.toString(), 
           email: user.email,
           googleId: user.googleId 
         }, 
         jwtSecret, 
         { expiresIn: '7d' }
       );
-      const refreshToken = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '30d' });
+      const refreshToken = jwt.sign({ id: user._id.toString() }, jwtSecret, { expiresIn: '30d' });
+      console.log('✅ JWT tokens generated');
 
-      // redirectUrl was already extracted above from req.query.state
+      // Build callback URL safely
       const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
-      const callbackUrl = new URL('/auth/callback', frontendUrl);
-      callbackUrl.searchParams.set('accessToken', accessToken);
-      callbackUrl.searchParams.set('refreshToken', refreshToken);
-      callbackUrl.searchParams.set('userId', user._id.toString());
-      callbackUrl.searchParams.set('email', user.email);
-      callbackUrl.searchParams.set('firstName', user.firstName);
-      callbackUrl.searchParams.set('lastName', user.lastName);
-      callbackUrl.searchParams.set('redirect', redirectUrl);
+      let callbackUrl;
+      try {
+        callbackUrl = new URL('/auth/callback', frontendUrl);
+        callbackUrl.searchParams.set('accessToken', accessToken);
+        callbackUrl.searchParams.set('refreshToken', refreshToken);
+        callbackUrl.searchParams.set('userId', user._id.toString());
+        callbackUrl.searchParams.set('email', user.email);
+        callbackUrl.searchParams.set('firstName', user.firstName || '');
+        callbackUrl.searchParams.set('lastName', user.lastName || '');
+        callbackUrl.searchParams.set('redirect', redirectUrl);
+      } catch (urlError) {
+        console.error('❌ Failed to construct callback URL:', urlError);
+        throw new Error(`Invalid FRONTEND_URL: ${frontendUrl}`);
+      }
       
       console.log('🔀 Redirecting to:', callbackUrl.toString());
       res.redirect(callbackUrl.toString());
     } catch (error) {
-      console.error('Google OAuth token generation error:', error);
+      console.error('❌ Google OAuth token generation error:', error);
+      console.error('❌ Error stack:', error.stack);
+      console.error('❌ Error name:', error.name);
+      console.error('❌ Error message:', error.message);
+      
+      // Log environment variables status (without exposing values)
+      console.error('❌ Environment check:');
+      console.error('  - DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Missing');
+      console.error('  - JWT_SECRET:', process.env.JWT_SECRET ? `✅ Set (${process.env.JWT_SECRET.length} chars)` : '❌ Missing');
+      console.error('  - FRONTEND_URL:', process.env.FRONTEND_URL || 'Using default');
+      
       const frontendUrl = process.env.FRONTEND_URL || 'https://testnotifier.co.uk';
       return res.redirect(`${frontendUrl}/auth/callback?error=token_generation_failed`);
     }

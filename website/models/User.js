@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   // Basic Information
@@ -150,10 +150,9 @@ const userSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-userSchema.index({ email: 1 });
-userSchema.index({ stripeCustomerId: 1 });
+// Note: email, stripeCustomerId, and googleId already have unique: true which creates indexes
+// Only add composite index for subscription queries
 userSchema.index({ 'subscription.tier': 1, 'subscription.status': 1 });
-userSchema.index({ googleId: 1 });
 
 // Pre-save middleware
 userSchema.pre('save', function(next) {
