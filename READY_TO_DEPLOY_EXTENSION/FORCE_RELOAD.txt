@@ -1,0 +1,32 @@
+🔥 FORCE CHROME TO RELOAD EXTENSION 🔥
+
+Chrome is caching the old UI. Follow these EXACT steps:
+
+1️⃣ CLOSE CHROME COMPLETELY:
+   - Quit Chrome (Cmd+Q on Mac, or Chrome menu → Quit)
+   - Make sure NO Chrome processes are running
+
+2️⃣ CLEAR EXTENSION CACHE:
+   Open Terminal and run:
+   
+   rm -rf ~/Library/Application\ Support/Google/Chrome/Default/Extensions/paabmognifcbmcfalhcfbcnfbffdkeba
+   
+   (This deletes the old cached extension data)
+
+3️⃣ RESTART CHROME:
+   - Open Chrome fresh
+   - Go to: chrome://extensions/
+
+4️⃣ LOAD EXTENSION:
+   - Make sure "Developer mode" is ON
+   - Click "Load unpacked"
+   - Select: /Users/mosman/Documents/DVLA BOT/READY_TO_DEPLOY_EXTENSION
+   - Click "Select Folder"
+
+5️⃣ VERIFY:
+   - Click extension icon
+   - You should see BLUE GRADIENT header (not green!)
+   - Stats should be in glass-morphism cards
+
+If you STILL see green header, the browser is using cached HTML.
+Try opening in Incognito mode or a different Chrome profile.

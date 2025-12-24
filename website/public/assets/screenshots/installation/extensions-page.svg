@@ -1,0 +1,52 @@
+<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="450" fill="#f8f9fa"/>
+
+  <!-- Browser Chrome -->
+  <rect x="0" y="0" width="800" height="60" fill="#1a73e8"/>
+
+  <!-- URL Bar -->
+  <rect x="50" y="80" width="700" height="40" fill="#ffffff" stroke="#dadce0" stroke-width="2" rx="20"/>
+  <text x="70" y="105" font-family="Arial, sans-serif" font-size="16" fill="#5f6368">chrome://extensions/</text>
+
+  <!-- Extensions Page Content -->
+  <rect x="50" y="140" width="700" height="250" fill="#ffffff" stroke="#dadce0" stroke-width="1" rx="8"/>
+
+  <!-- Page Header -->
+  <rect x="70" y="160" width="660" height="50" fill="#f8f9fa" rx="4"/>
+  <text x="85" y="190" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#202124">Extensions</text>
+
+  <!-- Developer Mode Toggle -->
+  <rect x="500" y="165" width="200" height="40" fill="#e8f0fe" stroke="#1a73e8" stroke-width="2" rx="20"/>
+  <circle cx="520" cy="185" r="8" fill="#34a853"/>
+  <text x="540" y="190" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1a73e8">Developer mode</text>
+  <text x="680" y="190" font-family="Arial, sans-serif" font-size="12" fill="#5f6368">ON</text>
+
+  <!-- Extension Cards Area -->
+  <rect x="70" y="230" width="660" height="120" fill="#f8f9fa" stroke="#dadce0" stroke-width="1" rx="8"/>
+
+  <!-- TestNotifier Extension Card -->
+  <rect x="85" y="245" width="630" height="90" fill="#ffffff" stroke="#1a73e8" stroke-width="2" rx="8"/>
+
+  <!-- Extension Icon -->
+  <circle cx="120" cy="290" r="20" fill="#1a73e8"/>
+  <text x="120" y="296" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">TN</text>
+
+  <!-- Extension Info -->
+  <text x="160" y="270" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#202124">TestNotifier - DVSA Test Finder</text>
+  <text x="160" y="290" font-family="Arial, sans-serif" font-size="14" fill="#5f6368">Find earlier driving test cancellations automatically</text>
+  <text x="160" y="310" font-family="Arial, sans-serif" font-size="12" fill="#80868b">ID: testnotifier-dvsa-finder • Version: 1.0.0</text>
+
+  <!-- Toggle Switch -->
+  <rect x="650" y="275" width="40" height="20" fill="#34a853" rx="10"/>
+  <circle cx="670" cy="285" r="8" fill="#ffffff"/>
+
+  <!-- Highlight -->
+  <path d="M 480 185 L 520 185 L 520 165 L 560 175 L 520 185 L 520 195 L 480 195 Z" fill="#34a853"/>
+  <text x="400" y="380" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#34a853" text-anchor="middle">✓ Extensions page loaded successfully</text>
+
+  <!-- Decorative Elements -->
+  <circle cx="700" cy="200" r="3" fill="#34a853"/>
+  <circle cx="720" cy="190" r="2" fill="#fbbc04"/>
+  <circle cx="680" cy="210" r="2" fill="#ea4335"/>
+</svg>

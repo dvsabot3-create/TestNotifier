@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Production builds
+website/dist/
+website/build/
+backend/dist/
+backend/build/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output/
+
+# MongoDB
+mongod*.log
+*.mongodb
+
+# Temporary files
+tmp/
+temp/
+
+# MongoDB Memory Server (large files)
+backend/node_modules/.cache/mongodb-memory-server/mongod-arm64-darwin-7.0.14
+backend/node_modules/.cache/mongodb-memory-server/
+
+# Next.js SWC binary (large files)
+website/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node
+
+# Next.js
+.next/
+out/
+
+# Vite
+.vite/

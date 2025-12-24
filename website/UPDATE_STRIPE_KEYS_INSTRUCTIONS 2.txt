@@ -1,0 +1,14 @@
+To update your Stripe API keys:
+
+1. From the Stripe dashboard API keys section, copy:
+   - Secret key (sk_test_...)
+   - Publishable key (pk_test_...)
+
+2. Edit the .env.local file and replace these lines:
+   STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+   STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+
+3. Replace with your actual keys from Stripe dashboard
+
+4. Restart your server after updating

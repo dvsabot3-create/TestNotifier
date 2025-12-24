@@ -1,0 +1,7 @@
+Contact: security@testnotifier.co.uk
+Expires: 2025-12-31T23:59:59.000Z
+Encryption: https://testnotifier.co.uk/pgp-key.txt
+Acknowledgments: https://testnotifier.co.uk/security/hall-of-fame
+Policy: https://testnotifier.co.uk/security/vulnerability-disclosure
+Preferred-Languages: en
+Canonical: https://testnotifier.co.uk/.well-known/security.txt

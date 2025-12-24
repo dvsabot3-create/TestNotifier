@@ -1,0 +1,444 @@
+/**
+ * DVSA Queen Extension - Website Design System Match
+ * Perfectly matches website globals.css and theme system
+ * Fixes font loading and color consistency issues
+ */
+
+/* Import Inter font exactly like website */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ===== WEBSITE ROOT VARIABLES ===== */
+:root {
+  /* Website color system from globals.css */
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Extension specific mapping */
+  --color-extension-bg: var(--background);
+  --color-extension-card: var(--card);
+  --color-extension-border: var(--border);
+  --color-extension-text: var(--foreground);
+  --gradient-extension-header: linear-gradient(135deg, var(--primary), oklch(0.269 0 0));
+
+  /* Typography - exact website match */
+  --font-family: 'Inter', sans-serif;
+  --font-size: 16px;
+
+  /* Border radius from website */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ===== GLOBAL STYLES - EXACT WEBSITE MATCH ===== */
+#dvsa-queen-panel * {
+  font-family: var(--font-family);
+  box-sizing: border-box;
+}
+
+/* Apply website base styles */
+#dvsa-queen-panel {
+  /* Modern card styling - website match */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 320px;
+  font-family: var(--font-family);
+  font-size: 0.875rem; /* 14px - website standard */
+  color: var(--foreground);
+  overflow: hidden;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1030;
+
+  /* Smooth animations - website style */
+  transition: all 150ms ease-in-out;
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* ===== HEADER - WEBSITE STYLE ===== */
+.dvsa-queen-header {
+  background: var(--gradient-extension-header);
+  color: var(--primary-foreground);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  position: relative;
+  overflow: hidden;
+}
+
+.dvsa-queen-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dvsa-queen-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  padding: 3px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 150ms ease;
+}
+
+.dvsa-queen-logo:hover {
+  transform: scale(1.05);
+}
+
+.dvsa-queen-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dvsa-queen-title {
+  font-weight: 600; /* semibold - website standard */
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+
+.dvsa-queen-tier-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dvsa-queen-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--primary-foreground);
+  font-size: 1.25rem;
+  cursor: pointer;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+  position: relative;
+  z-index: 1;
+}
+
+.dvsa-queen-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* ===== CONTENT - WEBSITE STYLE ===== */
+.dvsa-queen-content {
+  padding: 1.5rem;
+  background: var(--card);
+}
+
+.dvsa-queen-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--muted);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.status-indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  margin-right: 0.75rem;
+  position: relative;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.active {
+  background: var(--color-success-green);
+  box-shadow: 0 0 0 3px rgba(var(--color-success-green), 0.2);
+}
+
+.status-indicator.inactive {
+  background: var(--destructive);
+  box-shadow: 0 0 0 3px rgba(var(--destructive), 0.2);
+}
+
+.status-indicator.warning {
+  background: var(--color-warning-orange);
+  box-shadow: 0 0 0 3px rgba(var(--color-warning-orange), 0.2);
+}
+
+.status-text {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+/* ===== FEATURE INDICATORS - WEBSITE STYLE ===== */
+.dvsa-queen-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  background: var(--muted);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-success-green);
+  transition: all 150ms ease;
+}
+
+.dvsa-queen-feature:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.feature-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-success-green);
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}
+
+.feature-text {
+  color: var(--foreground);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ===== CONTROLS - WEBSITE STYLE ===== */
+.dvsa-queen-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dvsa-queen-check-btn,
+.dvsa-queen-settings-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--primary);
+  background: var(--card);
+  color: var(--primary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 150ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dvsa-queen-check-btn:hover,
+.dvsa-queen-settings-btn:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dvsa-queen-check-btn:active,
+.dvsa-queen-settings-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== PUPIL MANAGEMENT - WEBSITE STYLE ===== */
+.dvsa-pupil-management {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--muted);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.dvsa-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dvsa-section-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.dvsa-add-pupil-btn {
+  background: var(--gradient-extension-header);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.dvsa-add-pupil-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dvsa-pupil-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dvsa-pupil-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 150ms ease;
+}
+
+.dvsa-pupil-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.dvsa-pupil-info {
+  flex: 1;
+}
+
+.dvsa-pupil-name {
+  font-weight: 500;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  margin-bottom: 0.125rem;
+}
+
+.dvsa-pupil-details {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  line-height: 1.25;
+}
+
+.dvsa-pupil-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dvsa-pupil-btn {
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--secondary-foreground);
+}
+
+.dvsa-pupil-btn:hover {
+  background: var(--accent);
+  transform: scale(1.05);
+}
+
+.dvsa-pupil-edit:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.dvsa-pupil-pause:hover,
+.dvsa-pupil-resume:hover {
+  background: var(--color-warning-orange);
+  color: var(--primary-foreground);
+  border-color: var(--color-warning-orange);
+}
+
+.dvsa-pupil-delete:hover {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border-color: var(--destructive);
+}
+
+/* ===== ANIMATIONS - WEBSITE STYLE ===== */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 480px) {
+  #dvsa-queen-panel {
+    width: calc(100vw - 32px);
+    right: 16px;
+    left: 16px;
+  }
+
+  #dvsa-queen-panel.dvsa-queen-tier-professional {
+    width: calc(100vw - 32px);
+  }
+}

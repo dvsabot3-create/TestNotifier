@@ -1,0 +1,21 @@
+{
+  "type": "production_placeholder",
+  "step": "chrome-version",
+  "title": "Check Chrome Version",
+  "instructions": [
+    "1. Install Scribe Chrome extension",
+    "2. Navigate to the appropriate Chrome settings page",
+    "3. Start Scribe recording",
+    "4. Perform the installation step",
+    "5. Stop recording and export screenshots",
+    "6. Replace this placeholder with actual PNG file"
+  ],
+  "scribeUrl": "https://scribehow.com/shared/Check_Chrome_Version_for_TestNotifier__kYqQ",
+  "dimensions": {
+    "width": 800,
+    "height": 600
+  },
+  "format": "PNG",
+  "maxSize": "200KB",
+  "created": "2025-10-27T15:34:24.399Z"
+}

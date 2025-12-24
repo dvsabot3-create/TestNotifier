@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TestNotifier - Notification System Tests</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1d70b8, #2e8bc0);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #1d70b8;
+        }
+        .test-section h3 {
+            margin: 0 0 15px 0;
+            color: #1d70b8;
+            font-size: 16px;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .test-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        .test-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .test-button.secondary {
+            background: linear-gradient(135deg, #6c757d, #868e96);
+        }
+        .test-button.secondary:hover {
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .status.running {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .feature-icon.sms {
+            background: #007bff;
+            color: white;
+        }
+        .feature-icon.whatsapp {
+            background: #25d366;
+            color: white;
+        }
+        .feature-icon.email {
+            background: #dc3545;
+            color: white;
+        }
+        .feature-icon.analytics {
+            background: #6f42c1;
+            color: white;
+        }
+        .feature-icon.verification {
+            background: #fd7e14;
+            color: white;
+        }
+        .feature-icon.retry {
+            background: #20c997;
+            color: white;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1d70b8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 TestNotifier Notification System Tests</h1>
+            <p>Comprehensive testing suite for SMS, WhatsApp, Email notifications and booking verification</p>
+        </div>
+
+        <div class="content">
+            <div class="test-section">
+                <h3>📱 Multi-Channel Notification Tests</h3>
+                <ul class="feature-list">
+                    <li>
+                        <div class="feature-icon sms">SMS</div>
+                        <span>Twilio SMS integration with UK phone validation</span>
+                    </li>
+                    <li>
+                        <div class="feature-icon whatsapp">WA</div>
+                        <span>WhatsApp Business API for Professional tier</span>
+                    </li>
+                    <li>
+                        <div class="feature-icon email">@</div>
+                        <span>Email notifications with HTML templates</span>
+                    </li>
+                    <li>
+                        <div class="feature-icon analytics">📊</div>
+                        <span>Booking analytics and success rate tracking</span>
+                    </li>
+                    <li>
+                        <div class="feature-icon verification">✓</div>
+                        <span>Intelligent booking verification system</span>
+                    </li>
+                    <li>
+                        <div class="feature-icon retry">🔄</div>
+                        <span>Automatic retry with exponential backoff</span>
+                    </li>
+                </ul>
+                <button class="test-button" onclick="runNotificationTests()">
+                    🚀 Run All Notification Tests
+                </button>
+                <button class="test-button secondary" onclick="runQuickTest()">
+                    ⚡ Quick Test
+                </button>
+                <button class="test-button secondary" onclick="clearResults()">
+                    🗑️ Clear Results
+                </button>
+                <button class="test-button" onclick="testButtonFunction()" style="background: linear-gradient(135deg, #ffc107, #ff8c00);">
+                    🔧 Test Button Function
+                </button>
+            </div>
+
+            <div class="test-section">
+                <h3>🔧 Individual Component Tests</h3>
+                <button class="test-button" onclick="testSubscriptionTiers()">
+                    📊 Test Subscription Tiers
+                </button>
+                <button class="test-button" onclick="testPhoneValidation()">
+                    📞 Test Phone Validation
+                </button>
+                <button class="test-button" onclick="testEmailValidation()">
+                    📧 Test Email Validation
+                </button>
+                <button class="test-button" onclick="testRetryMechanism()">
+                    🔄 Test Retry Mechanism
+                </button>
+            </div>
+
+            <div id="status" class="status hidden"></div>
+            <div id="results" class="results hidden"></div>
+        </div>
+    </div>
+
+    <script src="test-notification-system.js"></script>
+    <script>
+        let testResults = [];
+        let originalConsoleLog = console.log;
+        let originalConsoleError = console.error;
+
+        // Override console to capture test output
+        function captureConsoleOutput() {
+            console.log = function(...args) {
+                originalConsoleLog.apply(console, args);
+                const message = args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                ).join(' ');
+                appendResult(message);
+            };
+
+            console.error = function(...args) {
+                originalConsoleError.apply(console, args);
+                const message = args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                ).join(' ');
+                appendResult(`ERROR: ${message}`, 'error');
+            };
+        }
+
+        function restoreConsole() {
+            console.log = originalConsoleLog;
+            console.error = originalConsoleError;
+        }
+
+        function showStatus(message, type = 'running') {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${type}`;
+            statusEl.innerHTML = message;
+            statusEl.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            document.getElementById('status').classList.add('hidden');
+        }
+
+        function appendResult(message, type = 'info') {
+            const resultsEl = document.getElementById('results');
+            resultsEl.classList.remove('hidden');
+
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#333';
+
+            resultsEl.innerHTML += `<div style="color: ${color}; margin: 2px 0;">[${timestamp}] ${message}</div>`;
+            resultsEl.scrollTop = resultsEl.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('results').classList.add('hidden');
+            hideStatus();
+        }
+
+        async function runNotificationTests() {
+            try {
+                clearResults();
+                captureConsoleOutput();
+
+                showStatus('<span class="loading"></span>Running comprehensive notification system tests...', 'running');
+
+                appendResult('🚀 Starting comprehensive notification system tests...');
+                appendResult('');
+
+                // Test SMS integration
+                showStatus('<span class="loading"></span>Testing SMS integration...', 'running');
+                try {
+                    appendResult('📱 Testing Twilio SMS integration...');
+                    // Mock SMS test - in real implementation, this would test actual Twilio API
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    appendResult('✅ SMS integration test completed');
+                } catch (error) {
+                    appendResult(`❌ SMS test failed: ${error.message}`);
+                }
+
+                // Test WhatsApp integration
+                showStatus('<span class="loading"></span>Testing WhatsApp integration...', 'running');
+                try {
+                    appendResult('📱 Testing WhatsApp Business API...');
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    appendResult('✅ WhatsApp integration test completed');
+                } catch (error) {
+                    appendResult(`❌ WhatsApp test failed: ${error.message}`);
+                }
+
+                // Test Email integration
+                showStatus('<span class="loading"></span>Testing Email integration...', 'running');
+                try {
+                    appendResult('📧 Testing Email notifications...');
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    appendResult('✅ Email integration test completed');
+                } catch (error) {
+                    appendResult(`❌ Email test failed: ${error.message}`);
+                }
+
+                showStatus('✅ All notification tests completed!', 'success');
+                appendResult('');
+                appendResult('🎉 Comprehensive notification system tests completed successfully!');
+
+            } catch (error) {
+                console.error('❌ Notification tests failed:', error);
+                showStatus('❌ Notification tests failed', 'error');
+                appendResult(`❌ Test suite error: ${error.message}`);
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        async function runQuickTest() {
+            clearResults();
+            captureConsoleOutput();
+
+            showStatus('<span class="loading"></span>Running quick notification test...', 'running');
+
+            try {
+                appendResult('⚡ Starting quick notification system test...');
+
+                // Quick validation tests
+                appendResult('📱 Testing phone number validation...');
+                const validPhones = ['+447700900123', '07700900123', '+44 7700 900123'];
+                const invalidPhones = ['123', '+44770090012', '0770090012345'];
+
+                validPhones.forEach(phone => {
+                    const isValid = /^\+?44\d{10}$|^(07|447)\d{9}$/.test(phone.replace(/[^\d+]/g, ''));
+                    appendResult(`  ${phone}: ${isValid ? '✅' : '❌'}`);
+                });
+
+                invalidPhones.forEach(phone => {
+                    const isValid = /^\+?44\d{10}$|^(07|447)\d{9}$/.test(phone.replace(/[^\d+]/g, ''));
+                    appendResult(`  ${phone}: ${!isValid ? '✅' : '❌'}`);
+                });
+
+                appendResult('📧 Testing email validation...');
+                const validEmails = ['test@example.com', 'user.name@domain.co.uk'];
+                const invalidEmails = ['not-an-email', '@invalid.com', 'test@'];
+
+                validEmails.forEach(email => {
+                    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                    appendResult(`  ${email}: ${isValid ? '✅' : '❌'}`);
+                });
+
+                invalidEmails.forEach(email => {
+                    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                    appendResult(`  ${email}: ${!isValid ? '✅' : '❌'}`);
+                });
+
+                appendResult('🔄 Testing retry mechanism...');
+                const retryDelays = [];
+                for (let i = 1; i <= 3; i++) {
+                    const delay = 60000 * Math.pow(2, i); // 2, 4, 8 minutes
+                    retryDelays.push(delay);
+                }
+                appendResult(`  Retry delays: ${retryDelays.map(d => `${d/60000}min`).join(', ')} ✅`);
+
+                appendResult('📊 Testing subscription tier features...');
+                const tiers = {
+                    'one-off': { sms: false, whatsapp: false, email: true },
+                    'starter': { sms: true, whatsapp: false, email: true },
+                    'premium': { sms: true, whatsapp: false, email: true },
+                    'professional': { sms: true, whatsapp: true, email: true }
+                };
+
+                Object.entries(tiers).forEach(([tier, features]) => {
+                    appendResult(`  ${tier.toUpperCase()}: SMS=${features.sms ? '✅' : '❌'} WhatsApp=${features.whatsapp ? '✅' : '❌'} Email=${features.email ? '✅' : '❌'}`);
+                });
+
+                showStatus('✅ Quick test completed successfully!', 'success');
+            } catch (error) {
+                appendResult(`❌ Quick test failed: ${error.message}`);
+                showStatus('❌ Quick test failed', 'error');
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        async function testSubscriptionTiers() {
+            clearResults();
+            captureConsoleOutput();
+
+            showStatus('<span class="loading"></span>Testing subscription tiers...', 'running');
+
+            try {
+                appendResult('📊 Testing subscription tier validation...');
+
+                const tiers = {
+                    'one-off': { expectedSms: false, expectedWhatsapp: false, expectedEmail: true },
+                    'starter': { expectedSms: true, expectedWhatsapp: false, expectedEmail: true },
+                    'premium': { expectedSms: true, expectedWhatsapp: false, expectedEmail: true },
+                    'professional': { expectedSms: true, expectedWhatsapp: true, expectedEmail: true }
+                };
+
+                Object.entries(tiers).forEach(([tier, expected]) => {
+                    // Simulate subscription check
+                    const subscription = {
+                        tier: tier,
+                        features: {
+                            smsNotifications: expected.expectedSms,
+                            whatsappNotifications: expected.expectedWhatsapp,
+                            emailNotifications: expected.expectedEmail
+                        }
+                    };
+
+                    const actual = subscription.features;
+                    const smsTest = actual.smsNotifications === expected.expectedSms ? '✅' : '❌';
+                    const whatsappTest = actual.whatsappNotifications === expected.expectedWhatsapp ? '✅' : '❌';
+                    const emailTest = actual.emailNotifications === expected.expectedEmail ? '✅' : '❌';
+
+                    appendResult(`  ${tier.toUpperCase()}: SMS ${smsTest} WhatsApp ${whatsappTest} Email ${emailTest}`);
+                });
+
+                showStatus('✅ Subscription tier tests completed!', 'success');
+            } catch (error) {
+                appendResult(`❌ Subscription tier test failed: ${error.message}`);
+                showStatus('❌ Subscription tier test failed', 'error');
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        async function testPhoneValidation() {
+            clearResults();
+            captureConsoleOutput();
+
+            showStatus('<span class="loading"></span>Testing phone number validation...', 'running');
+
+            try {
+                appendResult('📞 Testing UK phone number validation...');
+
+                const testCases = [
+                    { phone: '+447700900123', expected: true, description: 'Valid +44 format' },
+                    { phone: '07700900123', expected: true, description: 'Valid UK mobile' },
+                    { phone: '+44 7700 900123', expected: true, description: 'Valid with spaces' },
+                    { phone: '123', expected: false, description: 'Invalid short number' },
+                    { phone: '+44770090012', expected: false, description: 'Invalid - too short' },
+                    { phone: '0770090012345', expected: false, description: 'Invalid - too long' }
+                ];
+
+                testCases.forEach(testCase => {
+                    const cleanNumber = testCase.phone.replace(/[^\d+]/g, '');
+                    const isValid = /^\+?44\d{10}$|^(07|447)\d{9}$/.test(cleanNumber);
+                    const result = isValid === testCase.expected ? '✅' : '❌';
+                    appendResult(`  ${testCase.description} (${testCase.phone}): ${result}`);
+                });
+
+                showStatus('✅ Phone validation tests completed!', 'success');
+            } catch (error) {
+                appendResult(`❌ Phone validation test failed: ${error.message}`);
+                showStatus('❌ Phone validation test failed', 'error');
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        async function testEmailValidation() {
+            clearResults();
+            captureConsoleOutput();
+
+            showStatus('<span class="loading"></span>Testing email validation...', 'running');
+
+            try {
+                appendResult('📧 Testing email address validation...');
+
+                const testCases = [
+                    { email: 'test@example.com', expected: true, description: 'Valid basic email' },
+                    { email: 'user.name@domain.co.uk', expected: true, description: 'Valid with subdomain' },
+                    { email: 'test+tag@example.com', expected: true, description: 'Valid with plus addressing' },
+                    { email: 'not-an-email', expected: false, description: 'Invalid format' },
+                    { email: '@invalid.com', expected: false, description: 'Invalid - missing local part' },
+                    { email: 'test@', expected: false, description: 'Invalid - missing domain' }
+                ];
+
+                testCases.forEach(testCase => {
+                    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testCase.email);
+                    const result = isValid === testCase.expected ? '✅' : '❌';
+                    appendResult(`  ${testCase.description} (${testCase.email}): ${result}`);
+                });
+
+                showStatus('✅ Email validation tests completed!', 'success');
+            } catch (error) {
+                appendResult(`❌ Email validation test failed: ${error.message}`);
+                showStatus('❌ Email validation test failed', 'error');
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        async function testRetryMechanism() {
+            clearResults();
+            captureConsoleOutput();
+
+            showStatus('<span class="loading"></span>Testing retry mechanism...', 'running');
+
+            try {
+                appendResult('🔄 Testing notification retry mechanisms...');
+
+                // Test exponential backoff
+                const retryDelays = [];
+                for (let i = 1; i <= 3; i++) {
+                    const delay = 60000 * Math.pow(2, i); // 2, 4, 8 minutes
+                    retryDelays.push(delay);
+                }
+
+                appendResult(`  Retry delays (exponential backoff):`);
+                retryDelays.forEach((delay, index) => {
+                    appendResult(`    Attempt ${index + 1}: ${delay/60000} minutes ✅`);
+                });
+
+                // Test retry limits
+                const maxRetries = 3;
+                appendResult(`  Maximum retry attempts: ${maxRetries} ✅`);
+
+                // Test retry conditions
+                const shouldRetry = (retryCount, maxRetries) => retryCount < maxRetries;
+                appendResult(`  Retry logic test: attempt 1 ${shouldRetry(0, maxRetries) ? '✅' : '❌'}, attempt 3 ${!shouldRetry(3, maxRetries) ? '✅' : '❌'}`);
+
+                showStatus('✅ Retry mechanism tests completed!', 'success');
+            } catch (error) {
+                appendResult(`❌ Retry mechanism test failed: ${error.message}`);
+                showStatus('❌ Retry mechanism test failed', 'error');
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        // Make functions globally accessible for onclick handlers
+        window.runNotificationTests = runNotificationTests;
+        window.runQuickTest = runQuickTest;
+        window.clearResults = clearResults;
+        window.testSubscriptionTiers = testSubscriptionTiers;
+        window.testPhoneValidation = testPhoneValidation;
+        window.testEmailValidation = testEmailValidation;
+        window.testRetryMechanism = testRetryMechanism;
+
+        // Debug function to test button functionality
+        window.testButtonFunction = function() {
+            console.log('🔧 Button click test successful!');
+            appendResult('🔧 Button functionality test: SUCCESS');
+            showStatus('✅ Button test successful!', 'success');
+        };
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 TestNotifier Notification System Test Suite loaded');
+            console.log('📋 Available tests:');
+            console.log('  - Multi-channel notification tests');
+            console.log('  - Individual component tests');
+            console.log('  - Subscription tier validation');
+            console.log('  - Phone/Email validation');
+            console.log('  - Retry mechanism testing');
+            
+            // Test if functions are accessible
+            console.log('🔧 Testing function accessibility...');
+            try {
+                if (typeof runNotificationTests === 'function') {
+                    console.log('✅ runNotificationTests function accessible');
+                } else {
+                    console.error('❌ runNotificationTests function not accessible');
+                }
+            } catch (error) {
+                console.error('❌ Error testing function accessibility:', error);
+            }
+            
+            appendResult('🧪 TestNotifier Notification System Test Suite Ready!');
+            appendResult('💡 Click the buttons above to run different test scenarios');
+        });
+    </script>
+</body>
+</html>

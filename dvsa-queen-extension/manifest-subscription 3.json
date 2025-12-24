@@ -1,0 +1,86 @@
+{
+  "manifest_version": 3,
+  "name": "TestNotifier - DVSA Test Finder",
+  "version": "2.1.0",
+  "description": "Never miss an earlier driving test slot - Professional DVSA test cancellation finder with subscription-based features",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "scripting",
+    "webRequest"
+  ],
+
+  "host_permissions": [
+    "https://driverpracticaltest.dvsa.gov.uk/*",
+    "https://www.gov.uk/book-pupil-driving-test*",
+    "https://testnotifier.co.uk/*",
+    "https://api.testnotifier.co.uk/*",
+    "http://localhost:3000/*",
+    "http://localhost:3001/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["https://driverpracticaltest.dvsa.gov.uk/*"],
+      "js": [
+        "auth-manager.js",
+        "dvsa-automation-engine.js",
+        "content-subscription-enabled.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+
+  "background": {
+    "service_worker": "background-subscription-enabled.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_popup": "popup-subscription-enabled.html",
+    "default_title": "TestNotifier - DVSA Test Finder",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "externally_connectable": {
+    "matches": [
+      "https://testnotifier.co.uk/*",
+      "http://localhost:3000/*"
+    ]
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "auth-manager.js",
+        "dvsa-automation-engine.js"
+      ],
+      "matches": ["https://driverpracticaltest.dvsa.gov.uk/*"]
+    }
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+
+  "oauth2": {
+    "client_id": "your-google-oauth-client-id.apps.googleusercontent.com",
+    "scopes": ["email", "profile"]
+  }
+}
+

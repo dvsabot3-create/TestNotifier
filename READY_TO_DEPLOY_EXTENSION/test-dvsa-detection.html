@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVSA Slot Detection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1d70b8, #0f3460);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .mock-dvsa-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .calendar-day.available {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .calendar-day.available:hover {
+            background: #28a745;
+            color: white;
+            transform: scale(1.05);
+        }
+        .calendar-day.unavailable {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+            cursor: not-allowed;
+        }
+        .calendar-day.disabled {
+            background: #e2e3e5;
+            border-color: #6c757d;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        .test-results {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        .test-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-info { background: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 DVSA Slot Detection Test Suite</h1>
+        <p>Test the real DVSA slot detection system with mock DVSA calendar interfaces</p>
+    </div>
+
+    <div class="test-section">
+        <h2>📅 Mock DVSA Calendar Interface</h2>
+        <p>This simulates different DVSA calendar layouts to test the detection system:</p>
+
+        <div class="mock-dvsa-calendar" id="dvsaCalendar1">
+            <!-- Calendar will be populated by JavaScript -->
+        </div>
+
+        <div class="mock-dvsa-calendar" id="dvsaCalendar2" style="display: none;">
+            <!-- Alternative calendar format -->
+        </div>
+
+        <div class="mock-dvsa-calendar" id="dvsaCalendar3" style="display: none;">
+            <!-- Third calendar format -->
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="test-button" onclick="runDetectionTest()">🔍 Run Detection Test</button>
+            <button class="test-button" onclick="switchCalendarFormat()">🔄 Switch Calendar Format</button>
+            <button class="test-button" onclick="clearResults()">🗑️ Clear Results</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Results</h2>
+        <div id="testResults" class="test-results">
+            Click "Run Detection Test" to start testing the DVSA slot detection system...
+        </div>
+    </div>
+
+    <!-- Load the DVSA Slot Detector -->
+    <script src="dvsa-slot-detector.js"></script>
+
+    <script>
+        let currentCalendar = 1;
+        const testResults = document.getElementById('testResults');
+
+        // Sample DVSA calendar data
+        const calendarData = {
+            1: {
+                name: "Standard DVSA Calendar",
+                days: [
+                    { date: '2024-12-01', available: false, label: '1' },
+                    { date: '2024-12-02', available: true, label: '2', time: '09:00', centre: 'London Test Centre' },
+                    { date: '2024-12-03', available: false, label: '3' },
+                    { date: '2024-12-04', available: true, label: '4', time: '14:30', centre: 'Birmingham Test Centre' },
+                    { date: '2024-12-05', available: false, label: '5' },
+                    { date: '2024-12-06', available: true, label: '6', time: '11:15', centre: 'Manchester Test Centre' },
+                    { date: '2024-12-07', available: false, label: '7' },
+                    { date: '2024-12-08', available: false, label: '8' },
+                    { date: '2024-12-09', available: true, label: '9', time: '08:45', centre: 'Leeds Test Centre' },
+                    { date: '2024-12-10', available: false, label: '10' },
+                    { date: '2024-12-11', available: true, label: '11', time: '13:20', centre: 'Glasgow Test Centre' },
+                    { date: '2024-12-12', available: false, label: '12' },
+                    { date: '2024-12-13', available: true, label: '13', time: '10:10', centre: 'Cardiff Test Centre' },
+                    { date: '2024-12-14', available: false, label: '14' }
+                ]
+            },
+            2: {
+                name: "Alternative DVSA Format",
+                days: [
+                    { date: '2024-12-15', available: false, label: '15' },
+                    { date: '2024-12-16', available: true, label: '16', time: '09:30', centre: 'Bristol Test Centre' },
+                    { date: '2024-12-17', available: false, label: '17' },
+                    { date: '2024-12-18', available: true, label: '18', time: '15:00', centre: 'Sheffield Test Centre' },
+                    { date: '2024-12-19', available: false, label: '19' },
+                    { date: '2024-12-20', available: true, label: '20', time: '12:00', centre: 'Liverpool Test Centre' },
+                    { date: '2024-12-21', available: false, label: '21' }
+                ]
+            },
+            3: {
+                name: "Modern DVSA Layout",
+                days: [
+                    { date: '2024-12-22', available: false, label: '22' },
+                    { date: '2024-12-23', available: true, label: '23', time: '08:30', centre: 'Newcastle Test Centre' },
+                    { date: '2024-12-24', available: false, label: '24' },
+                    { date: '2024-12-25', available: true, label: '25', time: '11:45', centre: 'Edinburgh Test Centre' },
+                    { date: '2024-12-26', available: false, label: '26' },
+                    { date: '2024-12-27', available: true, label: '27', time: '14:15', centre: 'Dublin Test Centre' },
+                    { date: '2024-12-28', available: false, label: '28' }
+                ]
+            }
+        };
+
+        function initializeCalendar() {
+            Object.keys(calendarData).forEach(calendarId => {
+                const calendar = document.getElementById(`dvsaCalendar${calendarId}`);
+                const data = calendarData[calendarId];
+
+                calendar.innerHTML = '';
+                data.days.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = `calendar-day ${day.available ? 'available' : 'unavailable'}`;
+                    dayElement.setAttribute('data-date', day.date);
+                    dayElement.setAttribute('data-available', day.available);
+
+                    if (day.available) {
+                        dayElement.setAttribute('data-time', day.time);
+                        dayElement.setAttribute('data-centre', day.centre);
+                        dayElement.setAttribute('aria-label', `Available slot on ${day.date} at ${day.time} at ${day.centre}`);
+                    } else {
+                        dayElement.setAttribute('aria-label', `No availability on ${day.date}`);
+                    }
+
+                    dayElement.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold;">${day.label}</div>
+                            ${day.available ? `<div style="font-size: 10px; margin-top: 4px;">${day.time}</div>` : ''}
+                        </div>
+                    `;
+
+                    calendar.appendChild(dayElement);
+                });
+            });
+        }
+
+        function switchCalendarFormat() {
+            // Hide current calendar
+            document.getElementById(`dvsaCalendar${currentCalendar}`).style.display = 'none';
+
+            // Switch to next calendar
+            currentCalendar = currentCalendar >= 3 ? 1 : currentCalendar + 1;
+
+            // Show new calendar
+            document.getElementById(`dvsaCalendar${currentCalendar}`).style.display = 'grid';
+
+            addLog(`🔄 Switched to ${calendarData[currentCalendar].name}`);
+        }
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const statusIcon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            testResults.textContent += `[${timestamp}] ${statusIcon} ${message}\n`;
+            testResults.scrollTop = testResults.scrollHeight;
+        }
+
+        function clearResults() {
+            testResults.textContent = 'Test results cleared. Click "Run Detection Test" to start testing...\n';
+        }
+
+        async function runDetectionTest() {
+            try {
+                addLog('🚀 Starting DVSA Slot Detection Test...', 'info');
+
+                // Check if DVSASlotDetector is available
+                if (typeof DVSASlotDetector === 'undefined') {
+                    addLog('❌ DVSASlotDetector not found. Loading detector...', 'error');
+                    return;
+                }
+
+                addLog('✅ DVSASlotDetector found', 'success');
+
+                // Create detector instance
+                const detector = new DVSASlotDetector();
+                addLog('✅ DVSASlotDetector instance created', 'success');
+
+                // Test current calendar format
+                addLog(`🔍 Testing ${calendarData[currentCalendar].name}...`, 'info');
+
+                // Make the current calendar visible for detection
+                const currentCalendarEl = document.getElementById(`dvsaCalendar${currentCalendar}`);
+                currentCalendarEl.style.display = 'grid';
+
+                // Test slot detection
+                addLog('🔍 Detecting available slots...', 'info');
+                const availableSlots = await detector.extractSlotsFromCalendar();
+
+                addLog(`✅ Found ${availableSlots.length} available slots`, availableSlots.length > 0 ? 'success' : 'warning');
+
+                // Display detailed results
+                if (availableSlots.length > 0) {
+                    availableSlots.forEach((slot, index) => {
+                        addLog(`   Slot ${index + 1}: ${slot.date} at ${slot.time} - ${slot.centre} (${slot.type})`, 'success');
+                    });
+                }
+
+                // Test categorization
+                addLog('📊 Testing slot categorization...', 'info');
+                const categorizedSlots = detector.categorizeSlots(availableSlots);
+                addLog(`✅ Categorized ${categorizedSlots.length} slots`, 'success');
+
+                // Test slot details
+                if (availableSlots.length > 0) {
+                    addLog('🔍 Testing detailed slot information...', 'info');
+                    const firstSlot = availableSlots[0];
+                    const slotDetails = await detector.getSlotDetails(firstSlot.element);
+                    addLog(`✅ Slot details extracted:`, 'success');
+                    addLog(`   - ID: ${slotDetails.id}`, 'info');
+                    addLog(`   - Date: ${slotDetails.date}`, 'info');
+                    addLog(`   - Time: ${slotDetails.time}`, 'info');
+                    addLog(`   - Centre: ${slotDetails.centre}`, 'info');
+                    addLog(`   - Type: ${slotDetails.type}`, 'info');
+                    addLog(`   - Available: ${slotDetails.availability.available}`, 'info');
+                }
+
+                // Test all calendar formats
+                addLog('🔄 Testing all calendar formats...', 'info');
+                for (let i = 1; i <= 3; i++) {
+                    if (i !== currentCalendar) {
+                        document.getElementById(`dvsaCalendar${i}`).style.display = 'grid';
+                        const slots = await detector.extractSlotsFromCalendar();
+                        addLog(`   Format ${i}: Found ${slots.length} slots`, slots.length > 0 ? 'success' : 'warning');
+                        document.getElementById(`dvsaCalendar${i}`).style.display = 'none';
+                    }
+                }
+
+                addLog('🎉 DVSA Slot Detection Test Complete!', 'success');
+
+            } catch (error) {
+                addLog(`❌ Test failed: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCalendar();
+            addLog('✅ Test page initialized', 'success');
+            addLog('📅 Mock DVSA calendars loaded', 'success');
+            addLog('🎯 Ready for testing', 'info');
+        });
+    </script>
+</body>
+</html>
+
+<!--
+This test page provides:
+1. Mock DVSA calendar interfaces that simulate real DVSA website layouts
+2. Interactive testing of the DVSASlotDetector class
+3. Multiple calendar formats to test detection robustness
+4. Detailed logging and results display
+5. Visual feedback on detection performance
+
+The test validates:
+- Slot detection from various calendar formats
+- Date, time, and centre extraction
+- Slot categorization (cancellation vs new)
+- Detailed slot information retrieval
+- Error handling and edge cases
+-->

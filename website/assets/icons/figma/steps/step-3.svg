@@ -1,0 +1,26 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Step 3 Icon: Monitor -->
+  <defs>
+    <linearGradient id="step3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6f42c1"/>
+      <stop offset="100%" stop-color="#e83e8c"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Circle background -->
+  <circle cx="40" cy="40" r="38" fill="url(#step3Grad)" opacity="0.1"/>
+  <circle cx="40" cy="40" r="38" fill="none" stroke="url(#step3Grad)" stroke-width="3"/>
+  
+  <!-- Monitor screen -->
+  <rect x="22" y="25" width="36" height="24" rx="2" fill="none" stroke="url(#step3Grad)" stroke-width="3"/>
+  
+  <!-- Screen content - pulse line -->
+  <path d="M26 37 L30 37 L33 32 L36 42 L39 37 L54 37" stroke="url(#step3Grad)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Monitor stand -->
+  <rect x="36" y="49" width="8" height="6" fill="url(#step3Grad)"/>
+  <line x1="30" y1="55" x2="50" y2="55" stroke="url(#step3Grad)" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Number -->
+  <text x="68" y="20" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="url(#step3Grad)">3</text>
+</svg>
