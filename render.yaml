@@ -7,7 +7,7 @@ services:
     name: testnotifier-web
     runtime: docker
     repo: https://github.com/dvsabot3-create/TestNotifier
-    branch: fresh-deploy-nov1
+    branch: clean-v2
     rootDir: .
     dockerfilePath: ./Dockerfile
     dockerContext: .
