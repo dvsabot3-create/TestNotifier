@@ -69,6 +69,19 @@ passport.use(
 
 router.use(passport.initialize());
 
+// Diagnostic endpoint to check OAuth configuration
+router.get('/status', (req, res) => {
+  res.json({
+    googleClientIdSet: !!process.env.GOOGLE_CLIENT_ID,
+    googleClientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
+    googleClientSecretSet: !!process.env.GOOGLE_CLIENT_SECRET,
+    googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+    frontendUrl: process.env.FRONTEND_URL || 'not set',
+    jwtSecretSet: !!process.env.JWT_SECRET,
+    databaseUrlSet: !!process.env.DATABASE_URL
+  });
+});
+
 router.get('/google', (req, res, next) => {
   // Get redirect URL from state parameter
   const redirectUrl = req.query.state || req.query.redirect || '/dashboard';
