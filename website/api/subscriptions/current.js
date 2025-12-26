@@ -16,7 +16,13 @@ const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
+    console.log('🔐 Subscription API - Auth check:');
+    console.log('  - Auth header present:', !!authHeader);
+    console.log('  - Token present:', !!token);
+    console.log('  - Token (first 20 chars):', token ? token.substring(0, 20) + '...' : 'NONE');
+
     if (!token) {
+      console.log('❌ No token provided');
       return res.status(401).json({
         success: false,
         error: 'Access token required'
@@ -24,7 +30,19 @@ const authenticateToken = async (req, res, next) => {
     }
 
     // Verify JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('  - JWT decoded successfully');
+      console.log('  - Decoded email:', decoded.email);
+      console.log('  - Decoded id:', decoded.id);
+    } catch (jwtError) {
+      console.log('❌ JWT verification failed:', jwtError.message);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired token'
+      });
+    }
 
     // Find user in database
     const user = await User.findOne({
@@ -34,20 +52,28 @@ const authenticateToken = async (req, res, next) => {
       ]
     });
 
+    console.log('  - User found:', !!user);
+    if (user) {
+      console.log('  - User email:', user.email);
+      console.log('  - User tier:', user.subscription?.tier);
+    }
+
     if (!user) {
+      console.log('❌ User not found for token');
       return res.status(401).json({
         success: false,
-        error: 'Invalid token'
+        error: 'User not found'
       });
     }
 
+    console.log('✅ Authentication successful for:', user.email);
     req.user = user;
     next();
   } catch (error) {
-    console.error('Authentication error:', error);
+    console.error('❌ Authentication error:', error.message);
     return res.status(401).json({
       success: false,
-      error: 'Invalid token'
+      error: 'Authentication failed'
     });
   }
 };
