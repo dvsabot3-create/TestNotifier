@@ -83,6 +83,17 @@ router.get('/status', (req, res) => {
 });
 
 router.get('/google', (req, res, next) => {
+  // Check if Google credentials are configured
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.error('❌ Google OAuth credentials not configured!');
+    console.error('  GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'MISSING');
+    console.error('  GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'MISSING');
+    return res.status(500).json({
+      error: 'Google OAuth not configured',
+      message: 'Server is missing Google OAuth credentials. Please contact support.'
+    });
+  }
+
   // Get redirect URL from state parameter
   const redirectUrl = req.query.state || req.query.redirect || '/dashboard';
   console.log('🔐 Google OAuth initiated with redirect:', redirectUrl);
@@ -91,11 +102,19 @@ router.get('/google', (req, res, next) => {
   const encodedState = Buffer.from(redirectUrl).toString('base64');
   console.log('🔐 Encoded state for Google OAuth:', encodedState);
   
-  passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    state: encodedState,  // Pass encoded redirect URL directly as OAuth state
-    session: false
-  })(req, res, next);
+  try {
+    passport.authenticate('google', {
+      scope: ['profile', 'email'],
+      state: encodedState,
+      session: false
+    })(req, res, next);
+  } catch (error) {
+    console.error('❌ Passport authenticate error:', error);
+    return res.status(500).json({
+      error: 'OAuth initialization failed',
+      message: error.message
+    });
+  }
 });
 
 router.get('/google/callback', (req, res, next) => {
