@@ -227,7 +227,7 @@ class TestNotifierPopup {
     console.log('🔑 Token:', authToken ? authToken.substring(0, 20) + '...' : 'MISSING');
     
     try {
-      const apiUrl = 'https://www.testnotifier.co.uk/api/subscriptions/current';
+      const apiUrl = 'https://testnotifier.co.uk/api/subscriptions/current';
       
       console.log('📡 Calling API:', apiUrl);
       

@@ -195,5 +195,7 @@ userSchema.methods.incrementRebookUsage = async function() {
   await this.save();
 };
 
-module.exports = mongoose.model('User', userSchema);
+// Use existing model if already compiled, otherwise create new one
+// This prevents "Cannot overwrite model once compiled" errors
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
 
