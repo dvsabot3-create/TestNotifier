@@ -3,7 +3,7 @@ const passport = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { connectDatabase } = require('../config/database');
+const { connectDatabase } = require('../../config/database');
 
 const router = express.Router();
 
