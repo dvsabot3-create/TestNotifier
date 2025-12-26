@@ -27,45 +27,63 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 // Configure passport with Google Strategy
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
-      passReqToCallback: true  // Enable access to req object
-    },
-    async (req, accessToken, refreshToken, profile, done) => {
-      try {
-        // Get state from Google OAuth (passed back from Google)
-        const encodedState = req.query.state || '';
-        let redirectUrl = '/';
-        
-        try {
-          // Decode the base64 state to get original redirect URL
-          redirectUrl = encodedState ? Buffer.from(encodedState, 'base64').toString('utf8') : '/';
-          console.log('🔐 GoogleStrategy: Decoded redirect URL:', redirectUrl);
-        } catch (decodeError) {
-          console.error('Failed to decode state, using default:', decodeError);
-          redirectUrl = '/';
+let googleStrategyConfigured = false;
+try {
+  const clientID = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const callbackURL = process.env.GOOGLE_CALLBACK_URL || 'https://testnotifier.co.uk/api/auth/google/callback';
+  
+  console.log('🔐 Configuring Google Strategy:');
+  console.log('  - Client ID:', clientID ? `${clientID.substring(0, 20)}...` : 'NOT SET');
+  console.log('  - Client Secret:', clientSecret ? 'SET' : 'NOT SET');
+  console.log('  - Callback URL:', callbackURL);
+  
+  if (!clientID || !clientSecret) {
+    console.error('❌ Google OAuth credentials missing! Strategy NOT configured.');
+  } else {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: clientID,
+          clientSecret: clientSecret,
+          callbackURL: callbackURL,
+          passReqToCallback: true
+        },
+        async (req, accessToken, refreshToken, profile, done) => {
+          try {
+            const encodedState = req.query.state || '';
+            let redirectUrl = '/';
+            
+            try {
+              redirectUrl = encodedState ? Buffer.from(encodedState, 'base64').toString('utf8') : '/';
+              console.log('🔐 GoogleStrategy: Decoded redirect URL:', redirectUrl);
+            } catch (decodeError) {
+              console.error('Failed to decode state, using default:', decodeError);
+              redirectUrl = '/';
+            }
+            
+            const userData = {
+              googleId: profile.id,
+              email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
+              firstName: profile.name.givenName || '',
+              lastName: profile.name.familyName || '',
+              avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
+              state: redirectUrl
+            };
+            done(null, userData);
+          } catch (error) {
+            console.error('Google OAuth error:', error);
+            done(error, null);
+          }
         }
-        
-        const userData = {
-          googleId: profile.id,
-          email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
-          firstName: profile.name.givenName || '',
-          lastName: profile.name.familyName || '',
-          avatar: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
-          state: redirectUrl  // Preserve decoded state in userData
-        };
-        done(null, userData);
-      } catch (error) {
-        console.error('Google OAuth error:', error);
-        done(error, null);
-      }
-    }
-  )
-);
+      )
+    );
+    googleStrategyConfigured = true;
+    console.log('✅ Google Strategy configured successfully');
+  }
+} catch (strategyError) {
+  console.error('❌ Failed to configure Google Strategy:', strategyError.message);
+}
 
 router.use(passport.initialize());
 
@@ -83,14 +101,17 @@ router.get('/status', (req, res) => {
 });
 
 router.get('/google', (req, res, next) => {
-  // Check if Google credentials are configured
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    console.error('❌ Google OAuth credentials not configured!');
-    console.error('  GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'MISSING');
-    console.error('  GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'MISSING');
+  // Check if Google Strategy is configured
+  if (!googleStrategyConfigured) {
+    console.error('❌ Google OAuth not configured - strategy failed to initialize');
     return res.status(500).json({
       error: 'Google OAuth not configured',
-      message: 'Server is missing Google OAuth credentials. Please contact support.'
+      message: 'Google authentication is not available. Please contact support.',
+      debug: {
+        clientIdSet: !!process.env.GOOGLE_CLIENT_ID,
+        clientSecretSet: !!process.env.GOOGLE_CLIENT_SECRET,
+        callbackUrl: process.env.GOOGLE_CALLBACK_URL || 'not set'
+      }
     });
   }
 
@@ -102,19 +123,11 @@ router.get('/google', (req, res, next) => {
   const encodedState = Buffer.from(redirectUrl).toString('base64');
   console.log('🔐 Encoded state for Google OAuth:', encodedState);
   
-  try {
-    passport.authenticate('google', {
-      scope: ['profile', 'email'],
-      state: encodedState,
-      session: false
-    })(req, res, next);
-  } catch (error) {
-    console.error('❌ Passport authenticate error:', error);
-    return res.status(500).json({
-      error: 'OAuth initialization failed',
-      message: error.message
-    });
-  }
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    state: encodedState,
+    session: false
+  })(req, res, next);
 });
 
 router.get('/google/callback', (req, res, next) => {
