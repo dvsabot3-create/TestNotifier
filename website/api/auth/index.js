@@ -238,6 +238,8 @@ router.get('/google/callback', (req, res, next) => {
         callbackUrl.searchParams.set('refreshToken', refreshToken);
         callbackUrl.searchParams.set('userId', user._id.toString());
         callbackUrl.searchParams.set('email', user.email);
+        callbackUrl.searchParams.set('subscriptionTier', user.subscription?.tier || 'free');
+        callbackUrl.searchParams.set('subscriptionStatus', user.subscription?.status || 'inactive');
         callbackUrl.searchParams.set('firstName', user.firstName || '');
         callbackUrl.searchParams.set('lastName', user.lastName || '');
         callbackUrl.searchParams.set('redirect', redirectUrl);

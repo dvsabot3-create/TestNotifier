@@ -103,6 +103,8 @@ const AuthCallbackPage: React.FC = () => {
         const firstName = searchParams.get('firstName');
         const lastName = searchParams.get('lastName');
         const avatar = searchParams.get('avatar');
+        const subscriptionTier = searchParams.get('subscriptionTier') || 'free';
+        const subscriptionStatus = searchParams.get('subscriptionStatus') || 'inactive';
 
         console.log('OAuth Callback - Received params:', {
           accessToken: accessToken ? 'present' : 'missing',
@@ -124,7 +126,7 @@ const AuthCallbackPage: React.FC = () => {
           return;
         }
 
-        // Create user object
+        // Create user object with actual subscription from backend
         const userData = {
           id: userId,
           email,
@@ -133,11 +135,13 @@ const AuthCallbackPage: React.FC = () => {
           avatar: avatar || undefined,
           isEmailVerified: true,
           subscription: {
-            tier: 'free',
-            status: 'active'
+            tier: subscriptionTier,
+            status: subscriptionStatus
           },
           createdAt: new Date().toISOString()
         };
+        
+        console.log('📊 User subscription from backend:', { tier: subscriptionTier, status: subscriptionStatus });
 
         // Save authentication data (compatible with auth library)
         localStorage.setItem('token', accessToken);
