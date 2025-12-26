@@ -47,28 +47,26 @@ app.use(helmet({
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
+    // Allow requests with no origin (mobile apps, curl, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    // Allow Chrome extensions
+    // Allow Chrome extensions (any extension)
     if (origin.startsWith('chrome-extension://')) {
+      console.log('✅ CORS: Allowing Chrome extension:', origin);
       return callback(null, true);
     }
     
-    // Allow our domains
-    const allowedOrigins = [
-      'https://testnotifier.co.uk',
-      'https://www.testnotifier.co.uk',
-      'http://localhost:3000',
-      'http://localhost:5173'
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
+    // Allow our domains (with and without www)
+    if (origin.includes('testnotifier.co.uk') || 
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1')) {
+      console.log('✅ CORS: Allowing domain:', origin);
       return callback(null, true);
     }
     
-    // Block other origins
-    callback(new Error('Not allowed by CORS'));
+    // Log rejected origins for debugging (but don't throw error)
+    console.log('⚠️ CORS: Rejected origin:', origin);
+    callback(null, false);
   },
   credentials: true
 }));
