@@ -31,6 +31,8 @@ import { ContactSupport } from './pages/ContactSupport';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Settings from './pages/Settings';
+import SubscriptionPage from './pages/SubscriptionPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -110,6 +112,8 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/cancel" element={<CancelPage />} />
             <Route path="*" element={<HomePage />} />
