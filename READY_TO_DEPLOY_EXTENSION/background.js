@@ -51,6 +51,123 @@ let monitoringInterval = null;
 let dashboardSyncInterval = null;
 
 /**
+ * Listen for external messages from the website (testnotifier.co.uk)
+ * This handles authentication callbacks from the website OAuth flow
+ */
+chrome.runtime.onMessageExternal.addListener(
+  async (message, sender, sendResponse) => {
+    console.log('📨 External message received from website:', message.type);
+    console.log('📨 Sender:', sender.url);
+    
+    // Verify the message is from our website
+    if (sender.url && (sender.url.includes('testnotifier.co.uk') || sender.url.includes('localhost'))) {
+      if (message.type === 'AUTH_SUCCESS' || message.type === 'TESTNOTIFIER_AUTH') {
+        console.log('✅ Auth token received from website!');
+        
+        // Store the auth token
+        await chrome.storage.local.set({ 
+          authToken: message.token,
+          user: message.user || null
+        });
+        
+        console.log('💾 Auth token saved to extension storage');
+        
+        // Notify popup if open
+        try {
+          chrome.runtime.sendMessage({ 
+            type: 'AUTH_COMPLETE',
+            token: message.token,
+            user: message.user
+          });
+        } catch (e) {
+          // Popup might not be open
+          console.log('Popup not open, token saved for next open');
+        }
+        
+        sendResponse({ success: true });
+        return true;
+      }
+    }
+    
+    sendResponse({ success: false, error: 'Unknown message type' });
+    return true;
+  }
+);
+
+/**
+ * Listen for tab updates to detect auth callback
+ * This catches the auth token from the URL when OAuth redirects back
+ */
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    // Check if this is our auth callback URL with a token
+    if (tab.url.includes('testnotifier.co.uk') && tab.url.includes('accessToken=')) {
+      
+      console.log('🔐 Auth callback with token detected:', tab.url);
+      
+      // Extract token from URL if present
+      try {
+        const url = new URL(tab.url);
+        const accessToken = url.searchParams.get('accessToken');
+        const userId = url.searchParams.get('userId');
+        const email = url.searchParams.get('email');
+        const firstName = url.searchParams.get('firstName');
+        const lastName = url.searchParams.get('lastName');
+        const redirect = url.searchParams.get('redirect');
+        
+        console.log('📋 URL params:', { accessToken: !!accessToken, userId, email, redirect });
+        
+        // Process if we have a token (check for extension-login OR just grab any token)
+        if (accessToken) {
+          const isExtensionLogin = redirect && redirect.includes('extension');
+          console.log('✅ Token found! Extension login:', isExtensionLogin);
+          
+          const user = {
+            id: userId,
+            email: email,
+            firstName: firstName || '',
+            lastName: lastName || ''
+          };
+          
+          // Store the auth token
+          await chrome.storage.local.set({ 
+            authToken: accessToken,
+            user: user
+          });
+          
+          console.log('💾 Auth token saved to chrome.storage.local');
+          
+          // If this was an extension login, close the tab
+          if (isExtensionLogin) {
+            setTimeout(async () => {
+              try {
+                await chrome.tabs.remove(tabId);
+                console.log('🔒 Auth tab closed');
+              } catch (e) {
+                console.log('Could not close auth tab');
+              }
+            }, 1500);
+          }
+          
+          // Notify popup if open
+          try {
+            chrome.runtime.sendMessage({ 
+              type: 'AUTH_COMPLETE',
+              token: accessToken,
+              user: user
+            });
+          } catch (e) {
+            console.log('Popup not open, token saved for next open');
+          }
+        }
+      } catch (e) {
+        console.error('Could not parse auth URL:', e);
+      }
+    }
+  }
+});
+
+/**
  * Sync extension data to dashboard backend
  */
 async function syncToDashboard() {

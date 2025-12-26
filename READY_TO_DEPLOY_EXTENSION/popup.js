@@ -109,11 +109,11 @@ class TestNotifierPopup {
       
       // Set up message listener BEFORE opening tab
       if (!this.authMessageListenerSet) {
-        // Listen for auth token message from website via chrome.runtime
+        // Listen for auth token message from background script
         chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           console.log('📨 Received message in popup:', message);
           
-          if (message.type === 'AUTH_SUCCESS' || message.type === 'TESTNOTIFIER_AUTH') {
+          if (message.type === 'AUTH_SUCCESS' || message.type === 'TESTNOTIFIER_AUTH' || message.type === 'AUTH_COMPLETE') {
             console.log('✅ Auth successful! Token received');
             
             // Store token
@@ -124,15 +124,6 @@ class TestNotifierPopup {
             
             console.log('💾 Token saved to storage');
             
-            // Close the auth tab if it's still open
-            if (sender.tab && sender.tab.id) {
-              try {
-                await chrome.tabs.remove(sender.tab.id);
-              } catch (e) {
-                console.log('Could not close auth tab (may already be closed)');
-              }
-            }
-            
             // Reload popup to show authenticated state
             window.location.reload();
             
@@ -142,6 +133,22 @@ class TestNotifierPopup {
         
         this.authMessageListenerSet = true;
       }
+      
+      // Also poll for auth completion (backup method)
+      let pollCount = 0;
+      const pollInterval = setInterval(async () => {
+        pollCount++;
+        const result = await chrome.storage.local.get(['authToken']);
+        if (result.authToken) {
+          console.log('✅ Auth token detected via polling!');
+          clearInterval(pollInterval);
+          window.location.reload();
+        }
+        // Stop polling after 2 minutes
+        if (pollCount > 60) {
+          clearInterval(pollInterval);
+        }
+      }, 2000);
       
     } catch (error) {
       console.error('Error during sign in:', error);
@@ -217,9 +224,12 @@ class TestNotifierPopup {
    */
   async loadSubscriptionFromAPI(authToken) {
     console.log('🔐 Loading subscription from backend API...');
+    console.log('🔑 Token:', authToken ? authToken.substring(0, 20) + '...' : 'MISSING');
     
     try {
-      const apiUrl = 'https://testnotifier.co.uk/api/subscriptions/current';
+      const apiUrl = 'https://www.testnotifier.co.uk/api/subscriptions/current';
+      
+      console.log('📡 Calling API:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -229,8 +239,11 @@ class TestNotifierPopup {
         }
       });
       
+      console.log('📡 API Response status:', response.status);
+      
       if (response.ok) {
         const responseData = await response.json();
+        console.log('📡 API Response data:', responseData);
         
         // Handle both response formats: { subscription: {...} } or {...}
         const subscription = responseData.subscription || responseData;
@@ -247,10 +260,12 @@ class TestNotifierPopup {
         await chrome.storage.local.remove(['authToken']);
         throw new Error('Authentication expired. Please sign in again.');
       } else {
-        throw new Error(`API returned ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ API Error:', response.status, errorText);
+        throw new Error(`API returned ${response.status}: ${errorText}`);
       }
     } catch (error) {
-      console.error('Error loading subscription from API:', error);
+      console.error('❌ Error loading subscription from API:', error);
       throw error;
     }
   }

@@ -46,7 +46,30 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'https://testnotifier.co.uk',
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow Chrome extensions
+    if (origin.startsWith('chrome-extension://')) {
+      return callback(null, true);
+    }
+    
+    // Allow our domains
+    const allowedOrigins = [
+      'https://testnotifier.co.uk',
+      'https://www.testnotifier.co.uk',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Block other origins
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -131,14 +154,18 @@ app.use((req, res, next) => {
     res.setHeader('Expect-CT', 'max-age=86400, enforce');
   }
   
-  // Cross-Origin Resource Policy
-  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  // Cross-Origin Resource Policy - allow cross-origin for API
+  if (req.path.startsWith('/api/')) {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  } else {
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  }
   
   // Cross-Origin-Opener-Policy
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   
-  // Cross-Origin-Embedder-Policy
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  // Cross-Origin-Embedder-Policy - disabled for API compatibility
+  // res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
   
   // Disable caching for sensitive endpoints
   if (req.path.includes('/api/auth') || req.path.includes('/api/billing')) {
