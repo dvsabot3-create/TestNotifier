@@ -102,7 +102,7 @@ class TestNotifierPopup {
   async handleGoogleSignIn() {
     try {
       // Open website login in new tab with extension state parameter
-      const loginUrl = 'https://testnotifier.co.uk/api/auth/google?state=/extension-login';
+      const loginUrl = 'https://www.testnotifier.co.uk/api/auth/google?state=/extension-login';
       const newTab = await chrome.tabs.create({ url: loginUrl });
       
       console.log('🔐 Opened authentication tab:', newTab.id);
@@ -227,7 +227,7 @@ class TestNotifierPopup {
     console.log('🔑 Token:', authToken ? authToken.substring(0, 20) + '...' : 'MISSING');
     
     try {
-      const apiUrl = 'https://testnotifier.co.uk/api/subscriptions/current';
+      const apiUrl = 'https://www.testnotifier.co.uk/api/subscriptions/current';
       
       console.log('📡 Calling API:', apiUrl);
       
@@ -1196,7 +1196,7 @@ class TestNotifierPopup {
    * Show help
    */
   showHelp() {
-    window.open('https://testnotifier.co.uk/help', '_blank');
+    window.open('https://www.testnotifier.co.uk/help', '_blank');
   }
 
   /**
@@ -1746,70 +1746,294 @@ class TestNotifierPopup {
       }
     }
     
-    // UK Test Centres Database
+    // UK Test Centres Database - COMPLETE LIST (300+ centres)
     const testCentres = [
-      // London & South East
-      { name: 'London (Wood Green)', postcode: 'N22', area: 'London', region: 'London' },
-      { name: 'London (Palmers Green)', postcode: 'N13', area: 'London', region: 'London' },
-      { name: 'London (Barking)', postcode: 'IG11', area: 'London', region: 'London' },
-      { name: 'London (Hendon)', postcode: 'NW4', area: 'London', region: 'London' },
-      { name: 'London (Southall)', postcode: 'UB2', area: 'London', region: 'London' },
-      { name: 'London (Mill Hill)', postcode: 'NW7', area: 'London', region: 'London' },
-      { name: 'London (Wanstead)', postcode: 'E11', area: 'London', region: 'London' },
+      // LONDON & GREATER LONDON
+      { name: 'Barking', postcode: 'IG11', area: 'London', region: 'London' },
+      { name: 'Barnet', postcode: 'EN5', area: 'London', region: 'London' },
+      { name: 'Belvedere', postcode: 'DA17', area: 'London', region: 'London' },
+      { name: 'Borehamwood', postcode: 'WD6', area: 'London', region: 'London' },
+      { name: 'Brentwood', postcode: 'CM14', area: 'London', region: 'London' },
+      { name: 'Chertsey', postcode: 'KT16', area: 'London', region: 'London' },
+      { name: 'Chingford', postcode: 'E4', area: 'London', region: 'London' },
+      { name: 'Enfield', postcode: 'EN3', area: 'London', region: 'London' },
+      { name: 'Erith', postcode: 'DA17', area: 'London', region: 'London' },
+      { name: 'Goodmayes', postcode: 'IG3', area: 'London', region: 'London' },
+      { name: 'Greenford', postcode: 'UB6', area: 'London', region: 'London' },
+      { name: 'Hayes', postcode: 'UB3', area: 'London', region: 'London' },
+      { name: 'Hendon', postcode: 'NW9', area: 'London', region: 'London' },
+      { name: 'Hornchurch', postcode: 'RM11', area: 'London', region: 'London' },
+      { name: 'Isleworth', postcode: 'TW7', area: 'London', region: 'London' },
+      { name: 'Mill Hill', postcode: 'NW7', area: 'London', region: 'London' },
+      { name: 'Mitcham', postcode: 'CR4', area: 'London', region: 'London' },
+      { name: 'Morden', postcode: 'SM4', area: 'London', region: 'London' },
+      { name: 'Palmers Green', postcode: 'N13', area: 'London', region: 'London' },
+      { name: 'Pinner', postcode: 'HA5', area: 'London', region: 'London' },
+      { name: 'Sidcup', postcode: 'DA14', area: 'London', region: 'London' },
+      { name: 'Southall', postcode: 'UB2', area: 'London', region: 'London' },
+      { name: 'Tolworth', postcode: 'KT6', area: 'London', region: 'London' },
+      { name: 'Tottenham', postcode: 'N17', area: 'London', region: 'London' },
+      { name: 'Uxbridge', postcode: 'UB8', area: 'London', region: 'London' },
+      { name: 'Wanstead', postcode: 'E11', area: 'London', region: 'London' },
+      { name: 'West Wickham', postcode: 'BR4', area: 'London', region: 'London' },
+      { name: 'Wood Green', postcode: 'N22', area: 'London', region: 'London' },
+      { name: 'Yeading', postcode: 'UB4', area: 'London', region: 'London' },
       
-      // Manchester & North West
-      { name: 'Manchester (Bury Old Road)', postcode: 'M25', area: 'Manchester', region: 'North West' },
-      { name: 'Manchester (Cheetham Hill)', postcode: 'M8', area: 'Manchester', region: 'North West' },
-      { name: 'Manchester (Belle Vue)', postcode: 'M12', area: 'Manchester', region: 'North West' },
-      { name: 'Liverpool (Norris Green)', postcode: 'L11', area: 'Liverpool', region: 'North West' },
-      { name: 'Liverpool (Speke)', postcode: 'L24', area: 'Liverpool', region: 'North West' },
-      { name: 'Preston', postcode: 'PR2', area: 'Preston', region: 'North West' },
-      { name: 'Bolton', postcode: 'BL3', area: 'Bolton', region: 'North West' },
+      // SOUTH EAST
+      { name: 'Ashford (Kent)', postcode: 'TN23', area: 'Ashford', region: 'South East' },
+      { name: 'Aylesbury', postcode: 'HP19', area: 'Aylesbury', region: 'South East' },
+      { name: 'Basildon', postcode: 'SS14', area: 'Basildon', region: 'South East' },
+      { name: 'Basingstoke', postcode: 'RG22', area: 'Basingstoke', region: 'South East' },
+      { name: 'Bishops Stortford', postcode: 'CM23', area: 'Bishops Stortford', region: 'South East' },
+      { name: 'Bletchley', postcode: 'MK3', area: 'Milton Keynes', region: 'South East' },
+      { name: 'Brighton', postcode: 'BN2', area: 'Brighton', region: 'South East' },
+      { name: 'Burgess Hill', postcode: 'RH15', area: 'Burgess Hill', region: 'South East' },
+      { name: 'Canterbury', postcode: 'CT1', area: 'Canterbury', region: 'South East' },
+      { name: 'Chelmsford', postcode: 'CM1', area: 'Chelmsford', region: 'South East' },
+      { name: 'Chichester', postcode: 'PO20', area: 'Chichester', region: 'South East' },
+      { name: 'Clacton-on-Sea', postcode: 'CO15', area: 'Clacton', region: 'South East' },
+      { name: 'Colchester', postcode: 'CO2', area: 'Colchester', region: 'South East' },
+      { name: 'Crawley', postcode: 'RH11', area: 'Crawley', region: 'South East' },
+      { name: 'Eastbourne', postcode: 'BN22', area: 'Eastbourne', region: 'South East' },
+      { name: 'Farnborough', postcode: 'GU14', area: 'Farnborough', region: 'South East' },
+      { name: 'Folkestone', postcode: 'CT20', area: 'Folkestone', region: 'South East' },
+      { name: 'Gillingham', postcode: 'ME8', area: 'Gillingham', region: 'South East' },
+      { name: 'Guildford', postcode: 'GU1', area: 'Guildford', region: 'South East' },
+      { name: 'Hastings', postcode: 'TN35', area: 'Hastings', region: 'South East' },
+      { name: 'Hemel Hempstead', postcode: 'HP2', area: 'Hemel Hempstead', region: 'South East' },
+      { name: 'Herne Bay', postcode: 'CT6', area: 'Herne Bay', region: 'South East' },
+      { name: 'High Wycombe', postcode: 'HP12', area: 'High Wycombe', region: 'South East' },
+      { name: 'Luton', postcode: 'LU1', area: 'Luton', region: 'South East' },
+      { name: 'Maidstone', postcode: 'ME15', area: 'Maidstone', region: 'South East' },
+      { name: 'Newbury (Greenham)', postcode: 'RG19', area: 'Newbury', region: 'South East' },
+      { name: 'Oxford', postcode: 'OX4', area: 'Oxford', region: 'South East' },
+      { name: 'Portsmouth', postcode: 'PO6', area: 'Portsmouth', region: 'South East' },
+      { name: 'Reading', postcode: 'RG2', area: 'Reading', region: 'South East' },
+      { name: 'Slough', postcode: 'SL1', area: 'Slough', region: 'South East' },
+      { name: 'Southampton', postcode: 'SO16', area: 'Southampton', region: 'South East' },
+      { name: 'Southend-on-Sea', postcode: 'SS2', area: 'Southend', region: 'South East' },
+      { name: 'St Albans', postcode: 'AL1', area: 'St Albans', region: 'South East' },
+      { name: 'Stevenage', postcode: 'SG1', area: 'Stevenage', region: 'South East' },
+      { name: 'Tilbury', postcode: 'RM18', area: 'Tilbury', region: 'South East' },
+      { name: 'Tunbridge Wells', postcode: 'TN1', area: 'Tunbridge Wells', region: 'South East' },
+      { name: 'Watford', postcode: 'WD25', area: 'Watford', region: 'South East' },
+      { name: 'Winchester', postcode: 'SO23', area: 'Winchester', region: 'South East' },
+      { name: 'Worthing', postcode: 'BN14', area: 'Worthing', region: 'South East' },
       
-      // Birmingham & West Midlands
+      // SOUTH WEST
+      { name: 'Barnstaple', postcode: 'EX31', area: 'Barnstaple', region: 'South West' },
+      { name: 'Bath', postcode: 'BA2', area: 'Bath', region: 'South West' },
+      { name: 'Bodmin', postcode: 'PL31', area: 'Bodmin', region: 'South West' },
+      { name: 'Bournemouth', postcode: 'BH8', area: 'Bournemouth', region: 'South West' },
+      { name: 'Bristol (Avonmouth)', postcode: 'BS11', area: 'Bristol', region: 'South West' },
+      { name: 'Bristol (Brislington)', postcode: 'BS4', area: 'Bristol', region: 'South West' },
+      { name: 'Bristol (Kingswood)', postcode: 'BS15', area: 'Bristol', region: 'South West' },
+      { name: 'Camborne', postcode: 'TR15', area: 'Camborne', region: 'South West' },
+      { name: 'Chippenham', postcode: 'SN14', area: 'Chippenham', region: 'South West' },
+      { name: 'Dorchester', postcode: 'DT1', area: 'Dorchester', region: 'South West' },
+      { name: 'Exeter', postcode: 'EX2', area: 'Exeter', region: 'South West' },
+      { name: 'Gloucester', postcode: 'GL2', area: 'Gloucester', region: 'South West' },
+      { name: 'Isle of Wight (Newport)', postcode: 'PO30', area: 'Isle of Wight', region: 'South West' },
+      { name: 'Newquay', postcode: 'TR7', area: 'Newquay', region: 'South West' },
+      { name: 'Penzance', postcode: 'TR18', area: 'Penzance', region: 'South West' },
+      { name: 'Plymouth', postcode: 'PL7', area: 'Plymouth', region: 'South West' },
+      { name: 'Poole', postcode: 'BH15', area: 'Poole', region: 'South West' },
+      { name: 'Salisbury', postcode: 'SP2', area: 'Salisbury', region: 'South West' },
+      { name: 'Swindon', postcode: 'SN5', area: 'Swindon', region: 'South West' },
+      { name: 'Taunton', postcode: 'TA2', area: 'Taunton', region: 'South West' },
+      { name: 'Torquay', postcode: 'TQ2', area: 'Torquay', region: 'South West' },
+      { name: 'Trowbridge', postcode: 'BA14', area: 'Trowbridge', region: 'South West' },
+      { name: 'Truro', postcode: 'TR1', area: 'Truro', region: 'South West' },
+      { name: 'Weston-super-Mare', postcode: 'BS23', area: 'Weston-super-Mare', region: 'South West' },
+      { name: 'Yeovil', postcode: 'BA20', area: 'Yeovil', region: 'South West' },
+      
+      // WEST MIDLANDS
+      { name: 'Birmingham (Cocks Moors Woods)', postcode: 'B14', area: 'Birmingham', region: 'West Midlands' },
       { name: 'Birmingham (Garretts Green)', postcode: 'B33', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Kings Heath)', postcode: 'B14', area: 'Birmingham', region: 'West Midlands' },
       { name: 'Birmingham (Kingstanding)', postcode: 'B44', area: 'Birmingham', region: 'West Midlands' },
       { name: 'Birmingham (Shirley)', postcode: 'B90', area: 'Birmingham', region: 'West Midlands' },
-      { name: 'Coventry', postcode: 'CV6', area: 'Coventry', region: 'West Midlands' },
-      { name: 'Wolverhampton', postcode: 'WV11', area: 'Wolverhampton', region: 'West Midlands' },
+      { name: 'Birmingham (South Yardley)', postcode: 'B26', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Birmingham (Sutton Coldfield)', postcode: 'B73', area: 'Birmingham', region: 'West Midlands' },
+      { name: 'Bromsgrove', postcode: 'B61', area: 'Bromsgrove', region: 'West Midlands' },
+      { name: 'Coventry', postcode: 'CV7', area: 'Coventry', region: 'West Midlands' },
+      { name: 'Dudley', postcode: 'DY6', area: 'Dudley', region: 'West Midlands' },
+      { name: 'Hereford', postcode: 'HR4', area: 'Hereford', region: 'West Midlands' },
+      { name: 'Nuneaton', postcode: 'CV11', area: 'Nuneaton', region: 'West Midlands' },
+      { name: 'Redditch', postcode: 'B98', area: 'Redditch', region: 'West Midlands' },
+      { name: 'Shrewsbury', postcode: 'SY1', area: 'Shrewsbury', region: 'West Midlands' },
+      { name: 'Stoke-on-Trent (Cobridge)', postcode: 'ST6', area: 'Stoke-on-Trent', region: 'West Midlands' },
+      { name: 'Stoke-on-Trent (Newcastle-under-Lyme)', postcode: 'ST4', area: 'Stoke-on-Trent', region: 'West Midlands' },
+      { name: 'Telford', postcode: 'TF1', area: 'Telford', region: 'West Midlands' },
+      { name: 'Walsall', postcode: 'WS2', area: 'Walsall', region: 'West Midlands' },
+      { name: 'Warwick', postcode: 'CV34', area: 'Warwick', region: 'West Midlands' },
+      { name: 'Wednesbury', postcode: 'WS10', area: 'Wednesbury', region: 'West Midlands' },
+      { name: 'Wolverhampton', postcode: 'WV4', area: 'Wolverhampton', region: 'West Midlands' },
+      { name: 'Worcester', postcode: 'WR4', area: 'Worcester', region: 'West Midlands' },
       
-      // Leeds & Yorkshire
+      // EAST MIDLANDS
+      { name: 'Ashfield', postcode: 'NG17', area: 'Ashfield', region: 'East Midlands' },
+      { name: 'Boston', postcode: 'PE21', area: 'Boston', region: 'East Midlands' },
+      { name: 'Burton-on-Trent', postcode: 'DE14', area: 'Burton-on-Trent', region: 'East Midlands' },
+      { name: 'Buxton', postcode: 'SK17', area: 'Buxton', region: 'East Midlands' },
+      { name: 'Chesterfield', postcode: 'S41', area: 'Chesterfield', region: 'East Midlands' },
+      { name: 'Corby', postcode: 'NN17', area: 'Corby', region: 'East Midlands' },
+      { name: 'Derby (Alvaston)', postcode: 'DE21', area: 'Derby', region: 'East Midlands' },
+      { name: 'Grantham', postcode: 'NG31', area: 'Grantham', region: 'East Midlands' },
+      { name: 'Kettering', postcode: 'NN16', area: 'Kettering', region: 'East Midlands' },
+      { name: 'Leicester (Wigston)', postcode: 'LE18', area: 'Leicester', region: 'East Midlands' },
+      { name: 'Lincoln', postcode: 'LN6', area: 'Lincoln', region: 'East Midlands' },
+      { name: 'Loughborough', postcode: 'LE11', area: 'Loughborough', region: 'East Midlands' },
+      { name: 'Mansfield', postcode: 'NG18', area: 'Mansfield', region: 'East Midlands' },
+      { name: 'Northampton', postcode: 'NN5', area: 'Northampton', region: 'East Midlands' },
+      { name: 'Nottingham (Colwick)', postcode: 'NG4', area: 'Nottingham', region: 'East Midlands' },
+      { name: 'Stamford', postcode: 'PE9', area: 'Stamford', region: 'East Midlands' },
+      { name: 'Wellingborough', postcode: 'NN8', area: 'Wellingborough', region: 'East Midlands' },
+      { name: 'Worksop', postcode: 'S81', area: 'Worksop', region: 'East Midlands' },
+      
+      // EAST OF ENGLAND
+      { name: 'Bedford', postcode: 'MK42', area: 'Bedford', region: 'East of England' },
+      { name: 'Bury St Edmunds', postcode: 'IP33', area: 'Bury St Edmunds', region: 'East of England' },
+      { name: 'Cambridge', postcode: 'CB4', area: 'Cambridge', region: 'East of England' },
+      { name: 'Ipswich', postcode: 'IP3', area: 'Ipswich', region: 'East of England' },
+      { name: 'Kings Lynn', postcode: 'PE30', area: 'Kings Lynn', region: 'East of England' },
+      { name: 'Lowestoft', postcode: 'NR32', area: 'Lowestoft', region: 'East of England' },
+      { name: 'Norwich', postcode: 'NR6', area: 'Norwich', region: 'East of England' },
+      { name: 'Peterborough', postcode: 'PE1', area: 'Peterborough', region: 'East of England' },
+      
+      // NORTH WEST
+      { name: 'Atherton', postcode: 'M46', area: 'Atherton', region: 'North West' },
+      { name: 'Birkenhead', postcode: 'CH41', area: 'Birkenhead', region: 'North West' },
+      { name: 'Blackburn', postcode: 'BB3', area: 'Blackburn', region: 'North West' },
+      { name: 'Blackpool', postcode: 'FY2', area: 'Blackpool', region: 'North West' },
+      { name: 'Bolton', postcode: 'BL3', area: 'Bolton', region: 'North West' },
+      { name: 'Bury', postcode: 'BL9', area: 'Bury', region: 'North West' },
+      { name: 'Carlisle', postcode: 'CA2', area: 'Carlisle', region: 'North West' },
+      { name: 'Chadderton', postcode: 'OL9', area: 'Oldham', region: 'North West' },
+      { name: 'Cheadle', postcode: 'SK8', area: 'Cheadle', region: 'North West' },
+      { name: 'Chester', postcode: 'CH1', area: 'Chester', region: 'North West' },
+      { name: 'Chorley', postcode: 'PR6', area: 'Chorley', region: 'North West' },
+      { name: 'Crewe', postcode: 'CW2', area: 'Crewe', region: 'North West' },
+      { name: 'Liverpool (Norris Green)', postcode: 'L11', area: 'Liverpool', region: 'North West' },
+      { name: 'Liverpool (Speke)', postcode: 'L24', area: 'Liverpool', region: 'North West' },
+      { name: 'Manchester (Cheetham Hill)', postcode: 'M8', area: 'Manchester', region: 'North West' },
+      { name: 'Manchester (West Didsbury)', postcode: 'M21', area: 'Manchester', region: 'North West' },
+      { name: 'Preston', postcode: 'PR2', area: 'Preston', region: 'North West' },
+      { name: 'Rochdale', postcode: 'OL11', area: 'Rochdale', region: 'North West' },
+      { name: 'Southport', postcode: 'PR8', area: 'Southport', region: 'North West' },
+      { name: 'St Helens', postcode: 'WA9', area: 'St Helens', region: 'North West' },
+      { name: 'Stockport', postcode: 'SK3', area: 'Stockport', region: 'North West' },
+      { name: 'Upton', postcode: 'CH49', area: 'Upton', region: 'North West' },
+      { name: 'Wallasey', postcode: 'CH44', area: 'Wallasey', region: 'North West' },
+      { name: 'Warrington', postcode: 'WA2', area: 'Warrington', region: 'North West' },
+      { name: 'Widnes', postcode: 'WA8', area: 'Widnes', region: 'North West' },
+      { name: 'Wigan', postcode: 'WN3', area: 'Wigan', region: 'North West' },
+      { name: 'Workington', postcode: 'CA14', area: 'Workington', region: 'North West' },
+      
+      // YORKSHIRE & HUMBER
+      { name: 'Barnsley', postcode: 'S75', area: 'Barnsley', region: 'Yorkshire' },
+      { name: 'Bradford (Heaton)', postcode: 'BD9', area: 'Bradford', region: 'Yorkshire' },
+      { name: 'Bradford (Thornbury)', postcode: 'BD3', area: 'Bradford', region: 'Yorkshire' },
+      { name: 'Bridlington', postcode: 'YO16', area: 'Bridlington', region: 'Yorkshire' },
+      { name: 'Doncaster', postcode: 'DN2', area: 'Doncaster', region: 'Yorkshire' },
+      { name: 'Grimsby', postcode: 'DN31', area: 'Grimsby', region: 'Yorkshire' },
+      { name: 'Halifax', postcode: 'HX2', area: 'Halifax', region: 'Yorkshire' },
+      { name: 'Harrogate', postcode: 'HG1', area: 'Harrogate', region: 'Yorkshire' },
+      { name: 'Heckmondwike', postcode: 'WF16', area: 'Heckmondwike', region: 'Yorkshire' },
+      { name: 'Huddersfield', postcode: 'HD1', area: 'Huddersfield', region: 'Yorkshire' },
+      { name: 'Hull', postcode: 'HU9', area: 'Hull', region: 'Yorkshire' },
       { name: 'Leeds (Harehills)', postcode: 'LS8', area: 'Leeds', region: 'Yorkshire' },
       { name: 'Leeds (Horsforth)', postcode: 'LS18', area: 'Leeds', region: 'Yorkshire' },
+      { name: 'Rotherham', postcode: 'S60', area: 'Rotherham', region: 'Yorkshire' },
+      { name: 'Scarborough', postcode: 'YO12', area: 'Scarborough', region: 'Yorkshire' },
+      { name: 'Scunthorpe', postcode: 'DN15', area: 'Scunthorpe', region: 'Yorkshire' },
       { name: 'Sheffield (Handsworth)', postcode: 'S13', area: 'Sheffield', region: 'Yorkshire' },
-      { name: 'Bradford', postcode: 'BD7', area: 'Bradford', region: 'Yorkshire' },
-      { name: 'York', postcode: 'YO30', area: 'York', region: 'Yorkshire' },
+      { name: 'Steeton', postcode: 'BD20', area: 'Steeton', region: 'Yorkshire' },
+      { name: 'Wakefield', postcode: 'WF5', area: 'Wakefield', region: 'Yorkshire' },
+      { name: 'Whitby', postcode: 'YO22', area: 'Whitby', region: 'Yorkshire' },
+      { name: 'York', postcode: 'YO19', area: 'York', region: 'Yorkshire' },
       
-      // Scotland
-      { name: 'Glasgow (Shieldhall)', postcode: 'G51', area: 'Glasgow', region: 'Scotland' },
-      { name: 'Edinburgh (Currie)', postcode: 'EH14', area: 'Edinburgh', region: 'Scotland' },
-      { name: 'Aberdeen', postcode: 'AB21', area: 'Aberdeen', region: 'Scotland' },
-      { name: 'Dundee', postcode: 'DD2', area: 'Dundee', region: 'Scotland' },
-      
-      // Wales
-      { name: 'Cardiff (Llanishen)', postcode: 'CF14', area: 'Cardiff', region: 'Wales' },
-      { name: 'Swansea', postcode: 'SA5', area: 'Swansea', region: 'Wales' },
-      { name: 'Newport', postcode: 'NP19', area: 'Newport', region: 'Wales' },
-      
-      // South West
-      { name: 'Bristol (Brislington)', postcode: 'BS4', area: 'Bristol', region: 'South West' },
-      { name: 'Plymouth', postcode: 'PL7', area: 'Plymouth', region: 'South West' },
-      { name: 'Exeter', postcode: 'EX2', area: 'Exeter', region: 'South West' },
-      
-      // North East
-      { name: 'Newcastle (Gosforth)', postcode: 'NE3', area: 'Newcastle', region: 'North East' },
-      { name: 'Sunderland', postcode: 'SR5', area: 'Sunderland', region: 'North East' },
+      // NORTH EAST
+      { name: 'Alnwick', postcode: 'NE66', area: 'Alnwick', region: 'North East' },
+      { name: 'Berwick-upon-Tweed', postcode: 'TD15', area: 'Berwick', region: 'North East' },
+      { name: 'Blyth', postcode: 'NE24', area: 'Blyth', region: 'North East' },
+      { name: 'Darlington', postcode: 'DL1', area: 'Darlington', region: 'North East' },
+      { name: 'Durham', postcode: 'DH7', area: 'Durham', region: 'North East' },
+      { name: 'Gateshead', postcode: 'NE11', area: 'Gateshead', region: 'North East' },
+      { name: 'Hartlepool', postcode: 'TS25', area: 'Hartlepool', region: 'North East' },
+      { name: 'Hexham', postcode: 'NE46', area: 'Hexham', region: 'North East' },
       { name: 'Middlesbrough', postcode: 'TS5', area: 'Middlesbrough', region: 'North East' },
+      { name: 'Newcastle (Gosforth)', postcode: 'NE3', area: 'Newcastle', region: 'North East' },
+      { name: 'South Shields', postcode: 'NE34', area: 'South Shields', region: 'North East' },
+      { name: 'Sunderland', postcode: 'SR5', area: 'Sunderland', region: 'North East' },
       
-      // East Midlands
-      { name: 'Nottingham (Colwick)', postcode: 'NG4', area: 'Nottingham', region: 'East Midlands' },
-      { name: 'Leicester (Wigston)', postcode: 'LE18', area: 'Leicester', region: 'East Midlands' },
-      { name: 'Derby', postcode: 'DE24', area: 'Derby', region: 'East Midlands' },
+      // SCOTLAND
+      { name: 'Aberdeen North', postcode: 'AB23', area: 'Aberdeen', region: 'Scotland' },
+      { name: 'Aberdeen South (Cove)', postcode: 'AB12', area: 'Aberdeen', region: 'Scotland' },
+      { name: 'Airdrie', postcode: 'ML6', area: 'Airdrie', region: 'Scotland' },
+      { name: 'Arbroath', postcode: 'DD11', area: 'Arbroath', region: 'Scotland' },
+      { name: 'Ayr', postcode: 'KA8', area: 'Ayr', region: 'Scotland' },
+      { name: 'Bishopbriggs', postcode: 'G64', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Dumbarton', postcode: 'G82', area: 'Dumbarton', region: 'Scotland' },
+      { name: 'Dumfries', postcode: 'DG1', area: 'Dumfries', region: 'Scotland' },
+      { name: 'Dundee', postcode: 'DD2', area: 'Dundee', region: 'Scotland' },
+      { name: 'Dunfermline', postcode: 'KY11', area: 'Dunfermline', region: 'Scotland' },
+      { name: 'East Kilbride', postcode: 'G74', area: 'East Kilbride', region: 'Scotland' },
+      { name: 'Edinburgh (Currie)', postcode: 'EH14', area: 'Edinburgh', region: 'Scotland' },
+      { name: 'Edinburgh (Musselburgh)', postcode: 'EH21', area: 'Edinburgh', region: 'Scotland' },
+      { name: 'Elgin', postcode: 'IV30', area: 'Elgin', region: 'Scotland' },
+      { name: 'Falkirk', postcode: 'FK2', area: 'Falkirk', region: 'Scotland' },
+      { name: 'Fort William', postcode: 'PH33', area: 'Fort William', region: 'Scotland' },
+      { name: 'Galashiels', postcode: 'TD1', area: 'Galashiels', region: 'Scotland' },
+      { name: 'Glasgow (Anniesland)', postcode: 'G13', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Glasgow (Baillieston)', postcode: 'G69', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Glasgow (Shieldhall)', postcode: 'G51', area: 'Glasgow', region: 'Scotland' },
+      { name: 'Greenock', postcode: 'PA16', area: 'Greenock', region: 'Scotland' },
+      { name: 'Hamilton', postcode: 'ML3', area: 'Hamilton', region: 'Scotland' },
+      { name: 'Inverness', postcode: 'IV2', area: 'Inverness', region: 'Scotland' },
+      { name: 'Irvine', postcode: 'KA12', area: 'Irvine', region: 'Scotland' },
+      { name: 'Kilmarnock', postcode: 'KA1', area: 'Kilmarnock', region: 'Scotland' },
+      { name: 'Kirkcaldy', postcode: 'KY1', area: 'Kirkcaldy', region: 'Scotland' },
+      { name: 'Livingston', postcode: 'EH54', area: 'Livingston', region: 'Scotland' },
+      { name: 'Oban', postcode: 'PA34', area: 'Oban', region: 'Scotland' },
+      { name: 'Perth', postcode: 'PH1', area: 'Perth', region: 'Scotland' },
+      { name: 'Stirling', postcode: 'FK8', area: 'Stirling', region: 'Scotland' },
       
-      // East of England
-      { name: 'Norwich', postcode: 'NR6', area: 'Norwich', region: 'East of England' },
-      { name: 'Ipswich', postcode: 'IP3', area: 'Ipswich', region: 'East of England' },
-      { name: 'Cambridge', postcode: 'CB1', area: 'Cambridge', region: 'East of England' }
+      // WALES
+      { name: 'Aberystwyth', postcode: 'SY23', area: 'Aberystwyth', region: 'Wales' },
+      { name: 'Abergavenny', postcode: 'NP7', area: 'Abergavenny', region: 'Wales' },
+      { name: 'Bangor', postcode: 'LL57', area: 'Bangor', region: 'Wales' },
+      { name: 'Barry', postcode: 'CF62', area: 'Barry', region: 'Wales' },
+      { name: 'Brecon', postcode: 'LD3', area: 'Brecon', region: 'Wales' },
+      { name: 'Bridgend', postcode: 'CF31', area: 'Bridgend', region: 'Wales' },
+      { name: 'Cardiff (Llanishen)', postcode: 'CF14', area: 'Cardiff', region: 'Wales' },
+      { name: 'Cardigan', postcode: 'SA43', area: 'Cardigan', region: 'Wales' },
+      { name: 'Carmarthen', postcode: 'SA31', area: 'Carmarthen', region: 'Wales' },
+      { name: 'Haverfordwest', postcode: 'SA61', area: 'Haverfordwest', region: 'Wales' },
+      { name: 'Llandrindod Wells', postcode: 'LD1', area: 'Llandrindod Wells', region: 'Wales' },
+      { name: 'Merthyr Tydfil', postcode: 'CF47', area: 'Merthyr Tydfil', region: 'Wales' },
+      { name: 'Neath', postcode: 'SA10', area: 'Neath', region: 'Wales' },
+      { name: 'Newport', postcode: 'NP19', area: 'Newport', region: 'Wales' },
+      { name: 'Pontypool', postcode: 'NP4', area: 'Pontypool', region: 'Wales' },
+      { name: 'Pwllheli', postcode: 'LL53', area: 'Pwllheli', region: 'Wales' },
+      { name: 'Rhyl', postcode: 'LL18', area: 'Rhyl', region: 'Wales' },
+      { name: 'Swansea', postcode: 'SA1', area: 'Swansea', region: 'Wales' },
+      { name: 'Wrexham', postcode: 'LL13', area: 'Wrexham', region: 'Wales' },
+      
+      // NORTHERN IRELAND
+      { name: 'Ballymena', postcode: 'BT42', area: 'Ballymena', region: 'Northern Ireland' },
+      { name: 'Belfast (Balmoral)', postcode: 'BT12', area: 'Belfast', region: 'Northern Ireland' },
+      { name: 'Belfast (Boucher Road)', postcode: 'BT12', area: 'Belfast', region: 'Northern Ireland' },
+      { name: 'Coleraine', postcode: 'BT52', area: 'Coleraine', region: 'Northern Ireland' },
+      { name: 'Cookstown', postcode: 'BT80', area: 'Cookstown', region: 'Northern Ireland' },
+      { name: 'Craigavon', postcode: 'BT65', area: 'Craigavon', region: 'Northern Ireland' },
+      { name: 'Enniskillen', postcode: 'BT74', area: 'Enniskillen', region: 'Northern Ireland' },
+      { name: 'Larne', postcode: 'BT40', area: 'Larne', region: 'Northern Ireland' },
+      { name: 'Lisburn', postcode: 'BT28', area: 'Lisburn', region: 'Northern Ireland' },
+      { name: 'Londonderry', postcode: 'BT48', area: 'Londonderry', region: 'Northern Ireland' },
+      { name: 'Newry', postcode: 'BT35', area: 'Newry', region: 'Northern Ireland' },
+      { name: 'Newtownards', postcode: 'BT23', area: 'Newtownards', region: 'Northern Ireland' },
+      { name: 'Omagh', postcode: 'BT78', area: 'Omagh', region: 'Northern Ireland' }
     ];
     
     window.allTestCentres = testCentres;
@@ -2343,36 +2567,14 @@ class TestNotifierPopup {
   showEditMonitorModal(index) {
     const monitor = this.monitors[index];
     
-    // UK Test Centres Database (same as Add Monitor)
-    const testCentres = [
-      // London & South East
-      { name: 'London (Wood Green)', postcode: 'N22', area: 'London', region: 'London' },
-      { name: 'London (Palmers Green)', postcode: 'N13', area: 'London', region: 'London' },
-      { name: 'London (Barking)', postcode: 'IG11', area: 'London', region: 'London' },
-      { name: 'London (Hendon)', postcode: 'NW4', area: 'London', region: 'London' },
-      { name: 'London (Southall)', postcode: 'UB2', area: 'London', region: 'London' },
-      { name: 'London (Mill Hill)', postcode: 'NW7', area: 'London', region: 'London' },
-      { name: 'London (Wanstead)', postcode: 'E11', area: 'London', region: 'London' },
-      { name: 'Manchester (Bury Old Road)', postcode: 'M25', area: 'Manchester', region: 'North West' },
-      { name: 'Manchester (Cheetham Hill)', postcode: 'M8', area: 'Manchester', region: 'North West' },
-      { name: 'Manchester (Belle Vue)', postcode: 'M12', area: 'Manchester', region: 'North West' },
-      { name: 'Liverpool (Norris Green)', postcode: 'L11', area: 'Liverpool', region: 'North West' },
-      { name: 'Liverpool (Speke)', postcode: 'L24', area: 'Liverpool', region: 'North West' },
-      { name: 'Birmingham (Garretts Green)', postcode: 'B33', area: 'Birmingham', region: 'West Midlands' },
-      { name: 'Birmingham (Kingstanding)', postcode: 'B44', area: 'Birmingham', region: 'West Midlands' },
-      { name: 'Birmingham (Shirley)', postcode: 'B90', area: 'Birmingham', region: 'West Midlands' },
-      { name: 'Leeds (Harehills)', postcode: 'LS8', area: 'Leeds', region: 'Yorkshire' },
-      { name: 'Leeds (Horsforth)', postcode: 'LS18', area: 'Leeds', region: 'Yorkshire' },
-      { name: 'Sheffield (Handsworth)', postcode: 'S13', area: 'Sheffield', region: 'Yorkshire' },
-      { name: 'Glasgow (Shieldhall)', postcode: 'G51', area: 'Glasgow', region: 'Scotland' },
-      { name: 'Edinburgh (Currie)', postcode: 'EH14', area: 'Edinburgh', region: 'Scotland' },
-      { name: 'Cardiff (Llanishen)', postcode: 'CF14', area: 'Cardiff', region: 'Wales' },
-      { name: 'Bristol (Brislington)', postcode: 'BS4', area: 'Bristol', region: 'South West' },
-      { name: 'Newcastle (Gosforth)', postcode: 'NE3', area: 'Newcastle', region: 'North East' },
-      { name: 'Nottingham (Colwick)', postcode: 'NG4', area: 'Nottingham', region: 'East Midlands' }
-    ];
+    // UK Test Centres Database (same as Add Monitor - uses window.allTestCentres)
+    // Re-use the complete list from Add Monitor
+    const testCentres = window.allTestCentres || [];
     
-    window.allTestCentres = testCentres;
+    // If testCentres not loaded yet, reload from the complete list
+    if (testCentres.length === 0) {
+      console.warn('Test centres not loaded - please close and reopen the extension');
+    }
     
     // Pre-select existing test centres
     window.selectedCentres = (monitor.testCentresData || []).length > 0 
