@@ -13,6 +13,11 @@ export function PricingSection() {
     setLoading(planName);
     
     try {
+      // Get user email from localStorage
+      const userData = localStorage.getItem('user_data') || localStorage.getItem('user');
+      const user = userData ? JSON.parse(userData) : null;
+      const customerEmail = user?.email;
+
       // Create checkout session
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -23,6 +28,7 @@ export function PricingSection() {
           priceId: priceId,
           planName: planName,
           planType: planType,
+          customerEmail: customerEmail,
         }),
       });
 
